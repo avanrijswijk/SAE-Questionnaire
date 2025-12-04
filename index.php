@@ -14,6 +14,9 @@
         case 'connexion':
             require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'page_connexion.php');
             break;
+        case 'creation-questionnaire':
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'makeController.php');
+            break;
     }
 
     
