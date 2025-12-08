@@ -50,3 +50,19 @@ header#header > img#img-header {
         padding-bottom: 10px;
     }
 }
+
+/* Ensure the page and main can use full viewport height */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+/* Make the main container at least full viewport height */
+main.is-flex {
+    min-height: 100vh;
+}
+
+/* Stretch the first child div of main to full height */
+main.is-flex > div:first-child {
+    min-height: 100vh;
+}
