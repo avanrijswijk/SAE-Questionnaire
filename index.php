@@ -20,6 +20,9 @@
         case 'trouver-questionnaire':
             require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'findController.php');
             break;
+        case 'resultat-questionnaire':
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'resultController.php');
+            break;
     }
 
     
