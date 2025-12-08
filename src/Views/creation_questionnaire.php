@@ -2,7 +2,7 @@
     
     <div class="is-flex is-flex-direction-column is-justify-content-space-between" style="background-color: #E9E9E9;width: 30%;">
         <div style="background-color: #F5A320;border-radius: 0 0 100px 0;">
-            <button>
+            <button type="button">
                 <h3 class="title is-4 m-1 p-2">+ Ajouter une question</h3>
             </button>
         </div>
@@ -11,9 +11,84 @@
                 Partie pour l'affichage des questions, etc
             </noscript>
         </div>
-        <button onclick="window.location.href = './?c=home';">
+        <div id="dialog" class="modal">
+            <div class="modal-background"></div>
+            <form id="form-enregistrer" class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Enregestrer le questionnaire</p>
+                    <button type="button" id="bouton-fermer" class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body is-flex is-flex-direction-column is-align-items-center">
+                    <div class="field">
+                        <label class="label" for="nom-questionnaire">Nom du Questionnaire :</label>
+                        <div class="control">
+                            <input class="input" name="nom-questionnaire" id="nom-questionnaire"></input> 
+                        </div>     
+                    </div>
+                    <div class="field">
+                        <label class="label" for="liste_participants">Liste participants :</label>
+                        <div class="control">
+                            <div class="select">
+                            <select name="liste_participants" id="liste_participants">
+                                    <option value="">--Veuillez choisir une option--</option>
+                                    <option value="G2A">G2A</option>
+                                    <option value="A2">A2</option>
+                                </select> 
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="pt-3">Code d'acces au questionnaire : <span><code id="code_acces">XXXXX</code></span></p>  
+                    </div>
+                </section>
+                <footer  class="modal-card-foot">
+                    <button type="submit" class="button" id="bouton-valider">
+                        <p>Valider</p>
+                    </button>
+                </footer>
+            </form>
+        </div>
+        <button type="button" id="bouton-finir"> <!--onclick="window.location.href = './?c=home';"-->
             <h3 class="title is-4 mt-3 p-4">FINIR</h3>
         </button>
+        <script>
+            const modal = document.getElementById("dialog");
+            const boutonFinir = document.getElementById("bouton-finir");
+            const boutonValider = document.getElementById("bouton-valider");
+            const formEnregistrer = document.getElementById("form-enregistrer");
+            const boutonFermer = document.getElementById("bouton-fermer");
+
+            function fermer_modal() {
+                modal.classList.remove("is-active");
+            }
+
+            boutonFinir.addEventListener("click", () => {
+                modal.classList.add("is-active");
+            });
+
+            boutonFermer.addEventListener("click", () => {
+                fermer_modal();
+            });
+
+            formEnregistrer.addEventListener("submit", (e) => {
+                e.preventDefault();
+                // TODO: traiter les données du formulaire ici
+                fermer_modal();
+                window.location.href = "./?c=home";
+            });
+
+            // modal.addEventListener('click', () => {
+            //     fermer_modal();
+            // });
+
+            (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+                const $target = $close.closest('.modal');
+
+                $close.addEventListener('click', () => {
+                    fermer_modal();
+                });
+            });
+        </script>
     </div>
     <div style="background-color: #B5C6E6; width:100%"  class="is-flex is-justify-content-center is-align-items-center">
         <div style="background-color: #dfdfdfff; width:85%; padding: 10px;">
