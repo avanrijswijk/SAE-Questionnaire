@@ -22,7 +22,7 @@
             <h2 class="title is-2" style="text-align: center;">Créer ou modifier un questionnaire</h2>
           </a>
 
-          <a class="column is-flex is-flex-direction-column is-align-items-center p-6">
+          <a class="column is-flex is-flex-direction-column is-align-items-center p-6" href="./?c=trouver-questionnaire">
             <div class="image m-6 p-6" style="background-color: #F5A320; border-radius: 75px;">
               <img src="./src/Views/img/repondre_questionnaire.png" alt="icon répondre à un questionnaire">
             </div>
