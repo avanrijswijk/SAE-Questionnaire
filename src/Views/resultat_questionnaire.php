@@ -1,7 +1,7 @@
 <main style="background-color: #EFEFEF; height: 100%;">
     <div class="p-6">
         <h3 class="is-capitalized title is-3 has-text-weight-semibold">liste des questionnaires</h3>
-        <div class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2" style="">
+        <div class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2">
             <p>Titre du questionnaire</p>
         </div>
         <div id="questionnaires">
