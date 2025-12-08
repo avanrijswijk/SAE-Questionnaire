@@ -1,6 +1,6 @@
 <main class="is-flex is-flex-direction-row">
     
-    <div class="is-flex is-flex-direction-column is-justify-content-space-between" style="background-color: #E9E9E9;width: 30%;">
+    <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
         <div style="background-color: #F5A320;border-radius: 0 0 100px 0;">
             <button type="button">
                 <h3 class="title is-4 m-1 p-2">+ Ajouter une question</h3>
@@ -15,33 +15,33 @@
             <div class="modal-background"></div>
             <form id="form-enregistrer" class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Enregestrer le questionnaire</p>
+                    <p class="modal-card-title">Enregistrer le questionnaire</p>
                     <button type="button" id="bouton-fermer" class="delete" aria-label="close"></button>
                 </header>
                 <section class="modal-card-body is-flex is-flex-direction-column is-align-items-center">
-                    <div class="field">
+                    <div class="field" style="width: 50%;">
                         <label class="label" for="nom-questionnaire">Nom du Questionnaire :</label>
                         <div class="control">
-                            <input class="input" name="nom-questionnaire" id="nom-questionnaire"></input> 
+                            <input class="input" name="nom-questionnaire" id="nom-questionnaire" required></input> 
                         </div>     
                     </div>
-                    <div class="field">
+                    <div class="field" style="width: 50%;">
                         <label class="label" for="liste_participants">Liste participants :</label>
-                        <div class="control">
-                            <div class="select">
-                            <select name="liste_participants" id="liste_participants">
-                                    <option value="">--Veuillez choisir une option--</option>
-                                    <option value="G2A">G2A</option>
-                                    <option value="A2">A2</option>
+                        <div class="control" style="width: 100%;">
+                            <div class="select" style="width: 100%;">
+                                <select name="liste_participants" id="liste_participants" style="width: 100%;" required>
+                                        <option value="">--Veuillez choisir une option--</option>
+                                        <option value="G2A">G2A</option>
+                                        <option value="A2">A2</option>
                                 </select> 
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div class="field" style="width: 50%;">
                         <p class="pt-3">Code d'acces au questionnaire : <span><code id="code_acces">XXXXX</code></span></p>  
                     </div>
                 </section>
-                <footer  class="modal-card-foot">
+                <footer class="modal-card-foot" style="justify-content: center;">
                     <button type="submit" class="button" id="bouton-valider">
                         <p>Valider</p>
                     </button>
@@ -81,9 +81,7 @@
             //     fermer_modal();
             // });
 
-            (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
-                const $target = $close.closest('.modal');
-
+            (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete') || []).forEach(($close) => {
                 $close.addEventListener('click', () => {
                     fermer_modal();
                 });

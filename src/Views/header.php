@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./src/Views/css/style-header.css">
   </head>
   <body>
-    <header id="header">
+    <header id="header" style="box-shadow: rgba(17, 17, 26, 0.5) 0px 5px 10px;">
         <div id="div-header"></div>
         <img id="img-header" 
              src="./src/Views/img/unilim.png" 
