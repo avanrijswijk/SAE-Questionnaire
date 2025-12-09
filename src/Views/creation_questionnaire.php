@@ -2,15 +2,35 @@
     
     <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
         <div style="background-color: #F5A320;border-radius: 0 0 100px 0;">
-            <button type="button">
+            <button type="button" id="ajouter-question">
                 <h3 class="title is-4 m-1 p-2">+ Ajouter une question</h3>
             </button>
         </div>
-        <div>
+        <div id="visualiseur-questions" class="pl-2" style="height: 100%;">
             <noscript>
                 Partie pour l'affichage des questions, etc
             </noscript>
+            
         </div>
+        <script>
+            const boutonAjouterQuestion = document.getElementById("ajouter-question");
+            const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
+
+            function ajouter_question() {
+                const divConteneur = document.createElement("div");
+                const liReponse = document.createElement("li");
+                const titreQuestion = document.createElement("p");
+
+                titreQuestion.innerText = "Question ~";
+
+                divConteneur.appendChild(titreQuestion, titreQuestion);
+                divVisualiseurQuestions.appendChild(divConteneur);
+            }
+
+            boutonAjouterQuestion.addEventListener("click", () => {
+                ajouter_question();
+            });
+        </script>
         <div id="dialog" class="modal">
             <div class="modal-background"></div>
             <form id="form-enregistrer" class="modal-card">
