@@ -6,7 +6,7 @@
                 <h3 class="title is-4 m-1 p-2">+ Ajouter une question</h3>
             </button>
         </div>
-        <div id="visualiseur-questions" class="pl-2" style="height: 100%;">
+        <div id="visualiseur-questions" class="pl-2" style="height: 100%; max-height: 46em; overflow-y: scroll;">
             <noscript>
                 Partie pour l'affichage des questions, etc
             </noscript>
