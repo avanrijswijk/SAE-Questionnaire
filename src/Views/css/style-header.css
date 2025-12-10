@@ -11,6 +11,13 @@ header#header > div#div-header {
     max-height: 30px;
 }
 
+header#header > div#div-header > a > img#img-accueil {
+    position: absolute;
+    top: 5px;
+    width: 3.3%;
+    left: 50px;
+}
+
 header#header > img#img-header {
     width: 7%;
     max-width: 75px;
