@@ -16,18 +16,19 @@ class Questionnaire {
         $query = "SELECT * FROM questionnaires";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getQuestionnaire($id) {
-        $query = "SELECT * FROM questionnaires WHERE id = '$id' ";
+        $query = "SELECT * FROM questionnaires WHERE id = :id";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getQuestionnaireBy(array $params) {
-        $query = "SELECT * FROM qusetionnaires WHERE ". implode(' AND ',array_map(function($key) {
+        $query = "SELECT * FROM questionnaires WHERE ". implode(' AND ',array_map(function($key) {
             return "$key = :$key";
         }, array_keys($params)));
 

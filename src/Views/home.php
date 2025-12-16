@@ -15,21 +15,21 @@
               transition: all 1s;
             }
           </style>
-          <a class="column is-flex is-flex-direction-column is-align-items-center p-6" href="./?c=creation-questionnaire">
+          <a class="column is-flex is-flex-direction-column is-align-items-center p-6" href="?c=questionnaire&a=creation">
             <div class="image m-6 p-6" style="background-color: #F5A320; border-radius: 75px;">
               <img src="./src/Views/img/creation_questionnaire.png" alt="icon creation de questionnaire">
             </div>
             <h2 class="title is-2" style="text-align: center;">Créer ou modifier un questionnaire</h2>
           </a>
 
-          <a class="column is-flex is-flex-direction-column is-align-items-center p-6" href="./?c=trouver-questionnaire">
+          <a class="column is-flex is-flex-direction-column is-align-items-center p-6" href="?c=questionnaire&a=lister">
             <div class="image m-6 p-6" style="background-color: #F5A320; border-radius: 75px;">
               <img src="./src/Views/img/repondre_questionnaire.png" alt="icon répondre à un questionnaire">
             </div>
             <h2 class="title is-2" style="text-align: center;">Répondre à un questionnaire</h2>
           </a>
 
-          <a class="column is-flex is-flex-direction-column is-align-items-center p-6" href="./?c=resultat-questionnaire">
+          <a class="column is-flex is-flex-direction-column is-align-items-center p-6" href="?c=questionnaire&a=resultats">
             <div class="image m-6 p-6" style="background-color: #F5A320; border-radius: 75px;">
               <img src="./src/Views/img/resultat_quetionnaire.png" alt="icon creation de questionnaire">
             </div>
