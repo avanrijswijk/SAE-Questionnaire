@@ -1,18 +1,86 @@
-<main class="is-flex is-flex-direction-row">
-    <script src="./src/Views/js/creation_questionnaire.js"></script>
+<main class="is-flex is-flex-direction-row" style="max-height: 100vh;">
+    <script type="module" src="./src/Views/js/creation_questionnaire.js"></script>
+    <script src="./src/Views/js/creation_questionnaire/visualiseur_questions.js"></script>
     <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
         <div style="background-color: #F5A320;border-radius: 0 0 100px 0;">
             <button type="button" id="ajouter-question">
                 <h3 class="title is-4 m-1 p-2">+ Ajouter une question</h3>
             </button>
         </div>
-        <div id="visualiseur-questions" class="pl-2" style="height: 100%; max-height: 46em; overflow-y: scroll;">
+        <div id="dialog-creer-question" class="modal">
+            <div class="modal-background"></div>
+            <form class="modal-card" id="form-ajouter-question">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Ajouter une question</p>
+                    <button type="button" id="bouton-fermerMAQ" class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body is-flex is-flex-direction-column">
+                    <div class="field" style="width: 100%;">
+                        <label for="titre-question" class="label">Libelé de la question</label>
+                        <div class="control">
+                            <textarea class="textarea" rows=2 name="libele-question" autocapitalize="sentences" autofocus required></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Type de questions</label>
+                        <div class="radios">
+                            <label class="radio">
+                                <input type="radio" name="type-question" value="champs-libre" id="radio-champs-libre" checked required>
+                                Champs libre
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="type-question" value="radio-box">
+                                Radio box
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="type-question" value="check-box">
+                                Check box
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="type-question" value="select-bar">
+                                Barre de selection
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field" style="display: none;">
+                        <!-- Sous type pour les champs -->
+                        <label class="label">Sous type :</label>
+                        <div class="radios" id="sous-type-champs">
+                            <label class="radio">
+                                <input type="radio" name="sous-type-question" value="champs-libre-court" checked required>
+                                Petit champs
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="sous-type-question" value="champs-libre-long">
+                                Grand champs
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Options :</label>
+                        <div class="checkboxes">
+                            <label class="checkbox">
+                                <input type="checkbox" name="question-obligatoire" value="obligatoire">
+                                Question obligatoire
+                            </label>
+                        </div>
+                    </div>
+                </section>
+                <footer class="modal-card-foot" style="justify-content: center;">
+                    <button type="submit" class="button" id="bouton-validerMAQ"  style="width: 20%;">
+                        <p>Créer</p>
+                    </button>
+                </footer>
+            </form>
+            
+        </div>
+        <div id="visualiseur-questions" class="pl-2 pr-3" style="height: 100%; max-height: 46em; overflow-y: scroll;">
             <noscript>
                 Partie pour l'affichage des questions, etc
             </noscript>
             
         </div>
-        <div id="dialog" class="modal">
+        <div id="dialog-finir-questionnaire" class="modal">
             <div class="modal-background"></div>
             <form id="form-enregistrer" class="modal-card">
                 <header class="modal-card-head">
@@ -43,7 +111,7 @@
                     </div>
                 </section>
                 <footer class="modal-card-foot" style="justify-content: center;">
-                    <button type="submit" class="button" id="bouton-valider">
+                    <button type="submit" class="button" id="bouton-validerMVQ">
                         <p>Valider</p>
                     </button>
                 </footer>
@@ -53,10 +121,16 @@
             <h3 class="title is-4 mt-3 p-4">FINIR</h3>
         </button>
     </div>
-    <div style="background-color: #B5C6E6; width:100%"  class="is-flex is-justify-content-center is-align-items-center">
-        <div style="background-color: #dfdfdfff; width:85%; padding: 10px;">
-            page
+    <div style="background-color: #B5C6E6; width:100%"  class="is-flex is-justify-content-center"> <!-- enlever  is-align-items-center ; mettre un  -->
+        <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-qestionnaire">
+            <!--<div class="block">
+                <h4 class="title is-4 has-text-weight-semibold">Titre de la question</h4>
+                <div class="ml-2 field">
+                    reponses...
+                </div>
+            </div>-->
         </div>
+        
     </div>
     
 </main>
