@@ -60,35 +60,34 @@
             <p>Auteur</p>
             <p>Temps</p>
         </div>
+
         <div id="questionnaires">
+            <?php if (count($questionnaires) === 0) { ?>
+                <p>Aucun questionnaire en attente.</p>
+            <?php } else { ?>
+                <?php foreach ($questionnaires as $questionnaire): ?>
+                    <a href="./?c=questionnaire&a=#######&id=<?php echo $questionnaire['id']; ?>" class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2" style="border: 1px solid black; background-color: #ffffff;">
+                        <p style="color: black"><?php echo htmlspecialchars($questionnaire['titre']); ?></p>
+                        <p style="color: black"><?php echo htmlspecialchars($questionnaire['id_createur']); ?></p>
+                        <p style="color: black"><?php echo htmlspecialchars($questionnaire['date_expiration']); ?></p>
+                    </a>
+                <?php endforeach; ?>
+            <?php } ?>
+            
             <style>
-                div#questionnaies div:hover {
+                div#questionnaires div:hover {
                     border: #c70000ff;
                 }
             </style>
-            <a class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2" style="border: 1px solid black; background-color: #ffffff;">
-                <p style="color: black">Titre du questionnaire</p>
-                <p style="color: black">Auteur</p>
-                <p style="color: black">Temps</p>
-            </a>
 
+            <!-- Exemple statique
             <a class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2" style="border: 1px solid black; background-color: #ffffff;">
                 <p style="color: black">Titre du questionnaire</p>
                 <p style="color: black">Auteur</p>
                 <p style="color: black">Temps</p>
             </a>
-
-            <a class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2" style="border: 1px solid black; background-color: #ffffff;">
-                <p style="color: black">Titre du questionnaire</p>
-                <p style="color: black">Auteur</p>
-                <p style="color: black">Temps</p>
-            </a>
-
-            <a class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2" style="border: 1px solid black; background-color: #ffffff;">
-                <p style="color: black">Titre du questionnaire</p>
-                <p style="color: black">Auteur</p>
-                <p style="color: black">Temps</p>
-            </a>
+             -->
+            
         </div>
     </div>
 </main>
