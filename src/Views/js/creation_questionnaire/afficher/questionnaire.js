@@ -1,8 +1,7 @@
-import {TypeQuestion} from './type_question.js';
-import {ouvrire_modal, fermer_modal} from './gestion_modal.js';
-/*
-Ce fichier est le fichier relié à l'ajout d'une question dans la partie pour la visualitation du questionnaire
-*/
+import {TypeQuestion} from '../typeQuestion.js';
+
+// Ce fichier est le fichier relié à l'ajout d'une question dans la partie pour la visualitation du questionnaire
+
 
 
 /**
@@ -16,7 +15,7 @@ export function ajouter_question_visualiseur_questionnaire(parent, libeleQestion
     const titreQuestion = document.createElement("h4");
     const divSousConteneur = document.createElement("div");
 
-    let reponse;
+    let elementReponse;
 
     divConteneur.classList.add("block");
     titreQuestion.classList.add("title", "is-4", "has-text-weight-semibold");
@@ -25,14 +24,20 @@ export function ajouter_question_visualiseur_questionnaire(parent, libeleQestion
     divSousConteneur.classList.add("ml-3", "field", "control");
 
     // changer ça dans le future : selection du type de reponse avec la variable type
-    reponse = document.createElement("textarea");
-    reponse.rows = 4;
-    reponse.name = `${libeleQestion}-reponse1`;
-    reponse.classList.add("textarea");
-    reponse.style.border = "1px solid";
-    reponse.disabled = true;
-    reponse.style.resize = "none";
-    divSousConteneur.appendChild(reponse);
+    switch (type) {
+        case TypeQuestion.CHAMPS_LONG :
+        case TypeQuestion.CHAMPS_COURT :
+            elementReponse = document.createElement("textarea");
+            elementReponse.rows = type == TypeQuestion.CHAMPS_COURT ? 1 : 4;
+            elementReponse.name = `${libeleQestion}-reponse1`;
+            elementReponse.classList.add("textarea");
+            elementReponse.style.border = "1px solid";
+            elementReponse.disabled = true;
+            elementReponse.style.resize = "none";
+            break;
+    }
+    
+    divSousConteneur.appendChild(elementReponse);
 
     divConteneur.appendChild(titreQuestion);
     divConteneur.appendChild(divSousConteneur);

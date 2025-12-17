@@ -1,6 +1,6 @@
 <main class="is-flex is-flex-direction-row" style="max-height: 100vh;">
-    <script type="module" src="./src/Views/js/creation_questionnaire.js"></script>
-    <script src="./src/Views/js/creation_questionnaire/visualiseur_questions.js"></script>
+    <script type="module" src="./src/Views/js/creation_questionnaire/modals/fermerQuestionnaire/modalFermer.js"></script>
+    <script type="module" src="./src/Views/js/creation_questionnaire/modals/ajoutQuestion/modalAjouter.js"></script>
     <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
         <div style="background-color: #F5A320;border-radius: 0 0 100px 0;">
             <button type="button" id="ajouter-question">
@@ -23,34 +23,33 @@
                     </div>
                     <div class="field">
                         <label class="label">Type de questions</label>
-                        <div class="radios">
-                            <label class="radio">
+                        <div class="radios" id="radios-types">
+                            <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="champs-libre" id="radio-champs-libre" checked required>
                                 Champs libre
                             </label>
-                            <label class="radio">
-                                <input type="radio" name="type-question" value="radio-box">
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="type-question" value="radio-box" id="radio-radio-box">
                                 Radio box
                             </label>
-                            <label class="radio">
-                                <input type="radio" name="type-question" value="check-box">
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="type-question" value="check-box" id="radio-check-box">
                                 Check box
                             </label>
-                            <label class="radio">
-                                <input type="radio" name="type-question" value="select-bar">
-                                Barre de selection
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="type-question" value="select-bar" id="radio-select-bar">
+                                Liste déroulante
                             </label>
                         </div>
                     </div>
-                    <div class="field" style="display: none;">
-                        <!-- Sous type pour les champs -->
-                        <label class="label">Sous type :</label>
+                    <div id="radio-sous-type" class="field">
+                        <label class="label">Sous type(s) :</label>
                         <div class="radios" id="sous-type-champs">
-                            <label class="radio">
+                            <label class="radio is-unselectable">
                                 <input type="radio" name="sous-type-question" value="champs-libre-court" checked required>
                                 Petit champs
                             </label>
-                            <label class="radio">
+                            <label class="radio is-unselectable">
                                 <input type="radio" name="sous-type-question" value="champs-libre-long">
                                 Grand champs
                             </label>
@@ -59,7 +58,7 @@
                     <div class="field">
                         <label class="label">Options :</label>
                         <div class="checkboxes">
-                            <label class="checkbox">
+                            <label class="checkbox is-unselectable">
                                 <input type="checkbox" name="question-obligatoire" value="obligatoire">
                                 Question obligatoire
                             </label>
