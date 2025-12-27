@@ -1,7 +1,7 @@
 import { TypeQuestion } from '../../typeQuestion.js';
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
-import {ajouter_question_visualiseur_questions} from '../../afficher/questions.js';
-import {ajouter_question_visualiseur_questionnaire} from '../../afficher/questionnaire.js';
+import {ajouterQuestionVisualiseurQuestions} from '../../afficher/questions.js';
+import {ajouterQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
 
 /**
  * Met la premère lettre d'une chaine de caractères en majuscule
@@ -14,6 +14,9 @@ function mettreLaPremiereLettreEnMajuscule(chaine) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    //
+    let _id = 0;
+
     // ---------- pour ouvrir le modal d'ajouter une question (MAQ) ----------
     const boutonAjouterQuestion = document.getElementById("ajouter-question");
     const boutonFermerMAQ = document.getElementById("bouton-fermerMAQ");
@@ -101,8 +104,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("Question obligatoire :", estObligatoire);
         console.log("----------------------------------");
 
-        ajouter_question_visualiseur_questions(divVisualiseurQuestions, libeleQuestion);
-        ajouter_question_visualiseur_questionnaire(divVisualiseurQuestionnaire, libeleQuestion, typeQuestion);
+        ajouterQuestionVisualiseurQuestions(divVisualiseurQuestions, libeleQuestion, _id);
+        ajouterQuestionVisualiseurQuestionnaire(divVisualiseurQuestionnaire, libeleQuestion, typeQuestion, _id);
+        _id++;
 
         fermer_modal(modalAjouterQuestion);
         formMAQ.reset();

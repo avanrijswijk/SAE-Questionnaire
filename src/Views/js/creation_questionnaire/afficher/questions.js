@@ -1,10 +1,12 @@
+import { modalModifierQuestion } from '../modals/modificationQuestion/modalModifier';
 
 /**
  * Ajoute une question dans le visualiseur de questions (partie gauche)
  * @param {HTMLElement} parent - Le conteneur parent où sera placé la question
  * @param {string} libele - Le libelé de la question
+ * @param {int} _id 
  */
-export function ajouter_question_visualiseur_questions(parent, libele) {
+export function ajouterQuestionVisualiseurQuestions(parent, libele, _id) {
     const divConteneur = document.createElement("div");
     const spanFleche = document.createElement("span");
     const spanTitre = document.createElement("span");
@@ -30,11 +32,13 @@ export function ajouter_question_visualiseur_questions(parent, libele) {
     spanFleche.style.position = "absolute";
 
     divConteneur.classList.add("box");
+    divConteneur.dataset._id = _id;
     divConteneur.style.whiteSpace = "nowrap";
     divConteneur.style.marginBottom = 0;
     divConteneur.style.marginTop = "10px";
     divConteneur.style.padding = "5px 10px";
 
+    titreQuestion.classList.add("is-unselectable");
     titreQuestion.innerText = libele.toString();
     titreQuestion.style.overflow = "hidden";
     titreQuestion.style.textOverflow = "ellipsis";
@@ -52,4 +56,42 @@ export function ajouter_question_visualiseur_questions(parent, libele) {
     //divConteneur.appendChild(titreQuestion);
     divConteneur.append(spanFleche, spanTitre);
     parent.appendChild(divConteneur);
+
+    modalModifierQuestion(_id);
+}
+
+/**
+ * Modifi une question dans le visualisateurs de questions (partie de gauche)
+ * @param {int} id - identifiant de la question
+ * @param {string} libele - le nouveau libelé
+ */
+export function modifierQuestionVisualiseurQuestions(id, libele) {
+    const question = donnerQuestionAvecIdVisualiseurQuestions(id);
+    const balisePQuestion = question.querySelector('p');
+    balisePQuestion.innerText = libele;
+    balisePQuestion.title = libele;
+}
+
+
+/**
+ * retourne le div de la question avec son id
+ * (pour une question présent dans le visualisateur de questions (partie de gauche)) 
+ * @param {int} id - identifiant de la question
+ * @returns {HTMLDivElement} le div de la question
+ */
+export function donnerQuestionAvecIdVisualiseurQuestions(id) {
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
+    return divVisualiseurQuestions.querySelector(`[data-_id="${id}"]`);
+}
+
+/**
+ * donne le libele de la question en fonction de son id 
+ * (pour une question présent dans le visualisateur de questions (partie de gauche))
+ * @param {int} id - identifiant de la question 
+ * @returns {string} le libele
+ */
+export function donnerLibelleQuestionAvecIdVisualiseurQuestions(id) {
+    const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(id);
+    const pLibelle = divQuestion.querySelector("p");
+    return pLibelle.innerText;
 }

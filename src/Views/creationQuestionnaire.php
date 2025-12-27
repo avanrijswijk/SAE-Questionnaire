@@ -16,7 +16,7 @@
                 </header>
                 <section class="modal-card-body is-flex is-flex-direction-column">
                     <div class="field" style="width: 100%;">
-                        <label for="titre-question" class="label">Libelé de la question</label>
+                        <label for="titre-question" class="label">Libellé de la question</label>
                         <div class="control">
                             <textarea class="textarea" rows=2 name="libele-question" autocapitalize="sentences" autofocus required></textarea>
                         </div>
@@ -71,13 +71,36 @@
                     </button>
                 </footer>
             </form>
-            
+        </div>
+        <div id="dialog-modifier-question" class="modal">
+            <div class="modal-background"></div>
+            <form class="modal-card" id="form-modifier-question">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Modifier une question</p>
+                    <button type="button" id="bouton-fermerMMQ" class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div class="field">
+                        <label for="titre-question" class="label">Libellé de la question</label>
+                        <div class="control">
+                            <textarea class="textarea" rows=2 name="libelle-question" autocapitalize="sentences" autofocus required></textarea>
+                        </div>
+                    </div>
+                </section>
+                <footer class="modal-card-foot buttons" style="justify-content: center;">
+                    <button type="submit" class="button is-success" id="bouton-validerMMQ"  style="width: 20%;">
+                        <p>Modifier</p>
+                    </button>
+                    <button type="button" class="button is-danger" id="bouton-annulerMMQ"  style="width: 20%;">
+                        <p>Annuler</p>
+                    </button>
+                </footer>
+            </form>
         </div>
         <div id="visualiseur-questions" class="pl-2 pr-3" style="height: 100%; max-height: 46em; overflow-y: scroll;">
             <noscript>
                 Partie pour l'affichage des questions, etc
             </noscript>
-            
         </div>
         <div id="dialog-finir-questionnaire" class="modal">
             <div class="modal-background"></div>

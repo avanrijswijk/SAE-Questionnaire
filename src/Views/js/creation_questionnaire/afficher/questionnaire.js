@@ -9,8 +9,9 @@ import {TypeQuestion} from '../typeQuestion.js';
  * @param {HTMLElement} parent - Le conteneur parent où sera placé la question
  * @param {string} libeleQestion - Le libelé de la question
  * @param {TypeQuestion} type - Le type de réponse possible 
+ * @param {int} _id 
  */
-export function ajouter_question_visualiseur_questionnaire(parent, libeleQestion, type) {
+export function ajouterQuestionVisualiseurQuestionnaire(parent, libeleQestion, type, _id) {
     const divConteneur = document.createElement("div");
     const titreQuestion = document.createElement("h4");
     const divSousConteneur = document.createElement("div");
@@ -18,6 +19,7 @@ export function ajouter_question_visualiseur_questionnaire(parent, libeleQestion
     let elementReponse;
 
     divConteneur.classList.add("block");
+    divConteneur.dataset._id = _id;
     titreQuestion.classList.add("title", "is-4", "has-text-weight-semibold");
     titreQuestion.innerText = libeleQestion;
     titreQuestion.style.marginBottom = "10px";
@@ -47,3 +49,26 @@ export function ajouter_question_visualiseur_questionnaire(parent, libeleQestion
 document.addEventListener("DOMContentLoaded", async () => {
     
 });
+
+/**
+ * Modifi une question dans le visualisateur de questionnaire (partie de droite)
+ * @param {int} id - identifiant de la question
+ * @param {string} libele - le nouveau libelé
+ */
+export function modifierQuestionVisualiseurQuestionnaire(id, libele) {
+    const question = donnerQuestionAvecIdVisualiseurQuestionnaire(id);
+    const baliseH4Question = question.querySelector('h4');
+    baliseH4Question.innerText = libele;
+}
+
+
+/**
+ * retourne le div de la question avec son id
+ * (pour une question présent dans le visualisateur de questionnaire (partie de droite)) 
+ * @param {int} id - identifiant de la question
+ * @returns {HTMLDivElement} le div de la question
+ */
+export function donnerQuestionAvecIdVisualiseurQuestionnaire(id) {
+    const divVisualiseurQuestions = document.getElementById("visualiseur-qestionnaire");
+    return divVisualiseurQuestions.querySelector(`[data-_id="${id}"]`);
+}
