@@ -1,4 +1,4 @@
-import { modalModifierQuestion } from '../modals/modificationQuestion/modalModifier';
+import { ouvrireModalModifierQuestion } from '../modals/modificationQuestion/modalModifier';
 
 /**
  * Ajoute une question dans le visualiseur de questions (partie gauche)
@@ -57,7 +57,7 @@ export function ajouterQuestionVisualiseurQuestions(parent, libele, _id) {
     divConteneur.append(spanFleche, spanTitre);
     parent.appendChild(divConteneur);
 
-    modalModifierQuestion(_id);
+    ouvrireModalModifierQuestion(_id);
 }
 
 /**

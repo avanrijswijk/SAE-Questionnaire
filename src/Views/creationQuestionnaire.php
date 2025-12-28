@@ -18,7 +18,7 @@
                     <div class="field" style="width: 100%;">
                         <label for="titre-question" class="label">Libellé de la question</label>
                         <div class="control">
-                            <textarea class="textarea" rows=2 name="libele-question" autocapitalize="sentences" autofocus required></textarea>
+                            <textarea class="textarea" rows=2 name="libelle-question" autocapitalize="sentences" autofocus required></textarea>
                         </div>
                     </div>
                     <div class="field">

@@ -63,9 +63,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         e.preventDefault();
 
         const formData = new FormData(formMAQ);
-        const libeleQuestion = mettreLaPremiereLettreEnMajuscule(formData.get("libele-question"));   // libelé
-        if (libeleQuestion.trim() == "") {
-            alert("Le libelé de la question ne doit pas être vide.")
+        const libelleQuestion = mettreLaPremiereLettreEnMajuscule(formData.get("libelle-question"));   // libelé
+        if (libelleQuestion.trim() == "") {
+            alert("Le libellé de la question ne doit pas être vide.")
             return
         }
         // valeur possible de typeQuestionChoisi : 
@@ -99,13 +99,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
 
         console.log("------ Ajout d'une question ------");
-        console.log("Libelé de question :", libeleQuestion);
+        console.log("Libellé de question :", libelleQuestion);
         console.log("Type de question :", typeQuestion);
         console.log("Question obligatoire :", estObligatoire);
         console.log("----------------------------------");
 
-        ajouterQuestionVisualiseurQuestions(divVisualiseurQuestions, libeleQuestion, _id);
-        ajouterQuestionVisualiseurQuestionnaire(divVisualiseurQuestionnaire, libeleQuestion, typeQuestion, _id);
+        ajouterQuestionVisualiseurQuestions(divVisualiseurQuestions, libelleQuestion, _id);
+        ajouterQuestionVisualiseurQuestionnaire(divVisualiseurQuestionnaire, libelleQuestion, typeQuestion, _id);
         _id++;
 
         fermer_modal(modalAjouterQuestion);

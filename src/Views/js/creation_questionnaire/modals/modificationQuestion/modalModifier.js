@@ -4,6 +4,7 @@ import {modifierQuestionVisualiseurQuestions, donnerQuestionAvecIdVisualiseurQue
 import {modifierQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
 
 const NAME_TEXTAREA = "libelle-question";
+let id;
 
 /**
  * initialise le modal #dialog-modifier-question
@@ -22,16 +23,16 @@ function init_modal(modal, id) {
  */
 function mettreLaPremiereLettreEnMajuscule(chaine) {
     const [first, ...rest] = chaine;
-    return (first.toUpperCase() + (rest.join("")));
+    return (chaine.length>=0) ? (first.toUpperCase() + (rest.join(""))) : "";
 }
 
 /**
- * initialise l'ouverture, la fermeture et le traitement des données du modal de modification d'une question
+ * initialise la fermeture et le traitement des données du modal de modification d'une question
  * @param {int} id - identifiant de la question 
  */
-export function modalModifierQuestion(id) {
+function modalModifierQuestion() {
     //
-    const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(id);
+    //const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(id);
 
     // ---------- pour fermer le modal de modification de question (MMQ) ----------
     const boutonFermer = document.getElementById("bouton-fermerMMQ");
@@ -49,11 +50,7 @@ export function modalModifierQuestion(id) {
     const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
 
     // ---------- MAQ ----------
-    divQuestion.addEventListener("dblclick", () => {
-        form.reset();
-        init_modal(modal, id);
-        ouvrire_modal(modal);
-    });
+    
 
     boutonFermer.addEventListener("click", () => {
         fermer_modal(modal);
@@ -66,10 +63,11 @@ export function modalModifierQuestion(id) {
     form.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        const formData = new FormData(form);
-        const libelleQuestion = mettreLaPremiereLettreEnMajuscule(formData.get(NAME_TEXTAREA).trimStart());   // libelé
+        //const formData = new FormData(form);
+        const textarea = form.querySelector(`textarea[name="${NAME_TEXTAREA}"]`);
+        const libelleQuestion = mettreLaPremiereLettreEnMajuscule((textarea != null) ? textarea.value : "");   // libellé
         if (libelleQuestion.trim() == "") {
-            alert("Le libelé de la question ne doit pas être vide.")
+            alert("Le libellé de la question ne doit pas être vide.");
             return
         }
          
@@ -79,8 +77,11 @@ export function modalModifierQuestion(id) {
         console.log("Libellé de question :", libelleQuestion);
         console.log("----------------------------------");
 
-        modifierQuestionVisualiseurQuestions(id, libelleQuestion);
-        modifierQuestionVisualiseurQuestionnaire(id, libelleQuestion);
+        if (id != null) {
+            modifierQuestionVisualiseurQuestions(id, libelleQuestion);
+            modifierQuestionVisualiseurQuestionnaire(id, libelleQuestion);
+        }
+        
 
         fermer_modal(modal);
         form.reset();
@@ -90,3 +91,23 @@ export function modalModifierQuestion(id) {
         fermer_modal(modal);
     });
 }
+
+/**
+ * ouvre le modal de modification de questions en fonction de son id
+ * @param {int} identifiant - son identifiant (id)
+ */
+export function ouvrireModalModifierQuestion(identifiant) {
+    const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(identifiant);
+    const form = document.getElementById("form-modifier-question");
+    const modal = document.getElementById("dialog-modifier-question");
+    divQuestion.addEventListener("dblclick", () => {
+        id = identifiant;
+        form.reset();
+        init_modal(modal, identifiant);
+        ouvrire_modal(modal);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    modalModifierQuestion();
+});
