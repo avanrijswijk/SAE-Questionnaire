@@ -1,5 +1,24 @@
 import { ouvrireModalModifierQuestion } from '../modals/modificationQuestion/modalModifier';
 
+const style = new CSSStyleSheet();
+style.replaceSync(`
+p.question {
+    display: -webkit-box; 
+    -webkit-line-clamp: 1; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    white-space: normal;
+}
+
+div.box.div-question {
+    margin-bottom: 0;
+    margin-top: 10px;
+    padding: 5px 10px;
+}
+`);
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
+
 /**
  * Ajoute une question dans le visualiseur de questions (partie gauche)
  * @param {HTMLElement} parent - Le conteneur parent où sera placé la question
@@ -31,17 +50,11 @@ export function ajouterQuestionVisualiseurQuestions(parent, libele, _id) {
     spanFleche.style.backgroundColor = "var(--bulma-scheme-main)";
     spanFleche.style.position = "absolute";
 
-    divConteneur.classList.add("box");
+    divConteneur.classList.add("box", "div-question");
     divConteneur.dataset._id = _id;
-    divConteneur.style.whiteSpace = "nowrap";
-    divConteneur.style.marginBottom = 0;
-    divConteneur.style.marginTop = "10px";
-    divConteneur.style.padding = "5px 10px";
 
-    titreQuestion.classList.add("is-unselectable");
+    titreQuestion.classList.add("is-unselectable", "question");
     titreQuestion.innerText = libele.toString();
-    titreQuestion.style.overflow = "hidden";
-    titreQuestion.style.textOverflow = "ellipsis";
     titreQuestion.title = libele.toString();
     spanTitre.appendChild(titreQuestion);
 
