@@ -28,8 +28,8 @@ class QuestionnaireController {
 
     public function enregistrer() {
         $id = isset($_POST['id']) ? $_POST['id'] : null;
-        $titre = isset($_POST['titre']) ? $_POST['titre'] : null;
-        $date_expiration = isset($_POST['date_expiration']) ? $_POST['date_expiration'] : null;
+        $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
+        $date_expiration = isset($_POST['date-expriration']) ? $_POST['date-expriration'] : null;
         $id_createur = isset($_POST['id_createur']) ? $_POST['id_createur'] : null;
         $code = isset($_POST['code']) ? $_POST['code'] : null;
 
