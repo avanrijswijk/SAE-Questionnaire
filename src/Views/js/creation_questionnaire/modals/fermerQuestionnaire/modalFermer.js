@@ -17,12 +17,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         fermer_modal(modalValiderQuestionnaire);
     });
 
-    formMVQ.addEventListener("submit", (e) => {
-        e.preventDefault();
-        // TODO: traiter les données du formulaire ici
-        fermer_modal(modalValiderQuestionnaire);
-        window.location.href = "./?c=home";
-    });
+    // formMVQ.addEventListener("submit", (e) => {
+    //     e.preventDefault();
+    //     // TODO: traiter les données du formulaire ici
+    //     fermer_modal(modalValiderQuestionnaire);
+    //     window.location.href = "./?c=home";
+    // });
 
     if (modalValiderQuestionnaire.getElementsByClassName("modal-background").length != 1) {
         console.error("Il n'y a pas de div.modal-background dans le modal#dialog-finir-questionnaire");
