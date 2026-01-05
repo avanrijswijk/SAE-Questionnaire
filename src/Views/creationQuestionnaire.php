@@ -27,7 +27,7 @@
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="champs-libre" id="radio-champs-libre" checked required>
                                 Champs libre
-                            </label>
+                            </label><!--
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="radio-box" id="radio-radio-box">
                                 Radio box
@@ -39,7 +39,7 @@
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="select-bar" id="radio-select-bar">
                                 Liste déroulante
-                            </label>
+                            </label>-->
                         </div>
                     </div>
                     <div id="radio-sous-type" class="field">
