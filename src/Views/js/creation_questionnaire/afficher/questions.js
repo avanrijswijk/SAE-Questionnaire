@@ -16,7 +16,18 @@ div.box.div-question {
     margin-top: 10px;
     padding: 5px 10px;
 }
+
+div.box.div-question:hover {
+    border-left: 4px #90D5FF solid;
+    transition: border-left 0.2s ease-out;
+}
+
+div.box.div-question:not(:hover) {
+    border-left: 0px #90D5FF solid;
+    transition: border-left 0.2s ease-out;
+}
 `);
+
 document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
 
 /**
@@ -25,7 +36,7 @@ document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
  * @param {string} libele - Le libelé de la question
  * @param {int} _id 
  */
-export function ajouterQuestionVisualiseurQuestions(parent, libele, _id) {
+function ajouterQuestionVisualiseurQuestions(parent, libele, _id) {
     const divConteneur = document.createElement("div");
     const spanFleche = document.createElement("span");
     const spanTitre = document.createElement("span");
@@ -78,7 +89,7 @@ export function ajouterQuestionVisualiseurQuestions(parent, libele, _id) {
  * @param {int} id - identifiant de la question
  * @param {string} libele - le nouveau libelé
  */
-export function modifierQuestionVisualiseurQuestions(id, libele) {
+function modifierQuestionVisualiseurQuestions(id, libele) {
     const question = donnerQuestionAvecIdVisualiseurQuestions(id);
     const balisePQuestion = question.querySelector('p');
     balisePQuestion.innerText = libele;
@@ -92,7 +103,7 @@ export function modifierQuestionVisualiseurQuestions(id, libele) {
  * @param {int} id - identifiant de la question
  * @returns {HTMLDivElement} le div de la question
  */
-export function donnerQuestionAvecIdVisualiseurQuestions(id) {
+function donnerQuestionAvecIdVisualiseurQuestions(id) {
     const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
     return divVisualiseurQuestions.querySelector(`[data-_id="${id}"]`);
 }
@@ -103,8 +114,15 @@ export function donnerQuestionAvecIdVisualiseurQuestions(id) {
  * @param {int} id - identifiant de la question 
  * @returns {string} le libele
  */
-export function donnerLibelleQuestionAvecIdVisualiseurQuestions(id) {
+function donnerLibelleQuestionAvecIdVisualiseurQuestions(id) {
     const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(id);
     const pLibelle = divQuestion.querySelector("p");
     return pLibelle.innerText;
+}
+
+export {
+    ajouterQuestionVisualiseurQuestions, 
+    modifierQuestionVisualiseurQuestions, 
+    donnerQuestionAvecIdVisualiseurQuestions, 
+    donnerLibelleQuestionAvecIdVisualiseurQuestions
 }
