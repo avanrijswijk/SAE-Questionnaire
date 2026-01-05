@@ -98,13 +98,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                 break;
         };
 
+        const informations = {
+            "intitule" : libelleQuestion,
+            "type" : typeQuestion,
+            "obligatoire" : estObligatoire,
+            "_id" : _id
+        };
+
         console.log("------ Ajout d'une question ------");
         console.log("Libellé de question :", libelleQuestion);
         console.log("Type de question :", typeQuestion);
         console.log("Question obligatoire :", estObligatoire);
         console.log("----------------------------------");
 
-        ajouterQuestionVisualiseurQuestions(divVisualiseurQuestions, libelleQuestion, _id);
+        ajouterQuestionVisualiseurQuestions(divVisualiseurQuestions, informations);
         ajouterQuestionVisualiseurQuestionnaire(divVisualiseurQuestionnaire, libelleQuestion, typeQuestion, _id);
         _id++;
 

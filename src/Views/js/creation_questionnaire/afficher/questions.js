@@ -33,10 +33,14 @@ document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
 /**
  * Ajoute une question dans le visualiseur de questions (partie gauche)
  * @param {HTMLElement} parent - Le conteneur parent où sera placé la question
- * @param {string} libele - Le libelé de la question
- * @param {int} _id 
+ * @param {JSON} info - Les informations sur la question (intitule:str, type:str, obligatoire:bool, _id:int)
  */
-function ajouterQuestionVisualiseurQuestions(parent, libele, _id) {
+function ajouterQuestionVisualiseurQuestions(parent, info) {
+    const libelle = info["intitule"];
+    const _id = info["_id"];
+    const obligatoire = info["obligatoire"];
+    const type = info["type"];
+
     const divConteneur = document.createElement("div");
     const spanFleche = document.createElement("span");
     const spanTitre = document.createElement("span");
@@ -63,10 +67,13 @@ function ajouterQuestionVisualiseurQuestions(parent, libele, _id) {
 
     divConteneur.classList.add("box", "div-question");
     divConteneur.dataset._id = _id;
+    divConteneur.dataset.intitule = libelle;
+    divConteneur.dataset.type = type;
+    divConteneur.dataset.obligatoire = obligatoire;
 
     titreQuestion.classList.add("is-unselectable", "question");
-    titreQuestion.innerText = libele.toString();
-    titreQuestion.title = libele.toString();
+    titreQuestion.innerText = libelle.toString();
+    titreQuestion.title = libelle.toString();
     spanTitre.appendChild(titreQuestion);
 
     // divConteneur.addEventListener('mouseover', () => {
