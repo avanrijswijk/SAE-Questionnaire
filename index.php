@@ -33,6 +33,9 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
                 case 'resultats':
                     $questionnaireController->resultatsQuestionnaire();
                     break;
+                case 'enregistrer':
+                    $questionnaireController->enregistrer();
+                    break;
                 case 'supprimer':
                     $id = isset($_GET['id']) ? $_GET['id'] : null;
                     $questionnaireController->supprimer($id);
