@@ -44,6 +44,8 @@ class QuestionnaireController {
         } else {
             echo 'Erreur lors de l\'enregistrement.';
         }
+
+        return $ajoutOk;
     }
 
     public function supprimer($id = null) {

@@ -50,45 +50,41 @@ class Acceptes {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function createQuestionnaire($titre, $id_createur, $date_expiration, $code) {
-        $query = "INSERT INTO acceptes (titre, id_createur, date_expiration, date_creation, code) 
-        VALUES (:titre, :id_createur, :date_expiration, NOW(), :code)";
+    public function createAcceptes($id_questionnaire, $id_utilisateur) {
+        $query = "INSERT INTO acceptes (id_questionnaire, id_utilisateur) 
+        VALUES (:id_questionnaire, :id_utilisateur)";
 
         $stmt = $this->conn->prepare($query);
 
-        $stmt->bindParam(':titre', $titre);
-        $stmt->bindParam(':id_createur', $id_createur);
-        $stmt->bindParam(':date_expiration', $date_expiration);
-        $stmt->bindParam(':code', $code);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
 
         $stmt->execute();
 
         return $this->conn->lastInsertId();
     }
 
-    public function update($id, $titre, $date_expiration) {
-        $query = "UPDATE acceptes 
-                  SET titre = :titre, date_expiration = :date_expiration,
-                  WHERE id = :id";
+//    public function update($id_questionnaire, $id_utilisateur) {
+//        $query = "UPDATE acceptes 
+//                  SET <ajouter les nouveaux aruguments ici>
+//                  WHERE id_questionnaire = :id_questionnaire AND id_utilisateur = :id_utilisateur";
+//
+//        $stmt = $this->conn->prepare($query);
+//
+//        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+//        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
+//
+//        $stmt->execute();
+//    }
+
+    public function delete($id_questionnaire, $id_utilisateur) {
+        $query = "DELETE FROM acceptes WHERE id_questionnaire = :id_questionnaire AND id_utilisateur = :id_utilisateur";
 
         $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(':titre', $titre);
-        $stmt->bindParam(':date_expiration', $date_expiration);
-        $stmt->bindParam(':id', $id);
-
-        $stmt->execute();
-    }
-
-    public function delete($id) {
-        $query = "DELETE FROM acceptes WHERE id = :id";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
         $stmt->execute();
         
         return $stmt->rowCount() > 0;
-    }    
-
-
+    }   
 }

@@ -4,6 +4,7 @@
 
 
 require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'QuestionnaireController.php');
+require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'AcceptesController.php');
 
 
 // ajout de l'en tête
@@ -22,6 +23,7 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
 
         case 'questionnaire':
             $questionnaireController = new QuestionnaireController();
+            $acceptesController = new AcceptesController();
 
             switch ($action) {
                 case 'creation':
@@ -34,7 +36,8 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
                     $questionnaireController->resultatsQuestionnaire();
                     break;
                 case 'enregistrer':
-                    $questionnaireController->enregistrer();
+                    if ($questionnaireController->enregistrer()) {
+                    $acceptesController->enregistrer(); }
                     break;
                 case 'supprimer':
                     $id = isset($_GET['id']) ? $_GET['id'] : null;
