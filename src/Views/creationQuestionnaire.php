@@ -74,7 +74,7 @@
         </div>
         <div id="dialog-modifier-question" class="modal">
             <div class="modal-background"></div>
-            <form class="modal-card" id="form-modifier-question">
+            <form class="modal-card" id="form-modifier-question" action="?c=questionnaire&a=enregistrer">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Modifier une question</p>
                     <button type="button" id="bouton-fermerMMQ" class="delete" aria-label="close"></button>
@@ -115,6 +115,10 @@
                         <div class="control">
                             <input class="input" name="nom-questionnaire" id="nom-questionnaire" required></input> 
                         </div>     
+                    </div>
+                    <div class="field" style="width: 50%;">
+                        <label class="label" for="date-expriration">Date d'expiration :</label>
+                        <input type="datetime-local" class="input" name="date-expriration" id="date-expriration" min="<?php date_default_timezone_set('Europe/Paris'); echo date('Y-m-d\TH:i'); ?>"/>
                     </div>
                     <div class="field" style="width: 50%;">
                         <label class="label" for="liste_participants">Liste participants :</label>
