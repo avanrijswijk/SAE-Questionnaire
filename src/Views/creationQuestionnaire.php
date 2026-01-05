@@ -98,9 +98,6 @@
             </form>
         </div>
         <div id="visualiseur-questions" class="pl-2 pr-3" style="height: 100%; max-height: 46em; overflow-y: scroll;">
-            <noscript>
-                Partie pour l'affichage des questions, etc
-            </noscript>
         </div>
         <div id="dialog-finir-questionnaire" class="modal">
             <div class="modal-background"></div>
