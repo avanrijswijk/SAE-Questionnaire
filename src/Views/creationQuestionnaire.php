@@ -74,7 +74,7 @@
         </div>
         <div id="dialog-modifier-question" class="modal">
             <div class="modal-background"></div>
-            <form class="modal-card" id="form-modifier-question" action="?c=questionnaire&a=enregistrer">
+            <form class="modal-card" id="form-modifier-question">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Modifier une question</p>
                     <button type="button" id="bouton-fermerMMQ" class="delete" aria-label="close"></button>
@@ -104,7 +104,7 @@
         </div>
         <div id="dialog-finir-questionnaire" class="modal">
             <div class="modal-background"></div>
-            <form id="form-enregistrer" class="modal-card">
+            <form id="form-enregistrer" class="modal-card" action="?c=questionnaire&a=enregistrer">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Enregistrer le questionnaire</p>
                     <button type="button" id="bouton-fermer" class="delete" aria-label="close"></button>
