@@ -18,5 +18,6 @@
         </div>
         <img id="img-header" 
              src="./src/Views/img/unilim.png" 
-             alt="logo unilim">
+             alt="logo unilim"
+             style="cursor: default;">
     </header>
