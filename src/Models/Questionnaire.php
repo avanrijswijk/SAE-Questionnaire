@@ -49,8 +49,18 @@ class Questionnaire {
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':titre', $titre);
+        if (is_null($id_createur)) {
+            $id_createur = 1; // utilisateur par défaut en attendant la posibiliter de gérer les utilisateurs
+        } 
         $stmt->bindParam(':id_createur', $id_createur);
         $stmt->bindParam(':date_expiration', $date_expiration);
+        if (is_null($code)) {
+            $code = 'xxxxxx';
+        }
+        while ($this->existsCode($code)) {
+            // génère un code aléatoire de 4 lettres meme si la colonne 'code' n'est pas limité à 4 en vu de potentielles extentions
+            $code = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4); 
+        }
         $stmt->bindParam(':code', $code);
 
         $stmt->execute();
@@ -82,5 +92,13 @@ class Questionnaire {
         return $stmt->rowCount() > 0;
     }    
 
+    public function existsCode($code) { //true = code exists, false = code n'existe pas
+        $query = "SELECT COUNT(*) as count FROM questionnaires WHERE code = :code";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':code', $code);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] > 0;
+    }
 
 }
