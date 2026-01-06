@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Type de questions</label>
+                        <label class="label">Type de la question</label>
                         <div class="radios" id="radios-types">
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="champs-libre" id="radio-champs-libre" checked required>
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div id="radio-sous-type" class="field">
-                        <label class="label">Sous type(s) :</label>
+                        <label class="label">Sous type :</label>
                         <div class="radios" id="sous-type-champs">
                             <label class="radio is-unselectable">
                                 <input type="radio" name="sous-type-question" value="champs-libre-court" checked required>
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Options :</label>
+                        <label class="label">Option :</label>
                         <div class="checkboxes">
                             <label class="checkbox is-unselectable">
                                 <input type="checkbox" name="question-obligatoire" value="obligatoire">
@@ -86,6 +86,7 @@
                             <textarea class="textarea" rows=2 name="libelle-question" autocapitalize="sentences" autofocus required></textarea>
                         </div>
                     </div>
+                    
                 </section>
                 <footer class="modal-card-foot buttons" style="justify-content: center;">
                     <button type="submit" class="button is-success" id="bouton-validerMMQ"  style="width: 20%;">

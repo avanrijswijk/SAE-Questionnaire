@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ---------- MAQ ----------
     boutonAjouterQuestion.addEventListener("click", () => {
         formMAQ.reset();
+        divRadioSousType.style.display = "";
         ouvrire_modal(modalAjouterQuestion);
     });
 
@@ -112,7 +113,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("----------------------------------");
 
         ajouterQuestionVisualiseurQuestions(divVisualiseurQuestions, informations);
-        ajouterQuestionVisualiseurQuestionnaire(divVisualiseurQuestionnaire, libelleQuestion, typeQuestion, _id);
+        ajouterQuestionVisualiseurQuestionnaire(divVisualiseurQuestionnaire, informations);
         _id++;
 
         fermer_modal(modalAjouterQuestion);
