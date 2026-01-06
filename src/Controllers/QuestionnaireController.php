@@ -1,14 +1,47 @@
 <?php
 
 require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Questionnaire.php');
+require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Question.php');
 
 class QuestionnaireController {
 
     private $questionnaireModel;
+    private $questionModel;
 
     public function __construct() {
         $questionnaireModel = new Questionnaire();
         $this->questionnaireModel = $questionnaireModel;
+        $questionModel = new Question();
+        $this->questionModel = $questionModel;
+    }
+
+    public function repondre($id = null) {
+        if ($id === null) {
+            $id = isset($_GET['id']) ? $_GET['id'] : null;
+        }
+
+        if (empty($id)) {
+            echo 'Identifiant de questionnaire manquant.';
+            return;
+        }
+
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+
+        if (!$questionnaire) {
+            echo 'Questionnaire introuvable.';
+            return;
+        }
+
+        $questions = $this->questionModel->getQuestionBy(['id_questionnaire' => $id]);
+
+        // trier par position si disponible
+        usort($questions, function($a, $b) {
+            $pa = isset($a['position']) ? (int)$a['position'] : 0;
+            $pb = isset($b['position']) ? (int)$b['position'] : 0;
+            return $pa <=> $pb;
+        });
+
+        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'repondreQuestionnaire.php');
     }
 
 
@@ -28,8 +61,8 @@ class QuestionnaireController {
 
     public function enregistrer() {
         $id = isset($_POST['id']) ? $_POST['id'] : null;
-        $titre = isset($_POST['titre']) ? $_POST['titre'] : null;
-        $date_expiration = isset($_POST['date_expiration']) ? $_POST['date_expiration'] : null;
+        $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
+        $date_expiration = isset($_POST['date-expriration']) ? $_POST['date-expriration'] : null;
         $id_createur = isset($_POST['id_createur']) ? $_POST['id_createur'] : null;
         $code = isset($_POST['code']) ? $_POST['code'] : null;
 
@@ -44,6 +77,8 @@ class QuestionnaireController {
         } else {
             echo 'Erreur lors de l\'enregistrement.';
         }
+
+        return $ajoutOk;
     }
 
     public function supprimer($id = null) {
