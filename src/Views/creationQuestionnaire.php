@@ -116,7 +116,7 @@
                     </div>
                     <div class="field" style="width: 50%;">
                         <label class="label" for="date-expriration">Date d'expiration :</label>
-                        <input type="datetime-local" class="input" name="date-expriration" id="date-expriration" min="<?php date_default_timezone_set('Europe/Paris'); echo date('Y-m-d\TH:i'); ?>"/>
+                        <input type="date" class="input" name="date-expriration" id="date-expriration" min="<?php date_default_timezone_set('Europe/Paris'); echo date('Y-m-d'); ?>"/>
                     </div>
                     <div class="field" style="width: 50%;">
                         <label class="label" for="liste_participants">Liste participants :</label>
