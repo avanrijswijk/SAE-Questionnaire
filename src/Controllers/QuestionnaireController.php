@@ -69,7 +69,9 @@ class QuestionnaireController {
         if (isset($id)) {
             $ajoutOk = $this->questionnaireModel->update($id, $titre, $date_expiration);
         } else {
+            //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
             $ajoutOk = $this->questionnaireModel->createQuestionnaire($titre, $id_createur, $date_expiration, $code);
+            //}
         }
 
         if ($ajoutOk) {

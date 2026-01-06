@@ -1,6 +1,5 @@
 <main style="background-color: #EFEFEF; height: 100%;">
     <div>
-        <script src="./src/Views/js/modal_trouver_questionnaire.js"></script>
         <script src="./src/Views/js/lister_questionnaire/modals/code/modalCode.js"></script>
         <button style="background-color: #F5A320;border-radius: 0 0 100px 0;" id="bouton-code">
             <h3 class="title is-4 p-2 pr-6 is-3 has-text-weight-semibold">J'ai un code</h3>
@@ -11,7 +10,7 @@
                 <section class="modal-card-body" style="border-radius: 15px;">
                     <button id="bouton-fermer" class="delete" aria-label="close" style="position: absolute; right:10px; top: 10px;"></button>
                     <div class="field">
-                        <label class="label">Code du questionnaies :</label>
+                        <label class="label">Code du questionnaires :</label>
                         <div class="control">
                             <input class="input" type="text" placeholder="par exemple XXXXXX" required>
                         </div>
