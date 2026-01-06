@@ -9,8 +9,15 @@
   </head>
   <body>
     <header id="header" style="box-shadow: rgba(17, 17, 26, 0.5) 0px 5px 10px;">
-        <div id="div-header"></div>
+        <div id="div-header">
+          <a href="./?c=home">
+              <img id="img-accueil" 
+               src="./src/Views/img/home.png" 
+               alt="accueil">
+          </a>
+        </div>
         <img id="img-header" 
              src="./src/Views/img/unilim.png" 
-             alt="logo unilim">
+             alt="logo unilim"
+             style="cursor: default;">
     </header>
