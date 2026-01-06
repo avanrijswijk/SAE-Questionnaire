@@ -1,14 +1,47 @@
 <?php
 
 require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Questionnaire.php');
+require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Question.php');
 
 class QuestionnaireController {
 
     private $questionnaireModel;
+    private $questionModel;
 
     public function __construct() {
         $questionnaireModel = new Questionnaire();
         $this->questionnaireModel = $questionnaireModel;
+        $questionModel = new Question();
+        $this->questionModel = $questionModel;
+    }
+
+    public function repondre($id = null) {
+        if ($id === null) {
+            $id = isset($_GET['id']) ? $_GET['id'] : null;
+        }
+
+        if (empty($id)) {
+            echo 'Identifiant de questionnaire manquant.';
+            return;
+        }
+
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+
+        if (!$questionnaire) {
+            echo 'Questionnaire introuvable.';
+            return;
+        }
+
+        $questions = $this->questionModel->getQuestionBy(['id_questionnaire' => $id]);
+
+        // trier par position si disponible
+        usort($questions, function($a, $b) {
+            $pa = isset($a['position']) ? (int)$a['position'] : 0;
+            $pb = isset($b['position']) ? (int)$b['position'] : 0;
+            return $pa <=> $pb;
+        });
+
+        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'repondreQuestionnaire.php');
     }
 
 
