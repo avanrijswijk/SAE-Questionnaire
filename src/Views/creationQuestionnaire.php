@@ -101,7 +101,7 @@
         </div>
         <div id="dialog-finir-questionnaire" class="modal">
             <div class="modal-background"></div>
-            <form id="form-enregistrer" class="modal-card" action="?c=questionnaire&a=enregistrer">
+            <form id="form-enregistrer" class="modal-card" action="?c=questionnaire&a=enregistrer" method="post">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Enregistrer le questionnaire</p>
                     <button type="button" id="bouton-fermer" class="delete" aria-label="close"></button>
