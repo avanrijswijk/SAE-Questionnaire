@@ -1,4 +1,4 @@
-<main style="background-color: #EFEFEF; height: 100%;">
+<main style="background-color: #EFEFEF; height: 100%; overflow-y: auto;">
     <div>
         <script src="./src/Views/js/lister_questionnaire/modals/code/modalCode.js"></script>
         <button style="background-color: #F5A320;border-radius: 0 0 100px 0;" id="bouton-code">
@@ -22,41 +22,32 @@
             </form>
         </div>
     </div>
-    <div class="p-6">
-        <h3 class="is-capitalized title is-3 has-text-weight-semibold">liste des questionnaires en attente</h3>
-        <div class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2">
-            <p>Titre du questionnaire</p>
-            <p>Auteur</p>
-            <p>Temps</p>
-        </div>
-
-        <div id="questionnaires">
-            <?php if (count($questionnaires) === 0) { ?>
-                <p>Aucun questionnaire en attente.</p>
-            <?php } else { ?>
-                <?php foreach ($questionnaires as $questionnaire): ?>
-                    <a href="./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>" class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2" style="border: 1px solid black; background-color: #ffffff;">
-                        <p style="color: black"><?php echo htmlspecialchars($questionnaire['titre']); ?></p>
-                        <p style="color: black"><?php echo htmlspecialchars($questionnaire['id_createur']); ?></p>
-                        <p style="color: black"><?php echo htmlspecialchars($questionnaire['date_expiration']); ?></p>
-                    </a>
+    <div class="is-flex is-justify-content-center pt-5">
+        <table class="table is-hoverable" style="width: 95%;">
+            <colgroup>
+                    <col style="width:33%;">
+                    <col style="width:33%;">
+                    <col style="width:33%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Auteur</th>
+                    <th>Temps</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($questionnaires as $questionnaire): ?> 
+                    <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';">
+                        <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
+                        <td><?php echo htmlspecialchars($questionnaire['id_createur']); ?></td>
+                        <td><?php echo htmlspecialchars($questionnaire['date_expiration']); ?></td> 
+                    </tr>
                 <?php endforeach; ?>
-            <?php } ?>
-            
-            <style>
-                div#questionnaires div:hover {
-                    border: #c70000ff;
-                }
-            </style>
-
-            <!-- Exemple statique
-            <a class="is-flex is-flex-direction-row is-justify-content-space-between p-2 mb-2" style="border: 1px solid black; background-color: #ffffff;">
-                <p style="color: black">Titre du questionnaire</p>
-                <p style="color: black">Auteur</p>
-                <p style="color: black">Temps</p>
-            </a>
-             -->
-            
-        </div>
+            </tbody>
+        </table>
+        <?php if (count($questionnaires) === 0) { ?>
+            <p>Aucun questionnaire en attente.</p>
+        <?php }?>
     </div>
 </main>
