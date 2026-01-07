@@ -118,7 +118,11 @@ class QuestionnaireController {
                     $type = isset($questionData['type']) ? $questionData['type'] : null;                    $position = isset($questionData['position']) ? $questionData['position'] : null;
                     $position = isset($questionData['position']) ? $questionData['position'] : null;
                     $est_obligatoire = isset($questionData['est_obligatoire']) ? $questionData['est_obligatoire'] : null;
-
+                    if ($est_obligatoire == 'true') {
+                        $est_obligatoire = 1;
+                    } else {
+                        $est_obligatoire = 0;
+                    }
                     $ajoutOk = $this->questionModel->createQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire);
                     if (!$ajoutOk) {
                         echo 'Erreur lors de l\'enregistrement des questions.';
