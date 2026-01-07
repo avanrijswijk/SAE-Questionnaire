@@ -115,7 +115,7 @@ class QuestionnaireController {
             if (is_array($jsonQuestion)) {
                 foreach ($jsonQuestion as $questionData) {
                     $intitule = isset($questionData['intitule']) ? $questionData['intitule'] : null;
-                    $type = isset($questionData['type']) ? $questionData['type'] : null;                    $position = isset($questionData['position']) ? $questionData['position'] : null;
+                    $type = isset($questionData['type']) ? $questionData['type'] : null;
                     $position = isset($questionData['position']) ? $questionData['position'] : null;
                     $est_obligatoire = isset($questionData['est_obligatoire']) ? $questionData['est_obligatoire'] : null;
                     if ($est_obligatoire == 'true') {
