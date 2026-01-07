@@ -1,7 +1,9 @@
 <?php
 
-require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Questionnaire.php');
-require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Question.php');
+namespace App\Controllers;
+
+use App\Models\Questionnaire;
+use App\Models\Question;
 
 class QuestionnaireController {
 

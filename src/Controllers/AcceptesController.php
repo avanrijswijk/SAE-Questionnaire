@@ -1,6 +1,8 @@
 <?php
 
-require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Acceptes.php');
+namespace App\Controllers;
+
+use App\Models\Acceptes;
 
 class AcceptesController {
 

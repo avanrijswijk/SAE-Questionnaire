@@ -2,9 +2,11 @@
 
 //session_start();
 
+require 'vendor/autoload.php';
 
-require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'QuestionnaireController.php');
-require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'AcceptesController.php');
+
+use App\Controllers\QuestionnaireController;
+use App\Controllers\AcceptesController;
 
 
 // ajout de l'en tête
