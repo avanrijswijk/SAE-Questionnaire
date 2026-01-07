@@ -19,3 +19,6 @@ Thumbs.db
 /temp/
 /cache/
 
+# fichier perso
+/src/Views/js/creation_questionnaire/*.txt
+
