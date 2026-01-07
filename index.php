@@ -36,8 +36,9 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
                     $questionnaireController->resultatsQuestionnaire();
                     break;
                 case 'enregistrer':
-                    if ($questionnaireController->enregistrer()) {
-                    $acceptesController->enregistrer(); }
+                    if ($questionnaireController->enregistrerQuestionnaire()) {
+                            $acceptesController->enregistrer();
+                    }
                     break;
                 case 'repondre':
                     $id = isset($_GET['id']) ? $_GET['id'] : null;

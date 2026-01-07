@@ -44,7 +44,7 @@ class Question {
     public function createQuestion($id_questionnaire, $intitule, $id_type, $position, $est_obligatoire) {
         $query = "INSERT INTO questions (id_questionnaire, intitule, id_type, position, est_obligatoire) 
         VALUES (:id_questionnaire, :intitule, :id_type, :position, :est_obligatoire)";
-
+        $lastInsertId = $this->conn->lastInsertId();
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':id_questionnaire', $id_questionnaire);
@@ -54,8 +54,10 @@ class Question {
         $stmt->bindParam(':est_obligatoire', $est_obligatoire);
 
         $stmt->execute();
-
-        return $this->conn->lastInsertId();
+        if ($lastInsertId != $this->conn->lastInsertId()) {
+            return true;
+        }
+        return false;
     }
 
     public function update($id, $intitule, $id_type, $position, $est_obligatoire) {

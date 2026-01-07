@@ -57,9 +57,28 @@ class QuestionnaireController {
 
     public function resultatsQuestionnaire() {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'resultatsQuestionnaire.php');
+
     }
 
-    public function enregistrer() {
+    public function voirResultatsQuestionnaire() {
+        $id_questionnaire = isset($_GET['id_questionnaire']) ? $_GET['id_questionnaire'] : null;
+        
+        if (!is_null($id_questionnaire)) {
+            if ($_SESSION['id'] != $this->questionnaireModel->getQuestionnaire($id_questionnaire)['id_createur']) {
+                echo 'error : you are not the creator of this questionnaire.';
+                return;
+            } else {
+                $resultats = $this->questionnaireModel->getResults($id_questionnaire);
+                // require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'traitementResultats.php');
+            }
+            
+        } else {
+            echo 'error : unable to find the questionnaire id.';
+            return;
+        }
+    }
+
+    public function enregistrerQuestionnaire() {
         $id = isset($_POST['id']) ? $_POST['id'] : null;
         $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
         $date_expiration = isset($_POST['date-expriration']) ? $_POST['date-expriration'] : null;
@@ -71,6 +90,9 @@ class QuestionnaireController {
         } else {
             //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
             $ajoutOk = $this->questionnaireModel->createQuestionnaire($titre, $id_createur, $date_expiration, $code);
+            if ($ajoutOk) { //attention si deux questionnaire enregistrer en meme temps!
+                $ajoutOk = $this->enregistrerQuestions($this->questionnaireModel->lastInsertId());
+            }
             //}
         }
 
@@ -81,6 +103,34 @@ class QuestionnaireController {
         }
 
         return $ajoutOk;
+    }
+
+    public function enregistrerQuestions($id_questionnaire) {
+        if(!isset($id_questionnaire)) {
+            $id_questionnaire=0;
+        }
+        if (isset($_POST['liste-questions'])) {
+            $jsonQuestion = json_decode($_POST['liste-questions'], true);
+            
+            if (is_array($jsonQuestion)) {
+                foreach ($jsonQuestion as $questionData) {
+                    $intitule = isset($questionData['intitule']) ? $questionData['intitule'] : null;
+                    $type = isset($questionData['type']) ? $questionData['type'] : null;                    $position = isset($questionData['position']) ? $questionData['position'] : null;
+                    $position = isset($questionData['position']) ? $questionData['position'] : null;
+                    $est_obligatoire = isset($questionData['est_obligatoire']) ? $questionData['est_obligatoire'] : null;
+
+                    $ajoutOk = $this->questionModel->createQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire);
+                    if (!$ajoutOk) {
+                        echo 'Erreur lors de l\'enregistrement des questions.';
+                        return false;
+                    }
+                }
+            } else {
+                echo 'Données de questions invalides.';
+                return false;
+            }
+        }
+        return true; //temporaire
     }
 
     public function supprimer($id = null) {

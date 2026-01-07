@@ -101,4 +101,20 @@ class Questionnaire {
         return $result['count'] > 0;
     }
 
+    public function getResults($id_questionnaire) {
+        $query = "SELECT q.intitule ,r.reponse
+                  FROM questionnaire qnaire,
+                  LEFT JOIN questions q ON q.id_questionnaire = qnaire.id
+                  left JOIN reponses r ON r.id_question = q.id
+                  group BY q.id, r.id
+                  ORDER BY q.id, r.id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function lastInsertId() {
+        return $this->conn->lastInsertId();
+    }
 }
