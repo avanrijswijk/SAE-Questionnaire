@@ -23,7 +23,7 @@ function listerQuestions() {
             "intitule" : divQuestion.dataset.intitule,
             "type" : divQuestion.dataset.type,
             "position" : index+1,
-            "est_obligatoire" : divQuestion.dataset.intitule
+            "est_obligatoire" : divQuestion.dataset.obligatoire
         });
     }
     return questions
