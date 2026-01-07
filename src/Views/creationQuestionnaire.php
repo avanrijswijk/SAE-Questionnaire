@@ -154,7 +154,8 @@
                 </div>
             </div>-->
         </div>
-        
     </div>
-    
+    <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;">
+    </div>
+    <script type="module" src="./src/Views/js/creation_questionnaire/notification/notification.js"></script>
 </main>

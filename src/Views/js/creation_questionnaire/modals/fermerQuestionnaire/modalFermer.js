@@ -1,4 +1,5 @@
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
+import { notification, TypeNotification } from '../../notification/notification.js';
 
 /**
  * liste les questions :
@@ -8,10 +9,13 @@ import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
  * position : int
  * est_obligatoire : bool
  * }]
- * @returns {JSON} un fichier JSON contenant les informations
+ * @returns {Array} un fichier JSON contenant les informations
  */
 function listerQuestions() {
     const divQuestions = document.getElementById("visualiseur-questions");
+    if (divQuestions == null) {
+        return [];
+    }
     const questions = []
     for (let index = 0; index < divQuestions.children.length; index++) {
         const divQuestion = divQuestions.children[index];
@@ -56,9 +60,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         */
         //console.log(listerQuestions());
         const listeQuestions = document.createElement('input');
+        const jsonQuestions = listerQuestions();
+        if (jsonQuestions.length === 0) {
+            notification(TypeNotification.ERREUR, "Aucune question n'a été créé.");
+            e.preventDefault();
+        }
         listeQuestions.type = "hidden";
         listeQuestions.name = "liste-questions";
-        listeQuestions.value = JSON.stringify(listerQuestions());
+        listeQuestions.value = JSON.stringify(jsonQuestions);
 
         formMVQ.appendChild(listeQuestions);
     });
