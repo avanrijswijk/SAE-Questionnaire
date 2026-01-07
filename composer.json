@@ -2,7 +2,8 @@
     "name": "adrian/sae-questionnaire",
     "autoload": {
         "psr-4": {
-            "Adrian\\SaeQuestionnaire\\": "src/"
+            "Adrian\\Controllers\\": "src/Controllers/",
+            "Adrian\\Models\\": "src/Models/"
         }
     },
     "authors": [
