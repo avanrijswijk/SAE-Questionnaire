@@ -1,0 +1,15 @@
+{
+    "name": "adrian/sae-questionnaire",
+    "autoload": {
+        "psr-4": {
+            "Adrian\\SaeQuestionnaire\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Adrian VAN RIJSWIJK",
+            "email": "adrianlvr127@gmail.com"
+        }
+    ],
+    "require": {}
+}

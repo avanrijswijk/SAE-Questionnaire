@@ -1,0 +1,21 @@
+# Dépendances
+/vendor/
+
+# Archive Composer
+composer.phar
+
+# Fichiers de configuration sensibles (Identifiants BDD)
+.env
+config.php
+
+# Fichiers système et IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs et dossiers temporaires
+*.log
+/temp/
+/cache/
+
