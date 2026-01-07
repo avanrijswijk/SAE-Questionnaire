@@ -55,7 +55,7 @@ class Questionnaire {
         $stmt->bindParam(':id_createur', $id_createur);
         $stmt->bindParam(':date_expiration', $date_expiration);
         if (is_null($code)) {
-            $code = 'xxxxxx';
+            $code = 'ACDC';
         }
         while ($this->existsCode($code)) {
             // génère un code aléatoire de 4 lettres meme si la colonne 'code' n'est pas limité à 4 en vu de potentielles extentions
