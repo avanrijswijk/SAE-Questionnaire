@@ -6,6 +6,19 @@ declare(strict_types=1);
 if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . '.env')) {
 	$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 	$dotenv->safeLoad();
+	// Ensure variables loaded by phpdotenv are available via getenv() and in 
+	// $_SERVER for all SAPIs (some PHP configs don't populate getenv()).
+	foreach ($_ENV as $k => $v) {
+		if (!is_string($v) && !is_numeric($v)) {
+			continue;
+		}
+		// putenv so getenv() sees it
+		putenv(sprintf('%s=%s', $k, $v));
+		// also populate $_SERVER
+		if (!isset($_SERVER[$k])) {
+			$_SERVER[$k] = $v;
+		}
+	}
 }
 
 // Contrôle simple du comportement d'affichage des erreurs via APP_DEBUG (true/false)
