@@ -1,6 +1,7 @@
 <?php
 
-//session_start();
+session_start();
+$_SESSION['id_utilisateur'] = 112101; // utilisateur test en attendant la possibilité de gérer les utilisateurs
 
 require 'vendor/autoload.php';
 require_once(__DIR__.DIRECTORY_SEPARATOR.'bootstrap.php');

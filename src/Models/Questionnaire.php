@@ -102,4 +102,12 @@ class Questionnaire {
         return $result['count'] > 0;
     }
 
+    public function getQuestionnairesByUserId($id_utilisateur) {
+        $query = "SELECT * FROM questionnaires WHERE id IN (SELECT id_questionnaire FROM acceptes WHERE id_utilisateur = :id_utilisateur)";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
