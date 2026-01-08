@@ -1,4 +1,5 @@
 import {TypeQuestion} from '../typeQuestion.js';
+import { donnerNombreReponse } from "./questions.js";
 
 // Ce fichier est le fichier relié à l'ajout d'une question dans la partie pour la visualitation du questionnaire
 
@@ -16,7 +17,7 @@ export function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
     const estObligatoire = info["obligatoire"];
 
     const divConteneur = document.createElement("div");
-    const divLibele = document.createElement("div");
+    const divLibelle = document.createElement("div");
     const titreQuestion = document.createElement("h4");
     const spanObligatoire = document.createElement('span');
     const divSousConteneur = document.createElement("div");
@@ -25,7 +26,7 @@ export function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
 
     divConteneur.classList.add("block");
     divConteneur.dataset._id = _id;
-    divLibele.classList.add("is-flex", "is-flex-direction-row");
+    divLibelle.classList.add("is-flex", "is-flex-direction-row");
     titreQuestion.classList.add("title", "is-4", "has-text-weight-semibold");
     titreQuestion.innerText = libelleQestion;
     titreQuestion.style.marginBottom = "10px";
@@ -42,11 +43,34 @@ export function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
         case TypeQuestion.CHAMPS_COURT :
             elementReponse = document.createElement("textarea");
             elementReponse.rows = type == TypeQuestion.CHAMPS_COURT ? 1 : 4;
-            elementReponse.name = `${libelleQestion}-reponse1`;
+            // elementReponse.name = `${libelleQestion}-reponse1`;
             elementReponse.classList.add("textarea");
             elementReponse.style.border = "1px solid";
             elementReponse.disabled = true;
             elementReponse.style.resize = "none";
+            break;
+        
+        case TypeQuestion.RADIO_BOUTON :
+        case TypeQuestion.CHECK_BOUTON :
+            elementReponse = document.createElement("div");
+            elementReponse.classList.add(type == TypeQuestion.RADIO_BOUTON ? "radios" : "checkboxs");
+            
+            const input = document.createElement("input");
+            input.type = type == TypeQuestion.RADIO_BOUTON ? "radio" : "checkbox";
+            input.disabled = true;
+
+            const span = document.createElement("span");
+            span.innerText = " Réponse 1";
+            span.dataset._id = `${_id}-${donnerNombreReponse(_id)}`;
+            span.classList.add("libelle-reponse");
+
+            const spanEspace = document.createElement("span").innerText=" ";
+
+            const label = document.createElement("label");
+            label.classList.add(type == TypeQuestion.RADIO_BOUTON ? "radio" : "checkbox");
+            label.append(input, spanEspace, span);
+            
+            elementReponse.appendChild(label);
             break;
     }
 
@@ -54,11 +78,13 @@ export function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
         spanObligatoire.style.display = "none";
     }
     
-    divSousConteneur.appendChild(elementReponse);
+    if (elementReponse != null) {
+        divSousConteneur.appendChild(elementReponse);
+    }
 
     //titreQuestion.appendChild(spanObligatoire);
-    divLibele.append(titreQuestion, spanObligatoire);
-    divConteneur.append(divLibele, divSousConteneur);
+    divLibelle.append(titreQuestion, spanObligatoire);
+    divConteneur.append(divLibelle, divSousConteneur);
     //divConteneur.appendChild(divSousConteneur);
     parent.appendChild(divConteneur);
 }
@@ -69,13 +95,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /**
  * Modifi une question dans le visualisateur de questionnaire (partie de droite)
- * @param {int} id - identifiant de la question
- * @param {string} libele - le nouveau libelé
+ * @param {int || string} id - identifiant de la question
+ * @param {string} libelle - le nouveau libelé
  */
-export function modifierQuestionVisualiseurQuestionnaire(id, libele) {
-    const question = donnerQuestionAvecIdVisualiseurQuestionnaire(id);
-    const baliseH4Question = question.querySelector('h4');
-    baliseH4Question.innerText = libele;
+export function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
+    const identifiant = String(id);
+    const question = donnerQuestionAvecIdVisualiseurQuestionnaire(identifiant.includes("-") ? identifiant.split("-")[0] : identifiant);
+    if (identifiant.includes("-")) {
+        const reponse = question.querySelector(`span.libelle-reponse[data-_id="${id}"`);
+        reponse.textContent = libelle;
+    } else {
+        const baliseH4Question = question.querySelector('h4');
+        baliseH4Question.innerText = libelle; 
+    }
+    
 }
 
 

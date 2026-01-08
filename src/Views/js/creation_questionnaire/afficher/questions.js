@@ -1,4 +1,5 @@
-import { ouvrireModalModifierQuestion } from '../modals/modificationQuestion/modalModifier';
+import { ouvrireModalModifierQuestion, TypeModifier } from '../modals/modificationQuestion/modalModifier';
+import {TypeQuestion} from '../typeQuestion.js';
 
 const style = new CSSStyleSheet();
 style.replaceSync(`
@@ -11,7 +12,7 @@ p.question {
     white-space: normal;
 }
 
-div.box.div-question {
+div.box.div-box {
     margin-bottom: 0;
     margin-top: 10px;
     padding: 5px 10px;
@@ -25,6 +26,13 @@ div.box.div-question:hover {
 div.box.div-question:not(:hover) {
     border-left: 0px #90D5FF solid;
     transition: border-left 0.2s ease-out;
+}
+
+div.div-reponses {
+}
+
+div.div-reponse {
+    background-color: #eaeaea;
 }
 `);
 
@@ -41,34 +49,74 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
     const obligatoire = info["obligatoire"];
     const type = info["type"];
 
+    // conteneur
     const divConteneur = document.createElement("div");
-    const spanTitre = document.createElement("span");
+    const divQuestion = document.createElement("div");
     const titreQuestion = document.createElement("p");
 
-    divConteneur.classList.add("box", "div-question");
-    divConteneur.dataset._id = _id;
-    divConteneur.dataset.intitule = libelle;
-    divConteneur.dataset.type = type;
-    divConteneur.dataset.obligatoire = obligatoire;
+    divConteneur.classList.add("box", "div-question", "div-box");
+    divQuestion.dataset._id = _id;
+    divQuestion.dataset.intitule = libelle;
+    divQuestion.dataset.type = type;
+    divQuestion.dataset.obligatoire = obligatoire;
 
     titreQuestion.classList.add("is-unselectable", "question");
     titreQuestion.innerText = libelle.toString();
     titreQuestion.title = libelle.toString();
-    spanTitre.appendChild(titreQuestion);
 
-    // divConteneur.addEventListener('mouseover', () => {
-    //     spanFleche.style.display = "";
-    // });
+    divQuestion.appendChild(titreQuestion);
+    divConteneur.appendChild(divQuestion);
+    
+    // variables réponses
+    let divReponses;
+    let divReponse;
+    let pReponse;
 
-    // divConteneur.addEventListener('mouseout', () => {
-    //     spanFleche.style.display = "none";
-    // });
+    // bouton check/radio
+    if (type == TypeQuestion.CHECK_BOUTON || type == TypeQuestion.RADIO_BOUTON) {
+        divReponses = document.createElement("div");
+        divReponses.classList.add("div-reponses");
 
-    //divConteneur.appendChild(titreQuestion);
-    divConteneur.append(spanTitre);
+        divReponse = document.createElement("div");
+        divReponse.classList.add("box", "div-box", "div-reponse");
+        divReponse.dataset._id = `${_id}-${divReponses.children.length}`;
+
+        pReponse = document.createElement("p");
+        pReponse.innerText = "Réponse 1";
+        pReponse.classList.add("is-unselectable");
+        
+        divReponse.appendChild(pReponse);
+        divReponses.appendChild(divReponse);
+        divConteneur.appendChild(divReponses);
+
+        affichageReponses(divQuestion, divReponses);
+    }
+
+    //
     parent.appendChild(divConteneur);
 
-    ouvrireModalModifierQuestion(_id);
+    ouvrireModalModifierQuestion(_id, TypeModifier.QUESTION);
+    if (divReponse) {
+        console.log("hello");
+        ouvrireModalModifierQuestion(divReponse.dataset._id, TypeModifier.REPONSE);
+    }
+}
+
+/**
+ * Affiche ou cache le div des réponses pour une question bouton(s) radio/check ou liste déroulante
+ * @param {HTMLDivElement} divQuestion - me div qui contient la question
+ * @param {HTMLDivElement} divReponses - le div qui contient les réponses 
+ */
+function affichageReponses(divQuestion, divReponses) {
+    divQuestion.addEventListener("click", (event) => {
+        if (event.ctrlKey || event.metaKey) {
+            if (divReponses.style.display == "none") {
+                divReponses.style.display = "";
+            } else {
+                divReponses.style.display = "none";
+            }
+        }
+    });
 }
 
 /**
@@ -87,7 +135,7 @@ function modifierQuestionVisualiseurQuestions(id, libele) {
 /**
  * retourne le div de la question avec son id
  * (pour une question présent dans le visualisateur de questions (partie de gauche)) 
- * @param {int} id - identifiant de la question
+ * @param {int || string} id - identifiant de la question
  * @returns {HTMLDivElement} le div de la question
  */
 function donnerQuestionAvecIdVisualiseurQuestions(id) {
@@ -107,9 +155,20 @@ function donnerLibelleQuestionAvecIdVisualiseurQuestions(id) {
     return pLibelle.innerText;
 }
 
+
+function donnerNombreReponse(id) {
+    const divReponses = donnerQuestionAvecIdVisualiseurQuestions(id).parentElement.querySelector("div.div-reponses");
+    if (divReponses) {
+        return 0;
+    } else {
+        return divReponses.childElementCount;
+    }
+}
+
 export {
     ajouterQuestionVisualiseurQuestions, 
     modifierQuestionVisualiseurQuestions, 
     donnerQuestionAvecIdVisualiseurQuestions, 
-    donnerLibelleQuestionAvecIdVisualiseurQuestions
+    donnerLibelleQuestionAvecIdVisualiseurQuestions,
+    donnerNombreReponse
 }

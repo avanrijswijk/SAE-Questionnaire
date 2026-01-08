@@ -2,18 +2,36 @@ import { TypeQuestion } from '../../typeQuestion.js';
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
 import {modifierQuestionVisualiseurQuestions, donnerQuestionAvecIdVisualiseurQuestions, donnerLibelleQuestionAvecIdVisualiseurQuestions} from '../../afficher/questions.js';
 import {modifierQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
+import { notification, TypeNotification } from '../../notification/notification.js';
 
 const NAME_TEXTAREA = "libelle-question";
 let id;
+
+const TypeModifier = {
+    QUESTION : "question",
+    REPONSE : "reponse"
+};
 
 /**
  * initialise le modal #dialog-modifier-question
  * @param {HTMLDivElement} modal - le modal modifier
  * @param {int} id - l'identifiant de la question
+ * @param {typeModifier} type 
  */
-function init_modal(modal, id) {
+function init_modal(modal, id, type) {
     const textarea = modal.querySelector(`[name="${NAME_TEXTAREA}"]`);
     textarea.value = donnerLibelleQuestionAvecIdVisualiseurQuestions(id);
+
+    const pTitreModal = modal.querySelector(`p.modal-card-title`);
+    switch (type) {
+        case TypeModifier.QUESTION:
+            pTitreModal.innerHTML = "Modifier une question";
+            break;
+        case TypeModifier.REPONSE:
+        default :
+            pTitreModal.innerHTML = "Modifier une réponse";
+            break;
+    }
 }
 
 /**
@@ -78,8 +96,14 @@ function modalModifierQuestion() {
         console.log("----------------------------------");
 
         if (id != null) {
-            modifierQuestionVisualiseurQuestions(id, libelleQuestion);
-            modifierQuestionVisualiseurQuestionnaire(id, libelleQuestion);
+            try {
+                modifierQuestionVisualiseurQuestions(id, libelleQuestion);
+                modifierQuestionVisualiseurQuestionnaire(id, libelleQuestion);
+            } catch (e) {
+                notification(TypeNotification.ERREUR, "Une erreur c'est produite lors de la modification.");
+                console.error(e);
+            }
+            
         }
         
 
@@ -94,16 +118,17 @@ function modalModifierQuestion() {
 
 /**
  * ouvre le modal de modification de questions en fonction de son id
- * @param {int} identifiant - son identifiant (id)
+ * @param {int || string} identifiant - son identifiant (id)
+ * @param {TypeModifier} type - le type de comptenu qui sera modifié
  */
-export function ouvrireModalModifierQuestion(identifiant) {
+export function ouvrireModalModifierQuestion(identifiant, type) {
     const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(identifiant);
     const form = document.getElementById("form-modifier-question");
     const modal = document.getElementById("dialog-modifier-question");
     divQuestion.addEventListener("dblclick", () => {
         id = identifiant;
         form.reset();
-        init_modal(modal, identifiant);
+        init_modal(modal, identifiant, type);
         ouvrire_modal(modal);
     });
 }
@@ -111,3 +136,5 @@ export function ouvrireModalModifierQuestion(identifiant) {
 document.addEventListener("DOMContentLoaded", () => {
     modalModifierQuestion();
 });
+
+export {TypeModifier}
