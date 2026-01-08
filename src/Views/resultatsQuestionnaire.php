@@ -1,4 +1,5 @@
 <?php
+use App\Models\Questionnaire;
 $questionnaireBDD = new Questionnaire();
 $questionnaires = $questionnaireBDD->getQuestionnaireBy(["id_createur" => 1]);
 ?>

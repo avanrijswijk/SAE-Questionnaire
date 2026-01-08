@@ -1,7 +1,9 @@
 <?php
 
-require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Questionnaire.php');
-require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Question.php');
+namespace App\Controllers;
+
+use App\Models\Questionnaire;
+use App\Models\Question;
 
 class QuestionnaireController {
 
@@ -50,8 +52,11 @@ class QuestionnaireController {
     }
 
     public function listerQuestionnaires() {
-        $questionnaires = $this->questionnaireModel->getAllQuestionnaires();
-
+        if (!isset($_SESSION['id_utilisateur'])) {
+            $questionnaires = $this->questionnaireModel->getAllQuestionnaires();
+        } else {
+            $questionnaires = $this->questionnaireModel->getQuestionnairesByUserId($_SESSION['id_utilisateur']);
+        }
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'listerQuestionnaire.php');
     }
 

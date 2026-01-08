@@ -1,6 +1,8 @@
 <?php
 
-require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Acceptes.php');
+namespace App\Controllers;
+
+use App\Models\Acceptes;
 
 class AcceptesController {
 
@@ -40,6 +42,26 @@ class AcceptesController {
         }
     }
 
+    public function listerParticipants($id_questionnaire) {
+        $participants = $this->acceptesModel->getAcceptesBy(['id_questionnaire' => $id_questionnaire]);
+
+        return $participants;
+    }
+
+    public function estParticipant($id_questionnaire, $id_utilisateur) {
+        $participant = $this->acceptesModel->getAcceptesBy([
+            'id_questionnaire' => $id_questionnaire,
+            'id_utilisateur' => $id_utilisateur
+        ]);
+
+        return !empty($participant);
+    }
+
+    public function listerQuestionnaire() {
+        $questionnaires = $this->acceptesModel->getAcceptesParticipeA($_SESSION['id_utilisateur']);
+
+        return $questionnaires;
+    }
 }
 
     

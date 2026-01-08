@@ -1,7 +1,8 @@
 <?php
 
-require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.'Database.php');
+namespace App\Models;
 
+use PDO;
 
 class Question {
 

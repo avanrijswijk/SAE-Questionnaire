@@ -1,9 +1,9 @@
 {
-    "name": "adrian/sae-questionnaire",
+    "name": "app/sae-questionnaire",
     "autoload": {
         "psr-4": {
-            "Adrian\\Controllers\\": "src/Controllers/",
-            "Adrian\\Models\\": "src/Models/"
+            "App\\Controllers\\": "src/Controllers/",
+            "App\\Models\\": "src/Models/"
         }
     },
     "authors": [
@@ -12,5 +12,7 @@
             "email": "adrianlvr127@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
 }
