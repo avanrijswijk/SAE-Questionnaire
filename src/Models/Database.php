@@ -35,6 +35,25 @@ Class Database
             $username = $get('DB_USER', 'root');
             $password = $get('DB_PASS', '');
 
+            // Si les variables essentielles ne sont toujours pas définies, essayer
+            // de charger .env depuis la racine du projet (utile pour certains SAPI).
+            if (($host === 'localhost' && $get('DB_HOST', '') === '') || ($username === 'root' && $get('DB_USER', '') === '')) {
+                $possibleRoot = realpath(__DIR__ . '/../../');
+                if ($possibleRoot && file_exists($possibleRoot . DIRECTORY_SEPARATOR . '.env') && class_exists('Dotenv\\Dotenv')) {
+                    try {
+                        \Dotenv\Dotenv::createImmutable($possibleRoot)->safeLoad();
+                        // repopulate variables from $_ENV/$_SERVER if available
+                        $host = $get('DB_HOST', $host);
+                        $port = $get('DB_PORT', $port);
+                        $dbName = $get('DB_NAME', $dbName);
+                        $username = $get('DB_USER', $username);
+                        $password = $get('DB_PASS', $password);
+                    } catch (\Throwable $e) {
+                        // ignore and continue with defaults
+                    }
+                }
+            }
+
             $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $dbName);
 
             try {
