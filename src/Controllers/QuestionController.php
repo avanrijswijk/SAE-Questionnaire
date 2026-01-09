@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use App\Models\Question;
+use App\Controllers\Choix_possibleController;
 
 class QuestionController {
 
     private $questionModel;
+    private $choix_possibleController;
 
     public function __construct() {
         $questionModel = new Question();
         $this->questionModel = $questionModel;
+        $this->choix_possibleController = new Choix_possibleController();
     }
 
     public function enregistrerQuestions($id_questionnaire) {
@@ -26,6 +29,7 @@ class QuestionController {
                     $type = isset($questionData['type']) ? $questionData['type'] : null;
                     $position = isset($questionData['position']) ? $questionData['position'] : null;
                     $est_obligatoire = isset($questionData['est_obligatoire']) ? $questionData['est_obligatoire'] : null;
+                    $jsonChoix = isset($questionData['jsonChoix']) ? $questionData['jsonChoix'] : null;
                     if ($est_obligatoire == 'true') {
                         $est_obligatoire = 1;
                     } else {
@@ -35,7 +39,12 @@ class QuestionController {
                     if (!$ajoutOk) {
                         echo 'Erreur lors de l\'enregistrement des questions.';
                     } else {
-                        return true;
+                        $ajoutOk = $this->choix_possibleController->enregistrer($jsonChoix, $this->questionModel->getLastInsertId());
+                        if (!$ajoutOk) {
+                            echo 'Erreur lors de l\'enregistrement des choix pour la question :' . $intitule;
+                        }
+                        
+                        return $ajoutOk;
                     }
                 }
             } else {

@@ -1,4 +1,8 @@
 <?php
+
+use App\Controllers\AcceptesController;
+use App\Controllers\QuestionController;
+use App\Models\Acceptes;
 use App\Models\Questionnaire;
 $questionnaireBDD = new Questionnaire();
 $questionnaires = $questionnaireBDD->getQuestionnaireBy(["id_createur" => 1]);
@@ -22,13 +26,15 @@ $questionnaires = $questionnaireBDD->getQuestionnaireBy(["id_createur" => 1]);
                 </style>
                 <table class="table is-hoverable" style="width: 95%;">
                     <colgroup>
-                            <col style="width:80%;">
+                            <col style="width:70%;">
+                            <col style="width:10%;">
                             <col style="width:10%;">
                             <col style="width:10%;">
                     </colgroup>
                     <thead>
                         <tr>
                             <th>Titre</th>
+                            <th>Réponses</th>
                             <th>Telecharger</th>
                             <th>Supprimer</th>
                         </tr>
@@ -37,6 +43,7 @@ $questionnaires = $questionnaireBDD->getQuestionnaireBy(["id_createur" => 1]);
                         <?php foreach ($questionnaires as $questionnaire): ?> 
                             <tr onclick="event.stopPropagation();alert('affichage ficitif');">
                                 <td><?php echo $questionnaire["titre"] ?></td>
+                                <td><?php //echo ($acceptesController->nombreReponduText($questionnaire["id"]))?></td> <!-- renvoi rien -->
                                 <td>
                                     <div class="image is-32x32 ml-1 mr-2" onclick="event.stopPropagation();alert('telechargement ficitif');">
                                         <img src="./src/Views/img/telecharger-64.png" alt="icon de téléchargement" title="Telecharger">

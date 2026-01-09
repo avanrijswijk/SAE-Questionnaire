@@ -87,5 +87,8 @@ class Question {
         return $stmt->rowCount() > 0;
     }    
 
+public function getLastInsertId() {
+        return $this->conn->lastInsertId();
+    }
 
 }
