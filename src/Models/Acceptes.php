@@ -102,4 +102,34 @@ class Acceptes {
         }
         return false;
     }
+
+    public function countRepondu($id_questionnaire) {
+        $query = "SELECT COUNT(*) as count FROM acceptes WHERE id_questionnaire = :id_questionnaire AND repondu = 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'];
+    }
+
+    //alt
+    //public function countRepondu($id_questionnaire) {
+    //    $this->getAcceptesParticipants($id_questionnaire);
+    //    $counter=0;
+    //    foreach ($this->getAcceptesParticipants($id_questionnaire) as $part) {
+    //        if ($part['repondu'] == 1) {
+    //            $counter++;
+    //        }
+    //    }
+    //    return $counter;
+    //}
+
+    public function nombreParticipant($id_questionnaire) {
+        $query = "SELECT COUNT(*) as count FROM acceptes WHERE id_questionnaire = :id_questionnaire";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'];
+    }
 }
