@@ -1,9 +1,10 @@
 <?php
 
+include_once 'auth.php';
 
 require 'vendor/autoload.php';
 require_once(__DIR__.DIRECTORY_SEPARATOR.'bootstrap.php');
-
+echo $user;
 
 use App\Controllers\QuestionnaireController;
 use App\Controllers\AcceptesController;
