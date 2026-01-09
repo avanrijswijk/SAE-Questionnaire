@@ -1,0 +1,13 @@
+# Fichier permettant la redirection du site vers l'https
+# Pour si vous souhaitez accéder au site en https
+# --> renommer le fichier en .htacces
+# --> retirer les commentaires sur les lignes de configuration
+
+
+# RewriteEngine On
+
+# Si la connexion n'est pas en HTTPS
+# RewriteCond %{HTTPS} off
+
+# Rediriger vers la même URL mais avec https://
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
