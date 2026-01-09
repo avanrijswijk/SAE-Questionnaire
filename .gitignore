@@ -26,3 +26,6 @@ Thumbs.db
 # fichier perso
 /src/Views/js/creation_questionnaire/*.txt
 
+# accès à l'https
+.htaccess
+
