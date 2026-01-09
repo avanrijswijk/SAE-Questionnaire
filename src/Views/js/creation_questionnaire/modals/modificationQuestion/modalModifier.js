@@ -93,9 +93,9 @@ function modalModifierQuestion() {
          
         //const estObligatoire = formData.get("question-obligatoire") == "obligatoire" ? true : false;     
  
-        console.log("------ Modifier d'une question ------");
-        console.log("Libellé de question :", libelleQuestion);
-        console.log("----------------------------------");
+        // console.log("------ Modifier d'une question ------");
+        // console.log("Libellé de question :", libelleQuestion);
+        // console.log("----------------------------------");
 
         if (id != null) {
             try {

@@ -88,14 +88,14 @@ function creerReponse(info) {
     // const divReponses = document.createElement("div");
     // divReponses.classList.add("div-reponses");
 
-    let divReponse;
+    const divReponse = document.createElement("div");
+    divReponse.classList.add("box", "div-box", "div-reponse");
 
     switch (type) {
         case TypeQuestion.CHECK_BOUTON:
         case TypeQuestion.RADIO_BOUTON:
-            divReponse = document.createElement("div");
-            divReponse.classList.add("box", "div-box", "div-reponse");
             divReponse.dataset._id = `${_id}-${nombreReponse}`;
+            divReponse.dataset.intitule = `Réponse ${nombreReponse+1}`;
 
             const pReponse = document.createElement("p");
             pReponse.innerText = `Réponse ${nombreReponse+1}`;
@@ -148,6 +148,11 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
     attribuerModalModifierQuestionAvecId(_id, TypeModifier.QUESTION);
 }
 
+/**
+ * Ajout une réponse à une question dans le visualisateur de questions
+ * @param {int || string} id - l'identifiant de la question (X)
+ * @returns {int} - l'identifiant de la réponse. -1 si un probleme est survenu
+ */
 function ajouterReponseVisualisateurQuestions(id) {
     const divQuestion = document.querySelector(`div[data-_id="${id}"]`)
                                 .closest("div.box.div-question.div-box")
@@ -176,11 +181,10 @@ function ajouterReponseVisualisateurQuestions(id) {
             info["nombreReponse"] = divReponses.childElementCount;
             const divReponse = creerReponse(info);
             if (divReponse){
-                console.log("Le div réponse est ajouté")
                 divReponses.appendChild(divReponse);
                 identifiantReponse = divReponse.dataset._id;
                 attribuerModalModifierQuestionAvecId(identifiantReponse, TypeModifier.REPONSE);
-            } else {console.log("Le div réponse n'est pas ajouté");}
+            }
             break;
 
         case TypeQuestion.LISTE_DEROULANTE:
@@ -207,6 +211,25 @@ function affichageReponses(divReponses) {
             }
         }
     });
+}
+
+/**
+ * Supprime une question / reponse
+ * @param {int || string} id - l'identifiant de la question / reponse (X ou X-X) 
+ */
+function supprierQuestionVisualiseurQuestions(id) {
+    const divQuestion = document.querySelector(`div[data-_id="${id}"]`);
+    let parent;
+    if (String(id).includes("-")) {
+        parent = divQuestion.parentElement;
+    } else {
+        parent = divQuestion.closest("div.box.div-question.div-box").parentElement;
+    }
+
+    parent.removeChild(divQuestion);
+    if (String(id).includes("-") && parent.childElementCount <= 0) {
+        ajouterReponseVisualisateurQuestions(String(id).split("-")[0]);
+    }
 }
 
 /**
@@ -263,7 +286,8 @@ function donnerNombreReponse(id) {
 export {
     ajouterQuestionVisualiseurQuestions, 
     ajouterReponseVisualisateurQuestions,
-    modifierQuestionVisualiseurQuestions, 
+    modifierQuestionVisualiseurQuestions,
+    supprierQuestionVisualiseurQuestions, 
     donnerQuestionAvecIdVisualiseurQuestions, 
     donnerLibelleQuestionAvecIdVisualiseurQuestions,
     donnerNombreReponse

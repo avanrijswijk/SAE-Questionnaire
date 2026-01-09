@@ -19,10 +19,10 @@ function ajouterReponseVisualiseurQuestionnaire(idReponse, type) {
                                 .querySelector(`div.${_type ?? "rien"}`);
     
     if (divReponses) {
-        console.log("je passe ici visualq questonnnaire");
+        // console.log("je passe ici visualq questonnnaire");
         
         const divReponse = creerReponse(idReponse, type);
-        console.log(divReponse);
+        // console.log(divReponse);
         if (divReponse) divReponses.appendChild(divReponse);
     }
 }
@@ -58,6 +58,7 @@ function creerReponse(id, type) {
             const span = document.createElement("span");
             span.innerText = " Réponse 1";
             span.dataset._id = `${id}`;
+            span.dataset.type = type;
             span.classList.add("libelle-reponse");
 
             const spanEspace = document.createElement("span").innerText=" ";
@@ -92,6 +93,8 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
     let elementReponse;
 
     divConteneur.classList.add("block");
+    divConteneur.style.padding = "5px";
+    divConteneur.style.borderRadius = "8px";
     divConteneur.dataset._id = _id;
     divLibelle.classList.add("is-flex", "is-flex-direction-row");
     titreQuestion.classList.add("title", "is-4", "has-text-weight-semibold");
@@ -127,6 +130,30 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
     divConteneur.append(divLibelle, divSousConteneur);
     //divConteneur.appendChild(divSousConteneur);
     parent.appendChild(divConteneur);
+}
+
+function supprimerQuestionVisualiseurQuestionnaire(id) {
+    
+    
+    if (String(id).includes("-")) {
+        const spanReponse = document.querySelector(`span[data-_id="${id}"]`);
+        if (!spanReponse) return;
+        const labelReponse = spanReponse.parentElement;
+        if (!labelReponse) return;
+        const type = spanReponse.dataset.type;
+        const parent = labelReponse.parentElement;
+
+        parent.removeChild(labelReponse);
+        if (parent.childElementCount <= 0) {
+            console.log(parent.childElementCount);
+            ajouterReponseVisualiseurQuestionnaire(id, type);
+        }
+    } else{
+        const divQuestion = document.querySelector(`div.block[data-_id="${id}"]`);
+        const parent = divQuestion.parentElement;
+
+        parent.removeChild(divQuestion);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -167,5 +194,6 @@ export {
     donnerQuestionAvecIdVisualiseurQuestionnaire,
     modifierQuestionVisualiseurQuestionnaire,
     ajouterQuestionVisualiseurQuestionnaire,
-    ajouterReponseVisualiseurQuestionnaire
+    ajouterReponseVisualiseurQuestionnaire,
+    supprimerQuestionVisualiseurQuestionnaire
 }

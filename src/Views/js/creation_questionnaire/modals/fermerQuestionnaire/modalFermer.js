@@ -8,23 +8,38 @@ import { notification, TypeNotification } from '../../notification/notification.
  * type : str
  * position : int
  * est_obligatoire : bool
+ * reponses : list[str]
  * }]
  * @returns {Array} un fichier JSON contenant les informations
  */
 function listerQuestions() {
     const divQuestions = document.getElementById("visualiseur-questions");
-    if (divQuestions == null) {
-        return [];
+    const questions = [];
+
+    if (!divQuestions) {
+        return questions;
     }
-    const questions = []
-    for (let index = 0; index < divQuestions.children.length; index++) {
-        const divQuestion = divQuestions.children[index];
-        questions.push({
+
+    for (let index = 0; index < divQuestions.childElementCount; index++) {
+        const divConteneur = divQuestions.children[index];
+        const divQuestion = divConteneur.firstChild;
+        const divReponses = divConteneur.querySelector("div.div-reponses");
+
+        const data = {
             "intitule" : divQuestion.dataset.intitule,
             "type" : divQuestion.dataset.type,
             "position" : index+1,
-            "est_obligatoire" : divQuestion.dataset.intitule
-        });
+            "est_obligatoire" : divQuestion.dataset.obligatoire,
+            "reponses" : []
+        };
+
+        if (divReponses) {
+            divReponses.childNodes.forEach((divReponse) => {
+                data["reponses"].push(divReponse.dataset.intitule);
+            });
+        }
+
+        questions.push(data);
     }
     return questions
 }
@@ -69,6 +84,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.name = "liste-questions";
         listeQuestions.value = JSON.stringify(jsonQuestions);
 
+        console.log(jsonQuestions);
+        e.preventDefault();
+        return;
         formMVQ.appendChild(listeQuestions);
     });
 

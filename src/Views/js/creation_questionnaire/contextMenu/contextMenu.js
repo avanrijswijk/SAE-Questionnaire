@@ -1,7 +1,8 @@
 import { TypeQuestion } from "../typeQuestion.js";
 import { ouvrireModalModifierQuestion, TypeModifier } from "../modals/modificationQuestion/modalModifier.js";
-import { ajouterReponseVisualisateurQuestions } from "../afficher/questions.js";
-import { ajouterReponseVisualiseurQuestionnaire } from "../afficher/questionnaire.js";
+import { ajouterReponseVisualisateurQuestions, supprierQuestionVisualiseurQuestions } from "../afficher/questions.js";
+import { ajouterReponseVisualiseurQuestionnaire, supprimerQuestionVisualiseurQuestionnaire } from "../afficher/questionnaire.js";
+import { notification, TypeNotification } from "../notification/notification.js";
 
 const ID = "context-menu";
 
@@ -64,11 +65,6 @@ function identifierElement(element) {
     }
 
     return parent.dataset["_id"];
-}
-
-function fonc(element) {
-    const id = 0;
-    document.querySelector(`div[data-_id="${id}"]`).closest("div.box.div-question.div-box").querySelector("div.div-reponses");
 }
 
 // de https://github.com/NouvelleTechno/Right-Click-Menu
@@ -152,7 +148,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const menuItemSupprimer = document.getElementById("menu-item-supprimer");
 
     menuItemAfficher.addEventListener("click", () => {
-        alert("affiche où se situe la question");
+        const id = String(identifiant).split("-")[0];
+        const divQuestionVisualisateurQuestion = document.querySelector(`div.div-question > div[data-_id="${id}"`);
+        const divQuestionVisualisateurQuestionnaire = document.querySelector(`div.block[data-_id="${id}"`);
+
+        try {
+            if (divQuestionVisualisateurQuestion) {
+                divQuestionVisualisateurQuestion.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+
+            if (divQuestionVisualisateurQuestionnaire) {
+                divQuestionVisualisateurQuestionnaire.scrollIntoView({behavior: 'smooth', block: 'center'});
+                divQuestionVisualisateurQuestionnaire.style.backgroundColor = '#d1d1d1';
+                setTimeout(() => {
+                    divQuestionVisualisateurQuestionnaire.style.backgroundColor = '';
+                }, 2000);
+            }
+        } catch (e) {
+            notification(TypeNotification.INFO, "Nous n'avons pas trouvé la question");
+            console.error(e);
+        }
     });
 
     menuItemAjouterReponse.addEventListener("click", () => {
@@ -160,6 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (idReponse < 0) {
             // afficher une erreur
             console.error("Erreur dans l'ajout d'une nouvelle reponse");
+            notification(TypeNotification.ERREUR, "Une erreur est survenue lors de l'ajout d'une réponse sumplémentaire");
         } else {
             // definir type
             const type = document.querySelector(`div[data-_id="${String(idReponse).split("-")[0]}"]`).dataset.type;
@@ -173,7 +189,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     menuItemSupprimer.addEventListener("click", () => {
-        alert("supprimer une question / reponse");
+        supprierQuestionVisualiseurQuestions(identifiant);
+        supprimerQuestionVisualiseurQuestionnaire(identifiant);
     });
 });
 
