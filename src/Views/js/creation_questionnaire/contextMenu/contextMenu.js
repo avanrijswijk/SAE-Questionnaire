@@ -1,4 +1,7 @@
-import { TypeQuestion } from "../typeQuestion";
+import { TypeQuestion } from "../typeQuestion.js";
+import { ouvrireModalModifierQuestion, TypeModifier } from "../modals/modificationQuestion/modalModifier.js";
+import { ajouterReponseVisualisateurQuestions } from "../afficher/questions.js";
+import { ajouterReponseVisualiseurQuestionnaire } from "../afficher/questionnaire.js";
 
 const ID = "context-menu";
 
@@ -40,6 +43,34 @@ style.replaceSync(`
 `);
 document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
 
+let identifiant;
+
+/**
+ * Identifie la question est retroune l'identifiant du parent (X ou X-X)
+ * @param {HTMLElement} element - un element HTML 
+ * @return {int} - l'identifiant du parent
+ */
+function identifierElement(element) {
+    const classes = element.classList.value;
+    const dataset = element.dataset;
+    let parent;
+
+    if (element.tagName == 'P' && classes == "is-unselectable question") {
+        parent = element.parentElement;
+    } else if (element.tagName == 'DIV' && dataset["_id"]) {
+        parent = element;
+    } else if (element.tagName == 'DIV' && classes == "box div-question div-box") {
+        parent = element.firstChild;
+    }
+
+    return parent.dataset["_id"];
+}
+
+function fonc(element) {
+    const id = 0;
+    document.querySelector(`div[data-_id="${id}"]`).closest("div.box.div-question.div-box").querySelector("div.div-reponses");
+}
+
 // de https://github.com/NouvelleTechno/Right-Click-Menu
 
 /**
@@ -53,13 +84,19 @@ function attribuerContexteMenu(divQuestion, type) {
         // On empêche le "vrai" menu d'apparaître
         event.preventDefault();
         
-        //console.log(event.currentTarget);
-        console.log(event.target);
+        const elementSelectionne = event.target;
+        identifiant = identifierElement(elementSelectionne);
+        console.log("----------------------------");
+        console.log(elementSelectionne);
+        console.log(elementSelectionne.parentElement);
+        console.log(identifiant);
+        console.log("----------------------------");
 
-        const menuItemAjouterReponse = document.getElementById("ajouter-reponse");
+        const menuItemAjouterReponse = document.getElementById("menu-item-ajouter-reponse");
         switch (type) {
             case TypeQuestion.CHAMPS_COURT:
             case TypeQuestion.CHAMPS_LONG:
+            default:
                 menuItemAjouterReponse.style.display = "none";
                 break;
 
@@ -106,6 +143,38 @@ function attribuerContexteMenu(divQuestion, type) {
 document.addEventListener("click", () => {
     // On va chercher le menu et on lui retire la classe "active"
     document.querySelector("#context-menu").classList.remove("afficher");
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const menuItemAfficher = document.getElementById("menu-item-afficher");
+    const menuItemAjouterReponse = document.getElementById("menu-item-ajouter-reponse");
+    const menuItemModifier = document.getElementById("menu-item-modifier");
+    const menuItemSupprimer = document.getElementById("menu-item-supprimer");
+
+    menuItemAfficher.addEventListener("click", () => {
+        alert("affiche où se situe la question");
+    });
+
+    menuItemAjouterReponse.addEventListener("click", () => {
+        const idReponse = ajouterReponseVisualisateurQuestions(identifiant);
+        if (idReponse < 0) {
+            // afficher une erreur
+            console.error("Erreur dans l'ajout d'une nouvelle reponse");
+        } else {
+            // definir type
+            const type = document.querySelector(`div[data-_id="${String(idReponse).split("-")[0]}"]`).dataset.type;
+            ajouterReponseVisualiseurQuestionnaire(idReponse, type);
+        }
+    });
+
+    menuItemModifier.addEventListener("click", () => {
+        const typeQuestion = String(identifiant).includes("-") ? TypeModifier.REPONSE : TypeModifier.QUESTION;
+        ouvrireModalModifierQuestion(identifiant, typeQuestion);
+    });
+
+    menuItemSupprimer.addEventListener("click", () => {
+        alert("supprimer une question / reponse");
+    });
 });
 
 export {

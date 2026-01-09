@@ -3,14 +3,81 @@ import { donnerNombreReponse } from "./questions.js";
 
 // Ce fichier est le fichier relié à l'ajout d'une question dans la partie pour la visualitation du questionnaire
 
+/**
+ * Ajout une réponse de type 'type' dans le conteur d'une question en fonction de l'id de la reponse
+ * @param {int || string} idReponse - l'identifiant de la reponse (X-X)
+ * @param {TypeQuestion} type - le type de la réponse 
+ */
+function ajouterReponseVisualiseurQuestionnaire(idReponse, type) {
+    const idQuestion = String(idReponse).split("-")[0];
+    let _type;
+    switch (type) {
+        case TypeQuestion.CHECK_BOUTON: _type="checkboxs"; break;
+        case TypeQuestion.RADIO_BOUTON: _type="radios"; break;
+    }
+    const divReponses = document.querySelector(`div.block[data-_id="${idQuestion}"]`)
+                                .querySelector(`div.${_type ?? "rien"}`);
+    
+    if (divReponses) {
+        console.log("je passe ici visualq questonnnaire");
+        
+        const divReponse = creerReponse(idReponse, type);
+        console.log(divReponse);
+        if (divReponse) divReponses.appendChild(divReponse);
+    }
+}
 
+/**
+ * Crée un element HTML conformement au type de TypeQuestion
+ * @param {int || string} id - identifiant de la reponse
+ * @param {TypeQuestion} type - type de la reponse
+ * @returns {HTMLElement} - un element HTML
+ */
+function creerReponse(id, type) {
+
+    let elementReponse;
+    switch (type) {
+        case TypeQuestion.CHAMPS_LONG :
+        case TypeQuestion.CHAMPS_COURT :
+            elementReponse = document.createElement("textarea");
+            elementReponse.rows = type == TypeQuestion.CHAMPS_COURT ? 1 : 4;
+            // elementReponse.name = `${libelleQestion}-reponse1`;
+            elementReponse.classList.add("textarea");
+            elementReponse.style.border = "1px solid";
+            elementReponse.disabled = true;
+            elementReponse.style.resize = "none";
+            break;
+        
+        case TypeQuestion.RADIO_BOUTON :
+        case TypeQuestion.CHECK_BOUTON :
+            
+            const input = document.createElement("input");
+            input.type = type == TypeQuestion.RADIO_BOUTON ? "radio" : "checkbox";
+            input.disabled = true;
+
+            const span = document.createElement("span");
+            span.innerText = " Réponse 1";
+            span.dataset._id = `${id}`;
+            span.classList.add("libelle-reponse");
+
+            const spanEspace = document.createElement("span").innerText=" ";
+
+            const label = document.createElement("label");
+            label.classList.add(type == TypeQuestion.RADIO_BOUTON ? "radio" : "checkbox");
+            label.append(input, spanEspace, span);
+            
+            elementReponse = label;
+            break;
+    }
+    return elementReponse;
+}
 
 /**
  * Ajoute une question dans le visualiseur de questionnaire (partie droite)
  * @param {HTMLElement} parent - Le conteneur parent où sera placé la question
  * @param {JSON} info - Les informations sur la question (intitule:str, type:str, obligatoire:bool, _id:int)
  */
-export function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
+function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
     const libelleQestion = info['intitule'];
     const type = info['type'];
     const _id = info['_id'];
@@ -37,42 +104,15 @@ export function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
     spanObligatoire.classList.add("is-size-5", "ml-1");
     spanObligatoire.title = "obligatoire";
 
-    // changer ça dans le future : selection du type de reponse avec la variable type
-    switch (type) {
-        case TypeQuestion.CHAMPS_LONG :
-        case TypeQuestion.CHAMPS_COURT :
-            elementReponse = document.createElement("textarea");
-            elementReponse.rows = type == TypeQuestion.CHAMPS_COURT ? 1 : 4;
-            // elementReponse.name = `${libelleQestion}-reponse1`;
-            elementReponse.classList.add("textarea");
-            elementReponse.style.border = "1px solid";
-            elementReponse.disabled = true;
-            elementReponse.style.resize = "none";
-            break;
-        
-        case TypeQuestion.RADIO_BOUTON :
-        case TypeQuestion.CHECK_BOUTON :
-            elementReponse = document.createElement("div");
-            elementReponse.classList.add(type == TypeQuestion.RADIO_BOUTON ? "radios" : "checkboxs");
-            
-            const input = document.createElement("input");
-            input.type = type == TypeQuestion.RADIO_BOUTON ? "radio" : "checkbox";
-            input.disabled = true;
-
-            const span = document.createElement("span");
-            span.innerText = " Réponse 1";
-            span.dataset._id = `${_id}-${donnerNombreReponse(_id)}`;
-            span.classList.add("libelle-reponse");
-
-            const spanEspace = document.createElement("span").innerText=" ";
-
-            const label = document.createElement("label");
-            label.classList.add(type == TypeQuestion.RADIO_BOUTON ? "radio" : "checkbox");
-            label.append(input, spanEspace, span);
-            
-            elementReponse.appendChild(label);
-            break;
+    if (type == TypeQuestion.RADIO_BOUTON || type == TypeQuestion.CHECK_BOUTON) {
+        elementReponse = document.createElement("div");
+        elementReponse.style.rowGap = ".5em";
+        elementReponse.classList.add(type == TypeQuestion.RADIO_BOUTON ? "radios" : "checkboxs", "is-flex", "is-flex-direction-column");
+        elementReponse.appendChild(creerReponse(`${_id}-${donnerNombreReponse(_id)-1}`, type));
+    } else {
+        elementReponse = creerReponse(`${_id}-${donnerNombreReponse(_id)-1}`, type);
     }
+    
 
     if (!estObligatoire) {
         spanObligatoire.style.display = "none";
@@ -98,7 +138,7 @@ document.addEventListener("DOMContentLoaded", async () => {
  * @param {int || string} id - identifiant de la question
  * @param {string} libelle - le nouveau libelé
  */
-export function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
+function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
     const identifiant = String(id);
     const question = donnerQuestionAvecIdVisualiseurQuestionnaire(identifiant.includes("-") ? identifiant.split("-")[0] : identifiant);
     if (identifiant.includes("-")) {
@@ -118,7 +158,14 @@ export function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
  * @param {int} id - identifiant de la question
  * @returns {HTMLDivElement} le div de la question
  */
-export function donnerQuestionAvecIdVisualiseurQuestionnaire(id) {
+function donnerQuestionAvecIdVisualiseurQuestionnaire(id) {
     const divVisualiseurQuestions = document.getElementById("visualiseur-qestionnaire");
     return divVisualiseurQuestions.querySelector(`[data-_id="${id}"]`);
+}
+
+export {
+    donnerQuestionAvecIdVisualiseurQuestionnaire,
+    modifierQuestionVisualiseurQuestionnaire,
+    ajouterQuestionVisualiseurQuestionnaire,
+    ajouterReponseVisualiseurQuestionnaire
 }

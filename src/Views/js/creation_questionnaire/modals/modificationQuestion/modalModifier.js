@@ -7,6 +7,9 @@ import { notification, TypeNotification } from '../../notification/notification.
 const NAME_TEXTAREA = "libelle-question";
 let id;
 
+/**
+ * Type de contenue à modifier : Question ou Reponse
+ */
 const TypeModifier = {
     QUESTION : "question",
     REPONSE : "reponse"
@@ -16,7 +19,7 @@ const TypeModifier = {
  * initialise le modal #dialog-modifier-question
  * @param {HTMLDivElement} modal - le modal modifier
  * @param {int} id - l'identifiant de la question
- * @param {typeModifier} type 
+ * @param {TypeModifier} type 
  */
 function init_modal(modal, id, type) {
     const textarea = modal.querySelector(`[name="${NAME_TEXTAREA}"]`);
@@ -46,7 +49,6 @@ function mettreLaPremiereLettreEnMajuscule(chaine) {
 
 /**
  * initialise la fermeture et le traitement des données du modal de modification d'une question
- * @param {int} id - identifiant de la question 
  */
 function modalModifierQuestion() {
     //
@@ -64,8 +66,8 @@ function modalModifierQuestion() {
     //const listeRadiosType = document.getElementsByName("type-question");
 
     // ---------- ----------
-    const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
-    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+    // const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
+    // const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
 
     // ---------- MAQ ----------
     
@@ -117,19 +119,43 @@ function modalModifierQuestion() {
 }
 
 /**
- * ouvre le modal de modification de questions en fonction de son id
+ * ouvre un modal de modification de questions/réponses en fonction de son id
+ * @param {int || string} identifiant - son identifiant (id)
+ * @param {TypeModifier} type - le type de comptenu qui sera modifié 
+ */
+function ouvrireModalModifierQuestion(identifiant, type) {
+    const form = document.getElementById("form-modifier-question");
+    const modal = document.getElementById("dialog-modifier-question");
+    id = identifiant;
+    form.reset();
+    init_modal(modal, identifiant, type);
+    ouvrire_modal(modal);
+}
+
+/**
+ * attribu un modal de modification de questions/réponses en fonction de son conteneur
+ * @param {HTMLDivElement} conteneur - le conteneur de la question
+ * @param {TypeModifier} type - le type de comptenu qui sera modifié
+ */
+function attribuerModalModifierQuestionAvaecConteneur(conteneur, type) {
+    const identifiant = conteneur.dataset["_id"];
+    if (identifiant) {
+        conteneur.addEventListener("dblclick", () => {
+            ouvrireModalModifierQuestion(identifiant, type);
+        });
+    } 
+    
+}
+
+/**
+ * attribu un modal de modification de questions/réponses en fonction de son id
  * @param {int || string} identifiant - son identifiant (id)
  * @param {TypeModifier} type - le type de comptenu qui sera modifié
  */
-export function ouvrireModalModifierQuestion(identifiant, type) {
+function attribuerModalModifierQuestionAvecId(identifiant, type) {
     const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(identifiant);
-    const form = document.getElementById("form-modifier-question");
-    const modal = document.getElementById("dialog-modifier-question");
     divQuestion.addEventListener("dblclick", () => {
-        id = identifiant;
-        form.reset();
-        init_modal(modal, identifiant, type);
-        ouvrire_modal(modal);
+        ouvrireModalModifierQuestion(identifiant, type);
     });
 }
 
@@ -137,4 +163,9 @@ document.addEventListener("DOMContentLoaded", () => {
     modalModifierQuestion();
 });
 
-export {TypeModifier}
+export {
+    attribuerModalModifierQuestionAvecId,
+    attribuerModalModifierQuestionAvaecConteneur,
+    ouvrireModalModifierQuestion,
+    TypeModifier
+}
