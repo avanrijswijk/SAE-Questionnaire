@@ -1,6 +1,6 @@
 <?php
 
-include_once 'auth.php';
+//include_once 'auth.php';
 //session_start();
 //$_SESSION['id_utilisateur'] = 112101; // utilisateur test en attendant la possibilité de gérer les utilisateurs
 
