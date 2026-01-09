@@ -1,4 +1,4 @@
-import { ouvrireModalModifierQuestion } from '../modals/modificationQuestion/modalModifier';
+import { ouvrireModalModifierQuestion } from '../modals/modificationQuestion/modalModifier.js';
 
 const style = new CSSStyleSheet();
 style.replaceSync(`
