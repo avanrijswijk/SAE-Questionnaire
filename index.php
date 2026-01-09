@@ -1,7 +1,7 @@
 <?php
 
-session_start();
-$_SESSION['id_utilisateur'] = 112101; // utilisateur test en attendant la possibilité de gérer les utilisateurs
+//session_start();
+//$_SESSION['id_utilisateur'] = 112101; // utilisateur test en attendant la possibilité de gérer les utilisateurs
 
 require 'vendor/autoload.php';
 require_once(__DIR__.DIRECTORY_SEPARATOR.'bootstrap.php');
@@ -9,6 +9,8 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'bootstrap.php');
 
 use App\Controllers\QuestionnaireController;
 use App\Controllers\AcceptesController;
+use App\Controllers\QuestionController;
+use App\Controllers\Reponses_utilisateurController;
 
 
 // ajout de l'en tête
@@ -28,6 +30,8 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
         case 'questionnaire':
             $questionnaireController = new QuestionnaireController();
             $acceptesController = new AcceptesController();
+            $reponses_utilisateurController = new Reponses_utilisateurController();
+            $questionController = new QuestionController();
 
             switch ($action) {
                 case 'creation':
@@ -37,13 +41,17 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
                     $questionnaireController->listerQuestionnaires();
                     break;
                 case 'resultats':
-                    $questionnaireController->resultatsQuestionnaire();
+                    $reponses_utilisateurController->resultatsQuestionnaire();
                     break;
                 case 'enregistrer':
                     if ($questionnaireController->enregistrerQuestionnaire()) {
+                        if ($questionController->enregistrerQuestions($questionnaireController->lastInsertId())) {
                             $acceptesController->enregistrer();
+                        }
                     }
                     break;
+                case 'enregistrerReponses' :
+                    $reponses_utilisateurController = $choix;
                 case 'repondre':
                     $id = isset($_GET['id']) ? $_GET['id'] : null;
                     $questionnaireController->repondre($id);

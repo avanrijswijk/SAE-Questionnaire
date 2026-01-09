@@ -65,18 +65,19 @@ class Acceptes {
         return $this->conn->lastInsertId();
     }
 
-//    public function update($id_questionnaire, $id_utilisateur) {
-//        $query = "UPDATE acceptes 
-//                  SET <ajouter les nouveaux aruguments ici>
-//                  WHERE id_questionnaire = :id_questionnaire AND id_utilisateur = :id_utilisateur";
-//
-//        $stmt = $this->conn->prepare($query);
-//
-//        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
-//        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
-//
-//        $stmt->execute();
-//    }
+    public function update($id_questionnaire, $id_utilisateur, $repondu) {
+        $query = "UPDATE acceptes 
+                  SET repondu = :repondu
+                  WHERE id_questionnaire = :id_questionnaire AND id_utilisateur = :id_utilisateur";
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
+        $stmt->bindParam(':repondu', $repondu);
+
+        $stmt->execute();
+    }
 
     public function delete($id_questionnaire, $id_utilisateur) {
         $query = "DELETE FROM acceptes WHERE id_questionnaire = :id_questionnaire AND id_utilisateur = :id_utilisateur";
@@ -88,4 +89,17 @@ class Acceptes {
         
         return $stmt->rowCount() > 0;
     }   
+
+    public function asAnswered($id_utilisateur, $id_questionnaire) { //true = a déjà répondu, false = n'a pas répondu
+        $query = "SELECT repondu FROM acceptes WHERE id_utilisateur = :id_utilisateur AND id_questionnaire = :id_questionnaire";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result == 1) {
+            return true;
+        }
+        return false;
+    }
 }

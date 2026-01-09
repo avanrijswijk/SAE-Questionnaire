@@ -4,17 +4,21 @@ namespace App\Controllers;
 
 use App\Models\Questionnaire;
 use App\Models\Question;
+use App\Models\Reponses_utilisateur;
 
 class QuestionnaireController {
 
     private $questionnaireModel;
     private $questionModel;
+    private $reponses_utilisateurModel;
 
     public function __construct() {
         $questionnaireModel = new Questionnaire();
         $this->questionnaireModel = $questionnaireModel;
         $questionModel = new Question();
         $this->questionModel = $questionModel;
+        $reponses_utilisateurModel = new Reponses_utilisateur();
+        $this->reponses_utilisateurModel = $reponses_utilisateurModel;
     }
 
     public function repondre($id = null) {
@@ -60,12 +64,7 @@ class QuestionnaireController {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'listerQuestionnaire.php');
     }
 
-    public function resultatsQuestionnaire() {
-        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'resultatsQuestionnaire.php');
-
-    }
-
-    public function voirResultatsQuestionnaire() {
+    public function peutVoirResultatsQuestionnaire() {
         $id_questionnaire = isset($_GET['id_questionnaire']) ? $_GET['id_questionnaire'] : null;
         
         if (!is_null($id_questionnaire)) {
@@ -73,7 +72,7 @@ class QuestionnaireController {
                 echo 'error : you are not the creator of this questionnaire.';
                 return;
             } else {
-                $resultats = $this->questionnaireModel->getResults($id_questionnaire);
+                $resultats = $this->reponses_utilisateurModel->getReponse($id_questionnaire, $_SESSION['id_utilisateur']);
                 // require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'traitementResultats.php');
             }
             
@@ -95,10 +94,6 @@ class QuestionnaireController {
         } else {
             //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
             $ajoutOk = $this->questionnaireModel->createQuestionnaire($titre, $id_createur, $date_expiration, $code);
-            if ($ajoutOk) { //attention si deux questionnaire enregistrer en meme temps!
-                $ajoutOk = $this->enregistrerQuestions($this->questionnaireModel->lastInsertId());
-            }
-            //}
         }
 
         if ($ajoutOk) {
@@ -108,38 +103,6 @@ class QuestionnaireController {
         }
 
         return $ajoutOk;
-    }
-
-    public function enregistrerQuestions($id_questionnaire) {
-        if(!isset($id_questionnaire)) {
-            $id_questionnaire=0;
-        }
-        if (isset($_POST['liste-questions'])) {
-            $jsonQuestion = json_decode($_POST['liste-questions'], true);
-            
-            if (is_array($jsonQuestion)) {
-                foreach ($jsonQuestion as $questionData) {
-                    $intitule = isset($questionData['intitule']) ? $questionData['intitule'] : null;
-                    $type = isset($questionData['type']) ? $questionData['type'] : null;
-                    $position = isset($questionData['position']) ? $questionData['position'] : null;
-                    $est_obligatoire = isset($questionData['est_obligatoire']) ? $questionData['est_obligatoire'] : null;
-                    if ($est_obligatoire == 'true') {
-                        $est_obligatoire = 1;
-                    } else {
-                        $est_obligatoire = 0;
-                    }
-                    $ajoutOk = $this->questionModel->createQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire);
-                    if (!$ajoutOk) {
-                        echo 'Erreur lors de l\'enregistrement des questions.';
-                        return false;
-                    }
-                }
-            } else {
-                echo 'Données de questions invalides.';
-                return false;
-            }
-        }
-        return true; //temporaire
     }
 
     public function supprimer($id = null) {
@@ -154,12 +117,20 @@ class QuestionnaireController {
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
 
         if ($questionnaire) {
-            return $this->questionnaireModel->delete($id);
+            if($this->questionnaireModel->delete($id)){
+                $questions = $this->questionModel->getQuestionBy(['id_questionnaire' => $id]);
+                foreach ($questions as $question) {
+                    $this->questionModel->delete($question['id']);
+                }
+            }
         }
 
         return false;
     }
 
+    public function lastInsertId() {
+        return $this->questionnaireModel->lastInsertId();
+    }
 }
 
     
