@@ -1,5 +1,6 @@
-import { ouvrireModalModifierQuestion, TypeModifier } from '../modals/modificationQuestion/modalModifier';
+import { ouvrireModalModifierQuestion, TypeModifier } from '../modals/modificationQuestion/modalModifier.js';
 import {TypeQuestion} from '../typeQuestion.js';
+import { attribuerContexteMenu } from "../contextMenu/contextMenu.js";
 
 const style = new CSSStyleSheet();
 style.replaceSync(`
@@ -100,6 +101,8 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
         console.log("hello");
         ouvrireModalModifierQuestion(divReponse.dataset._id, TypeModifier.REPONSE);
     }
+
+    attribuerContexteMenu(divConteneur, type);
 }
 
 /**
