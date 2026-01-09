@@ -2,6 +2,17 @@
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/fermerQuestionnaire/modalFermer.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/ajoutQuestion/modalAjouter.js"></script>
     <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
+        <div id="context-menu">
+            <ul class="menu">
+                <li class="menu-item">Afficher</li>
+                <li class="menu-separator"></li>
+                <li class="menu-item" id="ajouter-reponse">Ajouter une réponse</li>
+                <li class="menu-item">Modifier</li>
+                <li class="menu-separator"></li>
+                <li class="menu-item">Supprimer</li>
+            </ul>
+        </div>
+        <script src="./src/Views/js/creation_questionnaire/contextMenu/contextMenu.js"></script>
         <div style="background-color: #F5A320;border-radius: 0 0 100px 0;">
             <button type="button" id="ajouter-question">
                 <h3 class="title is-4 m-1 p-2">+ Ajouter une question</h3>
@@ -27,11 +38,11 @@
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="champs-libre" id="radio-champs-libre" checked required>
                                 Champs libre
-                            </label><!--
+                            </label>
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="radio-box" id="radio-radio-box">
                                 Radio box
-                            </label>
+                            </label><!--
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="check-box" id="radio-check-box">
                                 Check box

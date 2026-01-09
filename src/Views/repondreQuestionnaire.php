@@ -35,7 +35,7 @@ $auteur = isset($questionnaire['id_createur']) ? htmlspecialchars($questionnaire
                         <label class="subtitle is-4"><strong><?php echo ($index+1).'. '; ?></strong><?php echo $intitule; ?> <?php if ($required) echo '<span style="color:red">*</span>'; ?></label>
                         <div class="answer">
                             <?php if ($type === 1): // texte ?>
-                                <textarea name="<?php echo $name; ?>" <?php echo $required; ?> class="textarea" placeholder="Remplir ce champ..." cols="50"></textarea>
+                                <textarea name="<?php echo $name; ?>" <?php if ($required) echo $required; ?> class="textarea" placeholder="Remplir ce champ..." cols="50"></textarea>
                             <?php elseif ($type === 2): // choix unique (radio) ?>
                                 <p><em>Choix unique - options non disponibles dans la vue.</em></p>
                             <?php elseif ($type === 3): // choix multiple ?>
