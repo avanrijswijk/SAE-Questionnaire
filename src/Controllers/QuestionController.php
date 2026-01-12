@@ -38,14 +38,13 @@ class QuestionController {
                     $ajoutOk = $this->questionModel->createQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire);
                     if (!$ajoutOk) {
                         echo 'Erreur lors de l\'enregistrement des questions.';
-                    // } else {
-                    //     $ajoutOk = $this->choix_possibleController->enregistrer($jsonChoix, $this->questionModel->getLastInsertId());
-                    //     if (!$ajoutOk) {
-                    //         echo 'Erreur lors de l\'enregistrement des choix pour la question :' . $intitule;
-                    //     }
-                        
-                    //     return $ajoutOk;
-                    }
+                    } //else {
+                    //    $ajoutOk = $this->choix_possibleController->enregistrer($jsonChoix, $this->questionModel->getLastInsertId());
+                    //    if (!$ajoutOk) {
+                    //        echo 'Erreur lors de l\'enregistrement des choix pour la question :' . $intitule;
+                    //    }
+                    //}
+                    
                     return $ajoutOk;
                 }
             } else {
