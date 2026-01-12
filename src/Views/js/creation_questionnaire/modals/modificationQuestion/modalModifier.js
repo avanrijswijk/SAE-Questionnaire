@@ -149,12 +149,14 @@ function attribuerModalModifierQuestionAvaecConteneur(conteneur, type) {
 
 /**
  * attribu un modal de modification de questions/réponses en fonction de son id
- * @param {int || string} identifiant - son identifiant (id)
+ * @param {*} identifiant - son identifiant (id)
  * @param {TypeModifier} type - le type de comptenu qui sera modifié
  */
 function attribuerModalModifierQuestionAvecId(identifiant, type) {
-    const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(identifiant);
-    divQuestion.addEventListener("dblclick", () => {
+    console.log("JE PASSE !!!");
+    const divConteneur = donnerQuestionAvecIdVisualiseurQuestions(identifiant); // peut etre un divQuestion ou un divReponse
+    if (!divConteneur){console.error("Le conteneur est null pour l'attribution du listener");}
+    divConteneur.addEventListener("dblclick", () => {
         ouvrireModalModifierQuestion(identifiant, type);
     });
 }

@@ -21,7 +21,7 @@ function ajouterReponseVisualiseurQuestionnaire(idReponse, type) {
     if (divReponses) {
         // console.log("je passe ici visualq questonnnaire");
         
-        const divReponse = creerReponse(idReponse, type);
+        const divReponse = creerReponse(idReponse, type, divReponses.childElementCount);
         // console.log(divReponse);
         if (divReponse) divReponses.appendChild(divReponse);
     }
@@ -31,9 +31,10 @@ function ajouterReponseVisualiseurQuestionnaire(idReponse, type) {
  * Crée un element HTML conformement au type de TypeQuestion
  * @param {int || string} id - identifiant de la reponse
  * @param {TypeQuestion} type - type de la reponse
+ * @param {number} [nombreReponse=0] - le nombre de reponse deja affichée
  * @returns {HTMLElement} - un element HTML
  */
-function creerReponse(id, type) {
+function creerReponse(id, type, nombreReponse = 0) {
 
     let elementReponse;
     switch (type) {
@@ -56,7 +57,7 @@ function creerReponse(id, type) {
             input.disabled = true;
 
             const span = document.createElement("span");
-            span.innerText = " Réponse 1";
+            span.innerText = ` Réponse ${nombreReponse+1}`;
             span.dataset._id = `${id}`;
             span.dataset.type = type;
             span.classList.add("libelle-reponse");
