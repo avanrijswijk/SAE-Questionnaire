@@ -12,7 +12,7 @@
                 <li class="menu-item" id="menu-item-supprimer">Supprimer</li>
             </ul>
         </div>
-        <script src="./src/Views/js/creation_questionnaire/contextMenu/contextMenu.js"></script>
+        <script type="module" src="./src/Views/js/creation_questionnaire/contextMenu/contextMenu.js"></script>
         <div style="background-color: #F5A320;border-radius: 0 0 100px 0;">
             <button type="button" id="ajouter-question">
                 <h3 class="title is-4 m-1 p-2">+ Ajouter une question</h3>

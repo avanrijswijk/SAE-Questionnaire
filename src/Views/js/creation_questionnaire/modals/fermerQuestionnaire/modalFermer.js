@@ -30,7 +30,7 @@ function listerQuestions() {
             "type" : divQuestion.dataset.type,
             "position" : index+1,
             "est_obligatoire" : divQuestion.dataset.obligatoire,
-            "reponses" : []
+            "choix" : []
         };
 
         if (divReponses) {
@@ -72,6 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         type : str
         position : int
         est_obligatoire : bool
+        choix : [str]
         */
         //console.log(listerQuestions());
         const listeQuestions = document.createElement('input');
@@ -85,8 +86,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.value = JSON.stringify(jsonQuestions);
 
         console.log(jsonQuestions);
-        e.preventDefault();
-        return;
+        // e.preventDefault();
+        // return;
         formMVQ.appendChild(listeQuestions);
     });
 
