@@ -25,12 +25,12 @@ class Choix_possibleController {
         }
     }
 
-    public function enregistrerJson($jsonChoix, $id_question) {
-        if (is_array($jsonChoix)) {
-            foreach ($jsonChoix as $choixData) {
-                $texte = isset($choixData['texte']) ? $choixData['texte'] : null;
-                if (isset($id_question) && isset($texte)) {
-                    $ajoutOk = $this->choixPossibleModel->createChoix($id_question, $texte);
+    //enregistre les choix à partir d'une liste de type string[]
+    public function enregistrerListe($ChoixListe, $id_question) {
+        if (is_array($ChoixListe)) {
+            foreach ($ChoixListe as $choix) {
+                if (isset($id_question) && isset($choix)) {
+                    $ajoutOk = $this->choixPossibleModel->createChoix($id_question, $choix);
                     if (!$ajoutOk) {
                         echo 'Erreur lors de l\'enregistrement des choix de la question :' . $id_question;
                         return false;
