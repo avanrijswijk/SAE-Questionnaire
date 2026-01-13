@@ -67,9 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(form){
         form.addEventListener('submit', (e) => {
-            console.log("L'événement submit est bien détecté !");
-            // Empêcher l'envoi immédiat pour confirmation
-            e.preventDefault();
+            //e.preventDefault();
+
+            hide(submitModal);
 
             const formData = new FormData(form);
 
@@ -91,9 +91,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            console.log("Données brutes :", Object.fromEntries(formData));
-            console.log("Données ordonnées :", data);
-            hide(submitModal);
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'json_reponses';
+            hiddenInput.value = JSON.stringify(data);
+
+            // console.log("Données brutes :", Object.fromEntries(formData));
+            // console.log("Données ordonnées :", data);
+
+            form.appendChild(hiddenInput);
         });
     }
 
