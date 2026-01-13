@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     formMVQ.addEventListener("submit", (e) => {
         //e.preventDefault();
-        e.preventDefault();
+        
         fermer_modal(modalValiderQuestionnaire);
         // window.location.href = "./?c=home";
 
