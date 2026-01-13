@@ -20,24 +20,23 @@ function listerQuestions() {
     }
 
     for (let index = 0; index < divQuestions.childElementCount; index++) {
-        const divConteneur = divQuestions.children[index];
-        const divQuestion = divConteneur.firstChild;
-        const divReponses = divConteneur.querySelector("div.div-reponses");
+        const divQuestion = divQuestions.children[index];
+        const divReponses = divQuestion.querySelector("div.div-reponses");
 
         const data = {
             "intitule" : divQuestion.dataset.intitule,
             "type" : divQuestion.dataset.type,
             "position" : index+1,
             "est_obligatoire" : divQuestion.dataset.obligatoire,
-            "reponses" : []
+            "choix" : []
         };
 
         if (divReponses) {
             divReponses.childNodes.forEach((divReponse) => {
-                data["reponses"].push(divReponse.dataset.intitule);
+                data["choix"].push(divReponse.dataset.intitule);
             });
         } else {
-            data["reponses"].push(null);
+            data["choix"].push(null);
         }
 
         questions.push(data);
@@ -64,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     formMVQ.addEventListener("submit", (e) => {
         //e.preventDefault();
-        
+        e.preventDefault();
         fermer_modal(modalValiderQuestionnaire);
         // window.location.href = "./?c=home";
 
@@ -84,7 +83,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.type = "hidden";
         listeQuestions.name = "liste-questions";
         listeQuestions.value = JSON.stringify(jsonQuestions);
-
+        
         formMVQ.appendChild(listeQuestions);
     });
 
