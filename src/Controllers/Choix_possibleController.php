@@ -29,15 +29,14 @@ class Choix_possibleController {
     public function enregistrerListe($ChoixListe, $id_question) {
         if (is_array($ChoixListe)) {
             foreach ($ChoixListe as $choix) {
-                if (isset($id_question) && isset($choix)) {
+                if (isset($id_question) && (isset($choix) || is_null($choix))) {
                     $ajoutOk = $this->choixPossibleModel->createChoix($id_question, $choix);
                     if (!$ajoutOk) {
                         echo 'Erreur lors de l\'enregistrement des choix de la question :' . $id_question;
-                        return false;
                     }
                 }
             }
-            return true;
+            return $ajoutOk;
         } else {
             echo 'Données de choix invalides.';
             return false;

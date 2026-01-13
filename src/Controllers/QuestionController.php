@@ -23,7 +23,7 @@ class QuestionController {
         if (isset($_POST['liste-questions'])) {
             $jsonQuestion = json_decode($_POST['liste-questions'], true);
             if (is_array($jsonQuestion)) {
-                $debugcount = 0;
+                
                 foreach ($jsonQuestion as $questionData) {
                     $intitule = isset($questionData['intitule']) ? $questionData['intitule'] : null;
                     $type = isset($questionData['type']) ? $questionData['type'] : null;
@@ -35,15 +35,14 @@ class QuestionController {
                     } else {
                         $est_obligatoire = 0;
                     }
-                    $debugcount++;
+                    
                     $ajoutOk = $this->questionModel->createQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire);
                     if (!$ajoutOk) {
                         echo 'Erreur lors de l\'enregistrement des questions.';
-                        return false;
-                    } else { $debugcount = $debugcount + 100; }
-                        $ajoutOk = $this->choix_possibleController->enregistrerListe($choixListe, $this->questionModel->getLastInsertId());
-                        if (!$ajoutOk) {
-                            echo 'Erreur lors de l\'enregistrement des choix pour la question :' . $intitule;
+                    }
+                    $ajoutOk = $this->choix_possibleController->enregistrerListe($choixListe, $this->questionModel->getLastInsertId());
+                    if (!$ajoutOk) {
+                        echo 'Erreur lors de l\'enregistrement des choix pour la question :' . $intitule;
                     }
                 }
                 return $ajoutOk;
