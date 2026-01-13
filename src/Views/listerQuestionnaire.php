@@ -36,7 +36,7 @@
                     <th>Temps</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="table">
                 <?php date_default_timezone_set('Europe/Paris'); ?>
                 <?php foreach ($questionnaires as $questionnaire): ?> 
                     <?php 
@@ -46,16 +46,27 @@
                         $date = date("d/m/Y", $tempsUnix);
                         $nbJoursRestant = round(($tempsUnix - strtotime("now")) / 86400, 0);
                     ?>
-                    <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';">
-                        <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
-                        <td><?php echo htmlspecialchars($questionnaire['id_createur']); ?></td>
-                        <td title="<?php echo htmlspecialchars($date) ?>" style="<?php if ($nbJoursRestant < 7) echo "color : red;" ?>"><?php echo htmlspecialchars($nbJoursRestant); ?> jours restant</td> 
-                    </tr>
+                    <?php if ($nbJoursRestant > 0) : ?>
+                        <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';">
+                            <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
+                            <td><?php echo htmlspecialchars($questionnaire['id_createur']); ?></td>
+                            <td title="<?php echo htmlspecialchars($date) ?>" style="<?php if ($nbJoursRestant < 7) echo "color : red;" ?>"><?php echo htmlspecialchars($nbJoursRestant); ?> jours restant</td> 
+                        </tr>
+                    <?php endif ?>
                 <?php endforeach; ?>
             </tbody>
-        </table>
+        </table><!--
         <?php if (count($questionnaires) === 0) { ?>
             <p>Aucun questionnaire en attente.</p>
-        <?php }?>
+        <?php }?>-->
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const table = document.querySelector("tbody.table");
+                if (table.childElementCount == 0) {
+                    document.querySelector("div.is-flex.is-justify-content-center.pt-5").appendChild(document.createElement("p").innerText("Aucun quesionnaire en attente?"));
+                }
+            });
+            
+        </script>
     </div>
 </main>
