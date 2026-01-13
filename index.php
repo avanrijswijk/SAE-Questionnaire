@@ -15,7 +15,10 @@ if (in_array($_SERVER['SERVER_NAME'], $whitelist_local)) {
     // --- MODE LOCAL ---
     // On simule un utilisateur connecté
     if (!isset($_SESSION['cas_user'])) {
-        $_SESSION['cas_user'] = 'etudiant_test_local';
+        $_SESSION['cas_user'] = 'etudiant_local';
+        $_SESSION['cas_prenom'] = 'Jean'; 
+        $_SESSION['cas_nom'] = 'Dupont'; 
+        $_SESSION['cas_groupes'] = ['etudiant', 'info'];
     }
 } else {
     // --- MODE SERVEUR (IUT) ---
