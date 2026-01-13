@@ -1,10 +1,30 @@
 <?php
 
-require_once 'config.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Liste des domaines considérés comme "local"
+$whitelist_local = array(
+    '127.0.0.1',
+    '::1',
+    'localhost'
+);
+
+if (in_array($_SERVER['SERVER_NAME'], $whitelist_local)) {
+    // --- MODE LOCAL ---
+    // On simule un utilisateur connecté
+    if (!isset($_SESSION['cas_user'])) {
+        $_SESSION['cas_user'] = 'etudiant_test_local';
+    }
+} else {
+    // --- MODE SERVEUR (IUT) ---
+    // Activation de la sécurité CAS
+    require_once 'config.php';
+}
 
 require 'vendor/autoload.php';
 require_once(__DIR__.DIRECTORY_SEPARATOR.'bootstrap.php');
-echo $user;
 
 use App\Controllers\QuestionnaireController;
 use App\Controllers\AcceptesController;

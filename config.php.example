@@ -1,49 +1,87 @@
 <?php
 
+// Exemple de mise en fonctionnement de protocole CAS  (en php)
+// (Adapter selon vos besoins)
+
+
+
+// 1. On active le tampon de sortie (INDISPENSABLE pour éviter le bug de rechargement)
+// Cela permet d'envoyer les headers de redirection même s'il y a des espaces avant
+ob_start();
+
+// 2. Gestion des erreurs (à désactiver en production, utile en dev)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// 3. Démarrage de la session
 if (session_status() === PHP_SESSION_NONE) {
+    // Optimisation pour éviter les blocages de session
+    ini_set('session.cookie_secure', 0); // Car on est en HTTP sur l'IP
+    ini_set('session.cookie_httponly', 1);
     session_start();
 }
 
-// Désactiver l'autoloader dépréciée de phpCAS pour éviter les warnings
-if (function_exists('spl_autoload_unregister')) {
-    // Supprimer tous les autoloaders enregistrés par phpCAS avant l'include
-    $autoloaders = spl_autoload_functions();
-    if ($autoloaders) {
-        foreach ($autoloaders as $autoloader) {
-            spl_autoload_unregister($autoloader);
-        }
-    }
-}
-
-// Inclure phpCAS depuis les sources directement
-require_once __DIR__ . '/vendor/apereo/phpcas/source/CAS.php';
-
-// Réenregistrer les autoloaders si nécessaire
-if (isset($autoloaders) && $autoloaders) {
-    foreach ($autoloaders as $autoloader) {
-        spl_autoload_register($autoloader);
-    }
-}
-
-// Configuration du serveur CAS de l'Université de Limoges
+// --- CONFIGURATION CAS ---
 $cas_host = 'cas.unilim.fr';
-$cas_context = '/cas';
 $cas_port = 443;
+$cas_context = '/cas';
 
-// URL de votre propre serveur (important pour le retour après connexion)
-define('MY_APP_URL', 'https://164.81.120.74');
+// --- DÉTECTION AUTOMATIQUE DE L'URL DE RETOUR ---
+// On construit l'URL de la page actuelle pour que le CAS nous renvoie ici
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+$current_url = $protocol . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
-// Initialisation de phpCAS
-phpCAS::client(CAS_VERSION_2_0, $cas_host, $cas_port, $cas_context, '');
+// On nettoie l'URL : on enlève le paramètre ?ticket=... s'il existe déjà pour éviter les boucles
+$service_url = preg_replace('/([?&])ticket=[^&]+(&|$)/', '$1', $current_url);
+// Petit nettoyage si le regex laisse un '?' ou '&' traîner à la fin
+$service_url = rtrim($service_url, '?&');
 
-// permet à votre PHP d'accepter la réponse du serveur CAS sans validation SSL
-phpCAS::setNoCasServerValidation();
 
-// Vérifier si l'utilisateur est authentifié sinon forecer l'authentification
-if (phpCAS::isAuthenticated()) {
-    $_SESSION['cas_user'] = phpCAS::getUser();
-} else {
-    phpCAS::forceAuthentication(); 
+// --- LOGIQUE D'AUTHENTIFICATION ---
+
+// CAS 1 : L'utilisateur est DÉJÀ connecté
+if (isset($_SESSION['cas_user'])) {
+    // On ne fait rien, on laisse le reste du site s'afficher
+    // Vous pouvez récupérer l'utilisateur avec $_SESSION['cas_user']
+} 
+// CAS 2 : On revient du CAS avec un ticket à valider
+elseif (isset($_GET['ticket'])) {
+    $ticket = $_GET['ticket'];
+    
+    // URL de validation interne (coulisses)
+    $validate_url = "https://$cas_host:$cas_port$cas_context/serviceValidate?service=" . urlencode($service_url) . "&ticket=" . $ticket;
+
+    // Requête cURL silencieuse (Zéro dépendance)
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $validate_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Important pour la VM
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    // Analyse de la réponse XML
+    if (preg_match('/<cas:user>(.*?)<\/cas:user>/', $response, $match)) {
+        // SUCCÈS !
+        $_SESSION['cas_user'] = $match[1];
+        
+        // REDIRECTION IMMÉDIATE vers la page propre (sans le ?ticket=...)
+        // C'est ça qui corrige votre bug de rechargement
+        header("Location: $service_url");
+        exit();
+    } else {
+        // Échec critique
+        die("Erreur d'authentification CAS. Réponse : " . htmlspecialchars($response));
+    }
+} 
+// CAS 3 : L'utilisateur n'est pas connecté -> On l'envoie au CAS
+else {
+    $login_url = "https://$cas_host:$cas_port$cas_context/login?service=" . urlencode($service_url);
+    header("Location: $login_url");
+    exit();
 }
 
+// Fin du fichier config.php
+// Tout code qui inclut ce fichier sera protégé par le CAS
 ?>
