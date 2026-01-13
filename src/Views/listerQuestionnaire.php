@@ -38,6 +38,9 @@
             </thead>
             <tbody>
                 <?php foreach ($questionnaires as $questionnaire): ?> 
+                    <?php 
+                        $date = isset($questionnaire['date_expiration']) ? $questionnaire['date_expiration'] : "";   
+                    ?>
                     <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';">
                         <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
                         <td><?php echo htmlspecialchars($questionnaire['id_createur']); ?></td>
