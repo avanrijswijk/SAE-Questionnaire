@@ -1,6 +1,7 @@
 import { attribuerModalModifierQuestionAvaecConteneur, attribuerModalModifierQuestionAvecId, TypeModifier } from '../modals/modificationQuestion/modalModifier.js';
 import {TypeQuestion} from '../typeQuestion.js';
 import { attribuerContexteMenu } from "../contextMenu/contextMenu.js";
+import { notification, TypeNotification } from '../notification/notification.js';
 
 const style = new CSSStyleSheet();
 style.replaceSync(`
@@ -143,9 +144,9 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
     parent.appendChild(divConteneur);
     if (divReponses) { // si divReponses est initialisé
         const divReponse = divReponses.firstChild; // on prend son premier enfant qui est initialisé comme div.div-reponse
-        attribuerModalModifierQuestionAvecId(divReponse.dataset._id, TypeModifier.REPONSE);
+        //attribuerModalModifierQuestionAvecId(divReponse.dataset._id, TypeModifier.REPONSE);
     }
-    attribuerModalModifierQuestionAvecId(_id, TypeModifier.QUESTION);
+    //attribuerModalModifierQuestionAvecId(_id, TypeModifier.QUESTION);
 }
 
 /**
@@ -173,17 +174,27 @@ function ajouterReponseVisualisateurQuestions(id) {
         "_id" : divQuestion.dataset._id
     }
 
-    
+    const nombreReponse = function() {
+        let idMax = 0;
+        Array.from(divReponses.children).forEach((divReponse) => {
+            const id = parseInt(String(divReponse.dataset._id).split("-")[1]);
+            if (idMax < id) { 
+                idMax = id;
+            }
+        });
+        return idMax+1;
+    };
+    console.log(`nb réponse +1 : ${nombreReponse()}`);
 
     switch (type) {
         case TypeQuestion.CHECK_BOUTON:
         case TypeQuestion.RADIO_BOUTON:
-            info["nombreReponse"] = divReponses.childElementCount;
+            info["nombreReponse"] = nombreReponse(); //divReponses.childElementCount;
             const divReponse = creerReponse(info);
             if (divReponse){
                 divReponses.appendChild(divReponse);
                 identifiantReponse = divReponse.dataset._id;
-                attribuerModalModifierQuestionAvecId(identifiantReponse, TypeModifier.REPONSE);
+                //attribuerModalModifierQuestionAvecId(identifiantReponse, TypeModifier.REPONSE);
             }
             break;
 
@@ -218,17 +229,20 @@ function affichageReponses(divReponses) {
  * @param {int || string} id - l'identifiant de la question / reponse (X ou X-X) 
  */
 function supprierQuestionVisualiseurQuestions(id) {
-    const divQuestion = document.querySelector(`div[data-_id="${id}"]`);
-    let parent;
-    if (String(id).includes("-")) {
-        parent = divQuestion.parentElement;
-    } else {
-        parent = divQuestion.closest("div.box.div-question.div-box").parentElement;
-    }
-
-    parent.removeChild(divQuestion);
-    if (String(id).includes("-") && parent.childElementCount <= 0) {
-        ajouterReponseVisualisateurQuestions(String(id).split("-")[0]);
+    try {
+        const divQuestion = document.querySelector(`div[data-_id="${id}"]`);
+        if (String(id).includes("-")) {
+            const parent = divQuestion.parentElement;
+            divQuestion.remove();
+            if (parent.childElementCount <= 0) {
+                ajouterReponseVisualisateurQuestions(String(id).split("-")[0]);
+            }
+        } else {
+            divQuestion.closest("div.box.div-question.div-box").remove();
+        }
+    } catch (e) {
+        console.error(e);
+        notification(TypeNotification.ERREUR, `Une erreur est survenue lors de la suppression d'une ${String(id).includes("-") ? "réponse." : "question."}`);
     }
 }
 

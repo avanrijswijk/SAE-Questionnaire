@@ -163,6 +163,22 @@ function attribuerModalModifierQuestionAvecId(identifiant, type) {
 
 document.addEventListener("DOMContentLoaded", () => {
     modalModifierQuestion();
+
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
+    
+    if (divVisualiseurQuestions) console.log("ouiiiiiiiiiii");
+    divVisualiseurQuestions.addEventListener("dblclick", (e) => {
+            const divReponse = e.target.closest(".div-reponse");
+            const divQuestion = e.target.closest(".div-question").firstChild;
+            console.log("dbclick");
+            if (divQuestion) {
+                const type = divQuestion.dataset.type;
+                const id = (divReponse) ? divReponse.dataset._id : divQuestion.dataset._id;
+                console.log(id);
+
+                ouvrireModalModifierQuestion(id, type);
+            }
+    });
 });
 
 export {

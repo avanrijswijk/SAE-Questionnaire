@@ -21,7 +21,7 @@ function ajouterReponseVisualiseurQuestionnaire(idReponse, type) {
     if (divReponses) {
         // console.log("je passe ici visualq questonnnaire");
         
-        const divReponse = creerReponse(idReponse, type, divReponses.childElementCount);
+        const divReponse = creerReponse(idReponse, type, parseInt(String(idReponse).split("-")[1]));
         // console.log(divReponse);
         if (divReponse) divReponses.appendChild(divReponse);
     }
@@ -96,6 +96,7 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
     divConteneur.classList.add("block");
     divConteneur.style.padding = "5px";
     divConteneur.style.borderRadius = "8px";
+    divConteneur.style.transition = "background-color 0.9s ease-in-out";
     divConteneur.dataset._id = _id;
     divLibelle.classList.add("is-flex", "is-flex-direction-row");
     titreQuestion.classList.add("title", "is-4", "has-text-weight-semibold");
@@ -135,7 +136,7 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
 
 function supprimerQuestionVisualiseurQuestionnaire(id) {
     
-    
+    console.warn("Faire la modification de la suppression d'une question/réponse dans le visualisateur de questionnaire");
     if (String(id).includes("-")) {
         const spanReponse = document.querySelector(`span[data-_id="${id}"]`);
         if (!spanReponse) return;
