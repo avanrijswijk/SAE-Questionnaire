@@ -37,14 +37,19 @@
                 </tr>
             </thead>
             <tbody>
+                <?php date_default_timezone_set('Europe/Paris'); ?>
                 <?php foreach ($questionnaires as $questionnaire): ?> 
                     <?php 
-                        $date = isset($questionnaire['date_expiration']) ? $questionnaire['date_expiration'] : "";   
+                        $dateBrute = isset($questionnaire['date_expiration']) ? $questionnaire['date_expiration'] : "";
+                        $tempsUnix = strtotime($dateBrute);
+
+                        $date = date("d/m/Y", $tempsUnix);
+                        $nbJoursRestant = round(($tempsUnix - strtotime("now")) / 86400, 0);
                     ?>
                     <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';">
                         <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
                         <td><?php echo htmlspecialchars($questionnaire['id_createur']); ?></td>
-                        <td><?php echo htmlspecialchars($questionnaire['date_expiration']); ?></td> 
+                        <td title="<?php echo htmlspecialchars($date) ?>" style="<?php if ($nbJoursRestant < 7) echo "color : red;" ?>"><?php echo htmlspecialchars($nbJoursRestant); ?> jours restant</td> 
                     </tr>
                 <?php endforeach; ?>
             </tbody>
