@@ -136,25 +136,25 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
 
 function supprimerQuestionVisualiseurQuestionnaire(id) {
     
-    console.warn("Faire la modification de la suppression d'une question/réponse dans le visualisateur de questionnaire");
+    // console.warn("Faire la modification de la suppression d'une question/réponse dans le visualisateur de questionnaire");
     if (String(id).includes("-")) {
         const spanReponse = document.querySelector(`span[data-_id="${id}"]`);
+        
         if (!spanReponse) return;
-        const labelReponse = spanReponse.parentElement;
+        const labelReponse = spanReponse.closest("label");
         if (!labelReponse) return;
         const type = spanReponse.dataset.type;
         const parent = labelReponse.parentElement;
+        labelReponse.remove();
 
-        parent.removeChild(labelReponse);
         if (parent.childElementCount <= 0) {
             console.log(parent.childElementCount);
             ajouterReponseVisualiseurQuestionnaire(id, type);
+            modifierQuestionVisualiseurQuestionnaire(id, "Réponse 1");
         }
     } else{
         const divQuestion = document.querySelector(`div.block[data-_id="${id}"]`);
-        const parent = divQuestion.parentElement;
-
-        parent.removeChild(divQuestion);
+        divQuestion.remove();
     }
 }
 

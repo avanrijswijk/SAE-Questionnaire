@@ -82,11 +82,11 @@ function attribuerContexteMenu(divQuestion, type) {
         
         const elementSelectionne = event.target;
         identifiant = identifierElement(elementSelectionne);
-        console.log("----------------------------");
-        console.log(elementSelectionne);
-        console.log(elementSelectionne.parentElement);
-        console.log(identifiant);
-        console.log("----------------------------");
+        // console.log("----------------------------");
+        // console.log(elementSelectionne);
+        // console.log(elementSelectionne.parentElement);
+        // console.log(identifiant);
+        // console.log("----------------------------");
 
         const menuItemAjouterReponse = document.getElementById("menu-item-ajouter-reponse");
         switch (type) {

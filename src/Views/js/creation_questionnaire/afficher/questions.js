@@ -152,16 +152,18 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
 /**
  * Ajout une réponse à une question dans le visualisateur de questions
  * @param {int || string} id - l'identifiant de la question (X)
+ * @param {number} [idReponse=-1] - l'identifiant de la réponse (X) s'il en faut une spécifique. id auto sinon
  * @returns {int} - l'identifiant de la réponse. -1 si un probleme est survenu
  */
-function ajouterReponseVisualisateurQuestions(id) {
+function ajouterReponseVisualisateurQuestions(id, idReponse=-1) {
     const divQuestion = document.querySelector(`div[data-_id="${id}"]`)
                                 .closest("div.box.div-question.div-box")
                                 .firstChild;
     const divReponses = document.querySelector(`div[data-_id="${id}"]`)
                                 .closest("div.box.div-question.div-box")
                                 .querySelector("div.div-reponses");
-    let identifiantReponse = -1;
+
+    let identifiantReponse = idReponse;
     
     if (!divReponses) return identifiantReponse;
 
@@ -193,7 +195,12 @@ function ajouterReponseVisualisateurQuestions(id) {
             const divReponse = creerReponse(info);
             if (divReponse){
                 divReponses.appendChild(divReponse);
-                identifiantReponse = divReponse.dataset._id;
+                if (identifiantReponse > 0) {
+                    divReponse.dataset._id = `${id}-${identifiantReponse}`;
+                } else {
+                    identifiantReponse = divReponse.dataset._id;
+                }
+                
                 //attribuerModalModifierQuestionAvecId(identifiantReponse, TypeModifier.REPONSE);
             }
             break;
@@ -235,7 +242,8 @@ function supprierQuestionVisualiseurQuestions(id) {
             const parent = divQuestion.parentElement;
             divQuestion.remove();
             if (parent.childElementCount <= 0) {
-                ajouterReponseVisualisateurQuestions(String(id).split("-")[0]);
+                ajouterReponseVisualisateurQuestions(String(id).split("-")[0], String(id).split("-")[1]);
+                modifierQuestionVisualiseurQuestions(id, "Réponse 1");
             }
         } else {
             divQuestion.closest("div.box.div-question.div-box").remove();

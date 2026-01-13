@@ -153,7 +153,6 @@ function attribuerModalModifierQuestionAvaecConteneur(conteneur, type) {
  * @param {TypeModifier} type - le type de comptenu qui sera modifié
  */
 function attribuerModalModifierQuestionAvecId(identifiant, type) {
-    console.log("JE PASSE !!!");
     const divConteneur = donnerQuestionAvecIdVisualiseurQuestions(identifiant); // peut etre un divQuestion ou un divReponse
     if (!divConteneur){console.error("Le conteneur est null pour l'attribution du listener");}
     divConteneur.addEventListener("dblclick", () => {
@@ -165,12 +164,10 @@ document.addEventListener("DOMContentLoaded", () => {
     modalModifierQuestion();
 
     const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
-    
-    if (divVisualiseurQuestions) console.log("ouiiiiiiiiiii");
+
     divVisualiseurQuestions.addEventListener("dblclick", (e) => {
             const divReponse = e.target.closest(".div-reponse");
             const divQuestion = e.target.closest(".div-question").firstChild;
-            console.log("dbclick");
             if (divQuestion) {
                 const type = divQuestion.dataset.type;
                 const id = (divReponse) ? divReponse.dataset._id : divQuestion.dataset._id;
