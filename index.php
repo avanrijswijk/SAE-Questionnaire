@@ -37,7 +37,7 @@ use App\Controllers\AcceptesController;
 require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'header.php');
 
 // routage simple (normaliser en minuscules)
-$controller = isset($_GET['c'])? strtolower($_GET['c']) : 'connexion';
+$controller = isset($_GET['c'])? strtolower($_GET['c']) : 'home';
 $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
 
 
@@ -45,6 +45,10 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
 
         case 'home':
             require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'homeController.php');
+            break;
+
+        case 'profil':
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'profil.php');
             break;
 
         case 'questionnaire':

@@ -3,12 +3,21 @@ header#header {
     padding-bottom: 40px;
 }
 
+/* Ensure header stays above page content */
+header#header {
+    position: relative;
+    z-index: 9999;
+}
+
 header#header > div#div-header {
     background: #D72222;
-    padding: 30px;
+    padding: 15px;
     border-bottom-left-radius: 100px;
     border-bottom-right-radius: 100px;
-    max-height: 30px;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1000;
 }
 
 header#header > div#div-header > a > img#img-accueil {
@@ -18,12 +27,49 @@ header#header > div#div-header > a > img#img-accueil {
     left: 50px;
 }
 
+/* Keep the home icon above the red band and other content */
+header#header > div#div-header > a > img#img-accueil {
+    z-index: 11000;
+}
+
+.header-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropdown .button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    box-shadow: none;
+}
+
+.dropdown .button:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.dropdown .caret {
+    margin-left: 8px;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.dropdown .dropdown-menu .dropdown-content .dropdown-item {
+    color: #333;
+}
+
 header#header > img#img-header {
     width: 7%;
     max-width: 75px;
     position: absolute;
     top: 10px;
     right: 20px;
+}
+
+/* Ensure Unilim logo is on top */
+header#header > img#img-header {
+    z-index: 12000;
 }
 
 @media screen and (max-width: 900px) {
