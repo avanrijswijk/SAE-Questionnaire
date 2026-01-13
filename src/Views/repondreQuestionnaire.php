@@ -22,7 +22,7 @@ $auteur = isset($questionnaire['id_createur']) ? htmlspecialchars($questionnaire
         <?php if (empty($questions)): ?>
             <p>Aucune question pour ce questionnaire.</p>
         <?php else: ?>
-            <form method="post" action="">
+            <form method="post" action="?c=questionnaire&a=enregistrerReponses">
                 <?php foreach ($questions as $index => $q): ?>
                     <?php
                         $intitule = isset($q['intitule']) ? htmlspecialchars($q['intitule']) : 'Question sans texte';
