@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(form){
         form.addEventListener('submit', (e) => {
-            //e.preventDefault();
+            // e.preventDefault();
 
             hide(submitModal);
 
@@ -79,27 +79,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (cle === "id_questionnaire") {
                     data.push({
                         "type" : cle,
-                        "id" : valeur,
+                        "id_choix" : valeur,
                         "reponse" : valeur
                     });
                 } else {
                     data.push({
                         "type" : cle.split("-")[0],
-                        "id" : cle.split("-")[1] ?? cle.split("-")[0],
+                        "id_choix" : cle.split("-")[1] ?? cle.split("-")[0],
                         "reponse" : valeur
                     });
                 }
             });
 
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'json_reponses';
+            const hiddenInput = form.querySelector('input[type=hidden][name=json_reponses]') ?? document.createElement('input');
+            if (!hiddenInput.type) {
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'json_reponses';
+                form.appendChild(hiddenInput);
+            }
+            
             hiddenInput.value = JSON.stringify(data);
 
             // console.log("Données brutes :", Object.fromEntries(formData));
             // console.log("Données ordonnées :", data);
 
-            form.appendChild(hiddenInput);
+            
         });
     }
 
