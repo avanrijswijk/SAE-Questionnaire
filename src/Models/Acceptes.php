@@ -132,4 +132,17 @@ class Acceptes {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['count'];
     }
+
+    public function repondre($id_utilisateur, $id_questionnaire) {
+        $query = "UPDATE acceptes 
+                  SET repondu = 1
+                  WHERE id_utilisateur = :id_utilisateur AND id_questionnaire = :id_questionnaire";
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+
+        $stmt->execute();
+    }
 }

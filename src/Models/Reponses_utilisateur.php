@@ -47,16 +47,14 @@ class Reponses_utilisateur {
     public function createReponse($id_utilisateur, $id_choix, $reponse) {
         $query = "INSERT INTO reponses_utilisateur (id_utilisateur, id_choix, reponse) 
         VALUES (:id_utilisateur, :id_choix, :reponse)";
-
+       
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':id_utilisateur', $id_utilisateur);
         $stmt->bindParam(':id_choix', $id_choix);
         $stmt->bindParam(':reponse', $reponse);
 
-        $stmt->execute();
-
-        return $this->conn->lastInsertId();
+        return $stmt->execute();
     }
 
     public function delete($id_utilisateur, $id_choix) {
