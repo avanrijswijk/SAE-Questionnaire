@@ -6,7 +6,6 @@ header#header {
 /* Ensure header stays above page content */
 header#header {
     position: relative;
-    z-index: 9999;
 }
 
 header#header > div#div-header {
@@ -17,7 +16,6 @@ header#header > div#div-header {
     align-items: center;
     justify-content: center;
     position: relative;
-    z-index: 1000;
 }
 
 header#header > div#div-header > a > img#img-accueil {
@@ -27,10 +25,6 @@ header#header > div#div-header > a > img#img-accueil {
     left: 50px;
 }
 
-/* Keep the home icon above the red band and other content */
-header#header > div#div-header > a > img#img-accueil {
-    z-index: 11000;
-}
 
 .header-center {
     display: flex;
@@ -67,10 +61,6 @@ header#header > img#img-header {
     right: 20px;
 }
 
-/* Ensure Unilim logo is on top */
-header#header > img#img-header {
-    z-index: 12000;
-}
 
 @media screen and (max-width: 900px) {
     header#header > img#img-header {
