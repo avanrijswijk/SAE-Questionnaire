@@ -13,18 +13,33 @@ import { notification, TypeNotification } from '../../notification/notification.
  */
 function listerQuestions() {
     const divQuestions = document.getElementById("visualiseur-questions");
-    if (divQuestions == null) {
-        return [];
+    const questions = [];
+
+    if (!divQuestions) {
+        return questions;
     }
-    const questions = []
-    for (let index = 0; index < divQuestions.children.length; index++) {
+
+    for (let index = 0; index < divQuestions.childElementCount; index++) {
         const divQuestion = divQuestions.children[index];
-        questions.push({
+        const divReponses = divQuestion.querySelector("div.div-reponses");
+
+        const data = {
             "intitule" : divQuestion.dataset.intitule,
             "type" : divQuestion.dataset.type,
             "position" : index+1,
-            "est_obligatoire" : divQuestion.dataset.intitule
-        });
+            "est_obligatoire" : divQuestion.dataset.obligatoire,
+            "choix" : []
+        };
+
+        if (divReponses) {
+            divReponses.childNodes.forEach((divReponse) => {
+                data["choix"].push(divReponse.dataset.intitule);
+            });
+        } else {
+            data["choix"].push(null);
+        }
+
+        questions.push(data);
     }
     return questions
 }
@@ -58,7 +73,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         position : int
         est_obligatoire : bool
         */
-        //console.log(listerQuestions());
+        console.log(listerQuestions());
         const listeQuestions = document.createElement('input');
         const jsonQuestions = listerQuestions();
         if (jsonQuestions.length === 0) {
@@ -68,7 +83,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.type = "hidden";
         listeQuestions.name = "liste-questions";
         listeQuestions.value = JSON.stringify(jsonQuestions);
-
+        
         formMVQ.appendChild(listeQuestions);
     });
 

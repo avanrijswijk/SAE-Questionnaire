@@ -6,13 +6,13 @@
         </button>
         <div id="dialog-code" class="modal">
             <div class="modal-background"></div>
-            <form id="form-enregistrer" class="modal-card">
+            <form id="form-enregistrer" class="modal-card" action="">
                 <section class="modal-card-body" style="border-radius: 15px;">
                     <button id="bouton-fermer" class="delete" aria-label="close" style="position: absolute; right:10px; top: 10px;"></button>
                     <div class="field">
                         <label class="label">Code du questionnaires :</label>
                         <div class="control">
-                            <input class="input" type="text" placeholder="par exemple XXXXXX" required>
+                            <input class="input" name="code" type="text" placeholder="par exemple XXXX" minlength="4" maxlength="4" pattern="[A-Za-z]{4}" required>
                         </div>
                     </div>
                     <button type="submit" class="button" id="bouton-valider">

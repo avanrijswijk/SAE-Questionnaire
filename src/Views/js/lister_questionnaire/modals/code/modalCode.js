@@ -10,10 +10,16 @@ const ouvrirModal = (modal) => {
 document.addEventListener("DOMContentLoaded", async () => {
     // ---------- pour ouvrire le modal de validation de questionnaire (MVQ) ----------
     const modalCode = document.getElementById("dialog-code");
+    const form = document.getElementById("form-enregistrer");
     const boutonJAiUnCode = document.getElementById("bouton-code");
+    const inputCode = form.querySelector("input");
     
-    // const form = document.getElementById("form-enregistrer");
     const boutonFermer = document.getElementById("bouton-fermer");
+
+    inputCode.addEventListener('input', function() {
+    // On remplace tout ce qui n'est PAS une lettre ou un espace par vide
+    this.value = String(this.value.replace(/[^a-zA-Z\s]|\s/g, '')).toUpperCase();
+});
 
     boutonJAiUnCode.addEventListener("click", () => {
         ouvrirModal(modalCode);
