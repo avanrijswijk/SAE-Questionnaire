@@ -51,7 +51,7 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
                         }
                     }
                     break;
-                case 'enregistrerReponses' :
+                case 'enregistrer-reponses' :
                     $reponses_utilisateurController->enregistrer();
                     break;
                 case 'repondre':

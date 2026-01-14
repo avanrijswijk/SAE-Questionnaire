@@ -67,43 +67,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(form){
         form.addEventListener('submit', (e) => {
-            // e.preventDefault();
+            //e.preventDefault();
 
             hide(submitModal);
 
-            const formData = new FormData(form);
+            // const formData = new FormData(form);
 
-            const data = [];
+            // const data = [];
 
-            formData.forEach((valeur, cle) => {
-                if (cle === "id_questionnaire") {
-                    data.push({
-                        "type" : cle,
-                        "id_choix" : valeur,
-                        "reponse" : valeur
-                    });
-                } else {
-                    data.push({
-                        "type" : cle.split("-")[0],
-                        "id_choix" : cle.split("-")[1] ?? cle.split("-")[0],
-                        "reponse" : valeur
-                    });
-                }
-            });
+            // formData.forEach((valeur, cle) => {
+            //     // if (cle === "id_questionnaire") {
+            //     //     data.push({
+            //     //         "type" : cle,
+            //     //         "id_choix" : valeur,
+            //     //         "reponse" : valeur
+            //     //     });
+            //     // } else {
+            //     //     data.push({
+            //     //         "type" : cle.split("-")[0],
+            //     //         "id_choix" : cle.split("-")[1] ?? cle.split("-")[0],
+            //     //         "reponse" : valeur
+            //     //     });
+            //     // }
+            //     entree.name = String(entree.name).split("-")[1];
+            // });
 
-            const hiddenInput = form.querySelector('input[type=hidden][name=json_reponses]') ?? document.createElement('input');
-            if (!hiddenInput.type) {
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'json_reponses';
-                form.appendChild(hiddenInput);
-            }
+            // const hiddenInput = form.querySelector('input[type=hidden][name=json_reponses]') ?? document.createElement('input');
+            // if (!hiddenInput.type) {
+            //     hiddenInput.type = 'hidden';
+            //     hiddenInput.name = 'json_reponses';
+            //     form.appendChild(hiddenInput);
+            // }
             
-            hiddenInput.value = JSON.stringify(data);
+            // hiddenInput.value = JSON.stringify(data);
 
             // console.log("Données brutes :", Object.fromEntries(formData));
             // console.log("Données ordonnées :", data);
 
-            
+            form.querySelectorAll('input, select, textarea').forEach(entree => {
+                if (entree.name && entree.name.includes('-')) entree.name = String(entree.name).split("-")[1];
+            });
+            /**
+             * sous la forme :
+             * id-choix -> réponse
+             */
+
         });
     }
 

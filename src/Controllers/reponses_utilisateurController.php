@@ -14,6 +14,12 @@ class Reponses_utilisateurController {
     }
 
     public function enregistrer() {
+        // Partie de test
+        foreach ($_POST as $id => $valeur) {
+            echo "$id -> $valeur <br>";
+        }
+        return;
+
         $id_utilisateur = isset($_SESSION['id_utilisateur']) ? $_SESSION['id_utilisateur'] : null;
         if (isset($_POST['liste-reponses'])) {
             $jsonreponse = json_decode($_POST['liste-reponses'], true);
