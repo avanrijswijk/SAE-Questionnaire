@@ -1,12 +1,33 @@
 <?php
 
-//include_once 'auth.php';
-//session_start();
-//$_SESSION['id_utilisateur'] = 112101; // utilisateur test en attendant la possibilité de gérer les utilisateurs
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Liste des domaines considérés comme "local"
+$whitelist_local = array(
+    '127.0.0.1',
+    '::1',
+    'localhost'
+);
+
+if (in_array($_SERVER['SERVER_NAME'], $whitelist_local)) {
+    // --- MODE LOCAL ---
+    // On simule un utilisateur connecté
+    if (!isset($_SESSION['cas_user'])) {
+        $_SESSION['cas_user'] = 'etudiant_local';
+        $_SESSION['cas_prenom'] = 'Jean'; 
+        $_SESSION['cas_nom'] = 'Dupont'; 
+        $_SESSION['cas_groupes'] = ['etudiant', 'info'];
+    }
+} else {
+    // --- MODE SERVEUR (IUT) ---
+    // Activation de la sécurité CAS
+    require_once 'config.php';
+}
 
 require 'vendor/autoload.php';
 require_once(__DIR__.DIRECTORY_SEPARATOR.'bootstrap.php');
-echo $user;
 
 use App\Controllers\QuestionnaireController;
 use App\Controllers\AcceptesController;
@@ -18,7 +39,7 @@ use App\Controllers\Reponses_utilisateurController;
 require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'header.php');
 
 // routage simple (normaliser en minuscules)
-$controller = isset($_GET['c'])? strtolower($_GET['c']) : 'connexion';
+$controller = isset($_GET['c'])? strtolower($_GET['c']) : 'home';
 $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
 
 
@@ -26,6 +47,10 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
 
         case 'home':
             require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'homeController.php');
+            break;
+
+        case 'profil':
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'profil.php');
             break;
 
         case 'questionnaire':
