@@ -106,11 +106,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             "_id" : _id
         };
 
-        console.log("------ Ajout d'une question ------");
-        console.log("Libellé de question :", libelleQuestion);
-        console.log("Type de question :", typeQuestion);
-        console.log("Question obligatoire :", estObligatoire);
-        console.log("----------------------------------");
+        // console.log("------ Ajout d'une question ------");
+        // console.log("Libellé de question :", libelleQuestion);
+        // console.log("Type de question :", typeQuestion);
+        // console.log("Question obligatoire :", estObligatoire);
+        // console.log("----------------------------------");
 
         ajouterQuestionVisualiseurQuestions(divVisualiseurQuestions, informations);
         ajouterQuestionVisualiseurQuestionnaire(divVisualiseurQuestionnaire, informations);

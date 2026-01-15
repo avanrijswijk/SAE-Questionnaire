@@ -46,10 +46,10 @@
               </div>
             </div>
           </div>
-
         </div>
         <img id="img-header" 
-             src="./src/Views/img/unilim.png" 
-             alt="logo unilim"
-             style="cursor: default;">
+            src="./src/Views/img/unilim.png" 
+            alt="logo unilim"
+            style="cursor: default;">
+        
     </header>

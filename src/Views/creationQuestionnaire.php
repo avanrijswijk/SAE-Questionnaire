@@ -1,7 +1,19 @@
 <main class="is-flex is-flex-direction-row" style="max-height: 100vh;">
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/fermerQuestionnaire/modalFermer.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/ajoutQuestion/modalAjouter.js"></script>
+    <script type="module" src="./src/Views/js/creation_questionnaire/modals/modificationQuestion/modalModifier.js"></script>
     <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
+        <div id="context-menu">
+            <ul class="menu">
+                <li class="menu-item" id="menu-item-afficher">Afficher</li>
+                <li class="menu-separator"></li>
+                <li class="menu-item" id="menu-item-ajouter-reponse">Ajouter une réponse</li>
+                <li class="menu-item" id="menu-item-modifier">Modifier</li>
+                <li class="menu-separator"></li>
+                <li class="menu-item" id="menu-item-supprimer">Supprimer</li>
+            </ul>
+        </div>
+        <script type="module" src="./src/Views/js/creation_questionnaire/contextMenu/contextMenu.js"></script>
         <div style="background-color: #F5A320;border-radius: 0 0 100px 0;">
             <button type="button" id="ajouter-question">
                 <h3 class="title is-4 m-1 p-2">+ Ajouter une question</h3>
@@ -27,7 +39,7 @@
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="champs-libre" id="radio-champs-libre" checked required>
                                 Champs libre
-                            </label><!--
+                            </label>
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="radio-box" id="radio-radio-box">
                                 Radio box
@@ -35,7 +47,7 @@
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="check-box" id="radio-check-box">
                                 Check box
-                            </label>
+                            </label><!--
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="select-bar" id="radio-select-bar">
                                 Liste déroulante
@@ -145,7 +157,7 @@
             <h3 class="title is-4 mt-3 p-4">FINIR</h3>
         </button>
     </div>
-    <div style="background-color: #B5C6E6; width:100%"  class="is-flex is-justify-content-center"> <!-- enlever  is-align-items-center ; mettre un  -->
+    <div style="background-color: #B5C6E6; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center"> <!-- enlever  is-align-items-center ; mettre un  -->
         <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-qestionnaire">
             <!--<div class="block">
                 <h4 class="title is-4 has-text-weight-semibold">Titre de la question</h4>
