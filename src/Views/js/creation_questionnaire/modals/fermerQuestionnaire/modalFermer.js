@@ -21,8 +21,9 @@ function listerQuestions() {
     }
 
     for (let index = 0; index < divQuestions.childElementCount; index++) {
-        const divQuestion = divQuestions.children[index];
-        const divReponses = divQuestion.querySelector("div.div-reponses");
+        const divConteneur = divQuestions.children[index];
+        const divQuestion = divConteneur.firstChild;
+        const divReponses = divConteneur.querySelector("div.div-reponses");
 
         const data = {
             "intitule" : divQuestion.dataset.intitule,
