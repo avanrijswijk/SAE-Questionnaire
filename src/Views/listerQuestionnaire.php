@@ -44,14 +44,21 @@
                         $tempsUnix = strtotime($dateBrute);
 
                         $date = date("d/m/Y", $tempsUnix);
-                        $nbJoursRestant = round(($tempsUnix - strtotime("now")) / 86400, 0);
+                        $difference = $tempsUnix - strtotime("now");
+                        $nbJoursRestant = round($difference / 86400, 0);
+                        $nbHeureRestant = round(($difference / 3600), 0);
                     ?>
                     <?php if ($nbJoursRestant > 0) : ?>
+                    <?php //if (1 == 1) : ?>
                         <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';">
                             <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
                             <td><?php echo htmlspecialchars($questionnaire['id_createur']); ?></td>
-                            <td title="<?php echo htmlspecialchars($date) ?>" style="<?php if ($nbJoursRestant < 7) echo "color : red;" ?>"><?php echo htmlspecialchars($nbJoursRestant); ?> jours restant</td> 
-                        </tr>
+                            <?php if ($nbJoursRestant <= 0) : ?>
+                                <td title="<?php echo htmlspecialchars($date) ?>" style="color : red;"><?php echo htmlspecialchars($nbHeureRestant); ?> heures restant</td> 
+                            <?php else : ?>
+                                <td title="<?php echo htmlspecialchars($date) ?>" style="<?php if ($nbJoursRestant < 7) echo "color : red;" ?>"><?php echo htmlspecialchars($nbJoursRestant); ?> jours restant</td> 
+                            <?php endif ?>
+                            </tr>
                     <?php endif ?>
                 <?php endforeach; ?>
             </tbody>
