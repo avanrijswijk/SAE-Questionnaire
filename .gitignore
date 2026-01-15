@@ -8,6 +8,8 @@ composer.phar
 
 # Fichiers de configuration sensibles (Identifiants BDD)
 .env
+.env.local
+.env.production
 config.php
 
 # Fichiers système et IDE
@@ -24,3 +26,7 @@ Thumbs.db
 # fichier perso
 /src/Views/js/creation_questionnaire/*.txt
 /src/Views/js/repondre_questionnaire/*.txt
+
+# accès à l'https
+.htaccess
+

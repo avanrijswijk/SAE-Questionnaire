@@ -1,0 +1,99 @@
+<?php
+
+// config.php - Version Manuelle avec Attributs
+// Adapter selon vos besoins
+
+ob_start(); // Empêche les erreurs de headers
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Gestion de session sécurisée
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_secure', 0);
+    ini_set('session.cookie_httponly', 1);
+    session_start();
+}
+
+// --- CONFIGURATION CAS ---
+$cas_host = 'cas.unilim.fr';
+$cas_port = 443;
+$cas_context = '/cas';
+
+// --- DÉTECTION URL ---
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+$current_url = $protocol . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+// Nettoyage de l'URL pour enlever le ticket
+$service_url = preg_replace('/([?&])ticket=[^&]+(&|$)/', '$1', $current_url);
+$service_url = rtrim($service_url, '?&');
+
+// --- LOGIQUE D'AUTHENTIFICATION ---
+
+// 1. Déjà connecté ? On ne fait rien.
+if (isset($_SESSION['cas_user'])) {
+    return;
+}
+
+// 2. Retour du CAS avec un ticket ?
+if (isset($_GET['ticket'])) {
+    $ticket = $_GET['ticket'];
+    $validate_url = "https://$cas_host:$cas_port$cas_context/serviceValidate?service=" . urlencode($service_url) . "&ticket=" . $ticket;
+
+    // Requête cURL
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $validate_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    // --- ANALYSE XML (C'est ici que tout change) ---
+    // On charge la réponse XML
+    $xml = simplexml_load_string($response);
+    
+    // Le XML du CAS utilise des namespaces (cas:user, cas:attributes...)
+    // On doit dire à PHP de regarder dans le namespace "cas"
+    $cas_namespace = $xml->children('http://www.yale.edu/tp/cas');
+
+    if (isset($cas_namespace->authenticationSuccess)) {
+        $success = $cas_namespace->authenticationSuccess;
+        
+        // 1. Récupération du login
+        $_SESSION['cas_user'] = (string)$success->user;
+
+        // 2. Récupération des attributs
+        if (isset($success->attributes)) {
+            $attrs = $success->attributes->children('http://www.yale.edu/tp/cas'); // Parfois nécessaire de répéter le namespace
+
+            // Si les attributs ne sont pas dans un namespace enfant, on essaie directement
+            if (count($attrs) == 0) {
+                 $attrs = $success->attributes->children();
+            }
+            
+            // Stockage dans la session
+            $_SESSION['cas_prenom'] = isset($attrs->givenName) ? (string)$attrs->givenName : '';
+            $_SESSION['cas_nom']    = isset($attrs->sn) ? (string)$attrs->sn : '';
+            
+            // Gestion des groupes (memberOf peut être unique ou multiple)
+            if (isset($attrs->memberOf)) {
+                // On convertit en tableau pour être sûr
+                $_SESSION['cas_groupes'] = json_decode(json_encode($attrs->memberOf), true);
+            } else {
+                $_SESSION['cas_groupes'] = [];
+            }
+        }
+
+        // Redirection propre
+        header("Location: " . $service_url, true, 303);
+        exit();
+    } else {
+        die("Erreur CAS : Authentification échouée.");
+    }
+} 
+// 3. Pas connecté -> Redirection vers le login
+else {
+    $login_url = "https://$cas_host:$cas_port$cas_context/login?service=" . urlencode($service_url);
+    header("Location: $login_url");
+    exit();
+}
+?>

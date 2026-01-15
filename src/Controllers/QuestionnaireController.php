@@ -46,14 +46,16 @@ class QuestionnaireController {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'repondreQuestionnaire.php');
     }
 
-
     public function ajouterQuestionnaire() {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'creationQuestionnaire.php');
     }
 
     public function listerQuestionnaires() {
-        $questionnaires = $this->questionnaireModel->getAllQuestionnaires();
-
+        if (!isset($_SESSION['id_utilisateur'])) {
+            $questionnaires = $this->questionnaireModel->getAllQuestionnaires();
+        } else {
+            $questionnaires = $this->questionnaireModel->getQuestionnairesByUserId($_SESSION['id_utilisateur']);
+        }
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'listerQuestionnaire.php');
     }
 
