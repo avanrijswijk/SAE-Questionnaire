@@ -84,26 +84,4 @@ class Reponses_utilisateur {
         return $this->conn->lastInsertId();
     }
 
-    public function exportToCSV() {
-    // Nom du fichier
-    $filename = "export_" . date("Y-m-d_H-i-s") . ".csv";
-
-    // En-têtes HTTP pour forcer le téléchargement
-    header("Content-Type: text/csv; charset=utf-8");
-    header("Content-Disposition: attachment; filename=$filename");
-
-    // Ouvre la sortie standard comme un fichier
-    $output = fopen("php://output", "w");
-
-    // Écrit la ligne d’en-têtes
-    fputcsv($output, array_keys($data[0]), ';');
-
-    // Écrit les données
-    foreach ($data as $row) {
-        fputcsv($output, $row, ';');
-    }
-
-    fclose($output);
-    exit;
-    }
 }
