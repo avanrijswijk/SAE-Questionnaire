@@ -42,21 +42,23 @@ class Question {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function createQuestion($id_questionnaire, $intitule, $id_type, $position, $est_obligatoire) {
-        $query = "INSERT INTO questions (id_questionnaire, intitule, id_type, position, est_obligatoire) 
-        VALUES (:id_questionnaire, :intitule, :id_type, :position, :est_obligatoire)";
-
+    public function createQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire) {
+        $query = "INSERT INTO questions (id_questionnaire, intitule, type, position, est_obligatoire) 
+        VALUES (:id_questionnaire, :intitule, :type, :position, :est_obligatoire)";
+        $lastInsertId = $this->conn->lastInsertId();
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':id_questionnaire', $id_questionnaire);
         $stmt->bindParam(':intitule', $intitule);
-        $stmt->bindParam(':id_type', $id_type);
+        $stmt->bindParam(':type', $type);
         $stmt->bindParam(':position', $position);
         $stmt->bindParam(':est_obligatoire', $est_obligatoire);
 
         $stmt->execute();
-
-        return $this->conn->lastInsertId();
+        if ($lastInsertId != $this->conn->lastInsertId()) {
+            return true;
+        }
+        return false;
     }
 
     public function update($id, $intitule, $id_type, $position, $est_obligatoire) {
@@ -85,5 +87,8 @@ class Question {
         return $stmt->rowCount() > 0;
     }    
 
+public function getLastInsertId() {
+        return $this->conn->lastInsertId();
+    }
 
 }

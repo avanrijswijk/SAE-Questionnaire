@@ -21,9 +21,8 @@ function listerQuestions() {
     }
 
     for (let index = 0; index < divQuestions.childElementCount; index++) {
-        const divConteneur = divQuestions.children[index];
-        const divQuestion = divConteneur.firstChild;
-        const divReponses = divConteneur.querySelector("div.div-reponses");
+        const divQuestion = divQuestions.children[index];
+        const divReponses = divQuestion.querySelector("div.div-reponses");
 
         const data = {
             "intitule" : divQuestion.dataset.intitule,
@@ -35,8 +34,10 @@ function listerQuestions() {
 
         if (divReponses) {
             divReponses.childNodes.forEach((divReponse) => {
-                data["reponses"].push(divReponse.dataset.intitule);
+                data["choix"].push(divReponse.dataset.intitule);
             });
+        } else {
+            data["choix"].push(null);
         }
 
         questions.push(data);
@@ -74,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         est_obligatoire : bool
         choix : [str]
         */
-        //console.log(listerQuestions());
+        console.log(listerQuestions());
         const listeQuestions = document.createElement('input');
         const jsonQuestions = listerQuestions();
         if (jsonQuestions.length === 0) {

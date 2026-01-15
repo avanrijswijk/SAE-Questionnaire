@@ -62,6 +62,13 @@ class AcceptesController {
 
         return $questionnaires;
     }
+
+    public function nombreReponduText($id_questionnaire) {
+       $counter = $this->acceptesModel->countRepondu($id_questionnaire);
+       $total = $this->acceptesModel->nombreParticipant($id_questionnaire);
+
+       return $counter . '/' . $total;
+    }
 }
 
     

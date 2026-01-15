@@ -56,7 +56,7 @@ class Questionnaire {
         $stmt->bindParam(':id_createur', $id_createur);
         $stmt->bindParam(':date_expiration', $date_expiration);
         if (is_null($code)) {
-            $code = 'xxxxxx';
+            $code = 'ACDC';
         }
         while ($this->existsCode($code)) {
             // génère un code aléatoire de 4 lettres meme si la colonne 'code' n'est pas limité à 4 en vu de potentielles extentions
@@ -110,4 +110,22 @@ class Questionnaire {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getResults($id_questionnaire) {
+        $query = "SELECT q.intitule ,r.reponse
+                  FROM questionnaire qnaire,
+                  LEFT JOIN questions q ON q.id_questionnaire = qnaire.id
+                  left JOIN reponses r ON r.id_question = q.id
+                  group BY q.id, r.id
+                  ORDER BY q.id, r.id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function lastInsertId() {
+        return $this->conn->lastInsertId();
+    }
+
 }
