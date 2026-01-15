@@ -130,6 +130,43 @@ class QuestionnaireController {
     public function lastInsertId() {
         return $this->questionnaireModel->lastInsertId();
     }
+
+    public function exportToCSV() {
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            http_response_code(400);
+            exit("ID manquant.");
+        }
+
+        $titre = $this->questionnaireModel->getTitreWithTireDuSixByID($id);
+        if (!$titre) {
+            http_response_code(404);
+            exit("Questionnaire introuvable.");
+        }
+
+        $resultats = $this->reponses_utilisateurModel->getReponseByQuestionnaryId($id);
+        if (empty($resultats)) {
+            http_response_code(204); // No content
+            exit;
+        }
+
+        $filename = "export_" . $titre . ".csv";
+
+        header("Content-Type: text/csv; charset=utf-8");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        $output = fopen("php://output", "w");
+        fputcsv($output, array_keys($resultats[0]), ';');
+
+        foreach ($resultats as $row) {
+            fputcsv($output, $row, ';');
+        }
+
+        fclose($output);
+        exit;
+    }
 }
 
     

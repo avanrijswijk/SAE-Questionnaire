@@ -45,8 +45,8 @@ $questionnaires = $questionnaireBDD->getQuestionnaireBy(["id_createur" => 1]);
                                 <td><?php echo $questionnaire["titre"] ?></td>
                                 <td><?php //echo ($acceptesController->nombreReponduText($questionnaire["id"]))?></td> <!-- renvoi rien -->
                                 <td>
-                                    <div class="image is-32x32 ml-1 mr-2" onclick="event.stopPropagation();alert('telechargement ficitif');">
-                                        <img src="./src/Views/img/telecharger-64.png" alt="icon de téléchargement" title="Telecharger">
+                                    <div class="image is-32x32 ml-1 mr-2" onclick="telechargerResultats(<?php echo $questionnaire['id']; ?>)">
+                                        <img src="./src/Views/img/telecharger-64.png" alt="icon de téléchargement" title="Télécharger">
                                     </div>
                                 </td>
                                 <td>

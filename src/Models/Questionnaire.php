@@ -112,14 +112,16 @@ class Questionnaire {
     }
 
     public function getResults($id_questionnaire) {
-        $query = "SELECT q.intitule ,r.reponse
-                  FROM questionnaire qnaire,
-                  LEFT JOIN questions q ON q.id_questionnaire = qnaire.id
-                  left JOIN reponses r ON r.id_question = q.id
-                  group BY q.id, r.id
-                  ORDER BY q.id, r.id";
-
+        $query = "SELECT qt.intitule ,r.reponse
+                  FROM questionnaires qtnaire
+                  where qtnaire.id = :id_questionnaire
+                  LEFT JOIN questions qt ON qt.id_questionnaire = qtnaire.id
+                  left JOIN choix_possible c ON c.id_question = qt.id
+                  left JOIN reponses r ON r.id_choix = c.id
+                  group BY qt.id, r.id
+                  ORDER BY qt.id, r.id";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -128,4 +130,19 @@ class Questionnaire {
         return $this->conn->lastInsertId();
     }
 
+    public function getTitreWithTireDuSixByID($id_questionnaire) {
+        $query = "SELECT titre FROM questionnaires WHERE id = :id_questionnaire";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!isset($result['titre'])) {
+            echo "Questionnaire introuvable.";
+            return;
+        } else {
+            $titre = $result['titre'];
+            $titreDuSix = str_replace(' ', '-', $titre);
+            return $titreDuSix;
+        }
+    }
 }

@@ -69,10 +69,14 @@ class Reponses_utilisateur {
     }    
 
     public function getReponseByQuestionnaryId($id_questionnaire) {
-        $query = "SELECT rep.* FROM questionnaires qtnaire WHERE id = :id_questionnaire
-                  LEFT JOIN questions q ON q.id_questionnaire = qtnaire.id
-                  LEFT JOIN choix_possible c ON c.id_question = q.id
-                  LEFT JOIN reponses_utilisateur rep ON rep.id_choix = c.id";
+        $query = "SELECT qt.intitule, r.reponse
+                FROM questionnaires qtnaire
+                LEFT JOIN questions qt ON qt.id_questionnaire = qtnaire.id
+                LEFT JOIN choix_possible c ON c.id_question = qt.id
+                LEFT JOIN reponses_utilisateur r ON r.id_choix = c.id
+                WHERE qtnaire.id = :id_questionnaire
+                GROUP BY qt.id, r.id
+                ORDER BY qt.id, r.id";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_questionnaire', $id_questionnaire);
@@ -84,26 +88,4 @@ class Reponses_utilisateur {
         return $this->conn->lastInsertId();
     }
 
-    public function exportToCSV() {
-    // Nom du fichier
-    $filename = "export_" . date("Y-m-d_H-i-s") . ".csv";
-
-    // En-têtes HTTP pour forcer le téléchargement
-    header("Content-Type: text/csv; charset=utf-8");
-    header("Content-Disposition: attachment; filename=$filename");
-
-    // Ouvre la sortie standard comme un fichier
-    $output = fopen("php://output", "w");
-
-    // Écrit la ligne d’en-têtes
-    fputcsv($output, array_keys($data[0]), ';');
-
-    // Écrit les données
-    foreach ($data as $row) {
-        fputcsv($output, $row, ';');
-    }
-
-    fclose($output);
-    exit;
-    }
 }
