@@ -71,7 +71,7 @@ class Questionnaire {
 
     public function update($id, $titre, $date_expiration) {
         $query = "UPDATE questionnaires 
-                  SET titre = :titre, date_expiration = :date_expiration,
+                  SET titre = :titre, date_expiration = :date_expiration
                   WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
@@ -112,11 +112,11 @@ class Questionnaire {
     }
 
     public function getResults($id_questionnaire) {
-        $query = "SELECT q.intitule ,r.reponse
-                  FROM questionnaire qnaire,
+        $query = "SELECT q.intitule, r.reponse
+                  FROM questionnaires qnaire
                   LEFT JOIN questions q ON q.id_questionnaire = qnaire.id
-                  left JOIN reponses r ON r.id_question = q.id
-                  group BY q.id, r.id
+                  LEFT JOIN reponses r ON r.id_question = q.id
+                  GROUP BY q.id, r.id
                   ORDER BY q.id, r.id";
 
         $stmt = $this->conn->prepare($query);

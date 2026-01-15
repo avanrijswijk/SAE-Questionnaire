@@ -60,7 +60,8 @@ Class Database
                 $this->conn = new PDO($dsn, $username, $password);
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $exception) {
-                echo 'Erreur de connexion : ' . $exception->getMessage();
+                error_log('Erreur de connexion DB: ' . $exception->getMessage());
+                throw new \RuntimeException('Erreur de connexion à la base de données. Voir logs pour détails.');
             }
         }
 
