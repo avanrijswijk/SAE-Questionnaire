@@ -69,14 +69,13 @@ class Reponses_utilisateur {
     }    
 
     public function getReponseByQuestionnaryId($id_questionnaire) {
-        $query = "SELECT qt.intitule, r.reponse
+        $query = "SELECT r.* 
                 FROM questionnaires qtnaire
-                LEFT JOIN questions qt ON qt.id_questionnaire = qtnaire.id
-                LEFT JOIN choix_possible c ON c.id_question = qt.id
-                LEFT JOIN reponses_utilisateur r ON r.id_choix = c.id
+                JOIN questions qt ON qt.id_questionnaire = qtnaire.id 
+                JOIN choix_possible c ON c.id_question = qt.id
+                JOIN reponses_utilisateur r ON r.id_choix = c.id
                 WHERE qtnaire.id = :id_questionnaire
-                GROUP BY qt.id, r.id
-                ORDER BY qt.id, r.id";
+                ORDER BY r.id_choix, r.id_utilisateur";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_questionnaire', $id_questionnaire);

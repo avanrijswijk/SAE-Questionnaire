@@ -133,6 +133,7 @@ class QuestionnaireController {
 
     public function exportToCSV() {
         $id = $_GET['id'] ?? null;
+
         if (!$id) {
             http_response_code(400);
             exit("ID manquant.");
@@ -149,6 +150,7 @@ class QuestionnaireController {
             http_response_code(204); // No content
             exit;
         }
+        
 
         $filename = "export_" . $titre . ".csv";
 
