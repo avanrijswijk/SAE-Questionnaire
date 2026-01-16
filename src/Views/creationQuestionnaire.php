@@ -142,9 +142,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="field" style="width: 50%;">
-                        <p class="pt-3">Code d'acces au questionnaire : <span><code id="code_acces">XXXXX</code></span></p>  
-                    </div>
                 </section>
                 <footer class="modal-card-foot" style="justify-content: center;">
                     <button type="submit" class="button" id="bouton-validerMVQ">
@@ -167,7 +164,5 @@
             </div>-->
         </div>
     </div>
-    <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;">
-    </div>
-    <script type="module" src="./src/Views/js/creation_questionnaire/notification/notification.js"></script>
+    <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;"></div>
 </main>

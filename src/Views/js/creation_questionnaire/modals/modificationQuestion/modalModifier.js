@@ -2,7 +2,7 @@ import { TypeQuestion } from '../../typeQuestion.js';
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
 import {modifierQuestionVisualiseurQuestions, donnerQuestionAvecIdVisualiseurQuestions, donnerLibelleQuestionAvecIdVisualiseurQuestions} from '../../afficher/questions.js';
 import {modifierQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
-import { notification, TypeNotification } from '../../notification/notification.js';
+import { notification, TypeNotification } from '../../../utils/notification/notification.js';
 
 const NAME_TEXTAREA = "libelle-question";
 let id;

@@ -12,7 +12,18 @@ $auteur = isset($questionnaire['id_createur']) ? htmlspecialchars($questionnaire
 ?>
 <main class="container" style="margin-top: 25px;">
     <script src="./src/Views/js/repondre_questionnaire/modals/modal.js"></script>
-	<?php if ($date_exp): ?><p><strong>Expiration :</strong> <?php echo $date_exp; ?></p><?php endif; ?>
+	<?php if ($date_exp): ?>
+        <?php 
+            $dateBrute = isset($date_exp) ? $date_exp : "";
+            $tempsUnix = strtotime($dateBrute);
+
+            $date = date("d/m/Y", $tempsUnix);
+            $difference = $tempsUnix - strtotime("now");
+            $nbJoursRestant = round($difference / 86400, 0);
+            $nbHeureRestant = round(($difference / 3600), 0);
+        ?>
+        <p title="<?php echo htmlspecialchars($date) ?>"><strong>Expiration :</strong> <?php echo $nbJoursRestant ? $nbJoursRestant . " jours restant" : $nbHeureRestant . " heures restant"; ?></p>
+    <?php endif; ?>
 	<?php if ($code): ?><p><strong>Code :</strong> <?php echo $code; ?></p><?php endif; ?>
     <?php if ($auteur): ?><p><strong>Auteur :</strong> <?php echo $auteur; ?></p><?php endif; ?>
     
@@ -37,23 +48,33 @@ $auteur = isset($questionnaire['id_createur']) ? htmlspecialchars($questionnaire
                             <?php switch ($type):
                                 default:
                                 case "textfield": ?>
-                                    <textarea name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="2" maxlength="1800"></textarea>
+                                    <textarea style="min-height: 50px;" name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="2" maxlength="1800"></textarea>
                                 <?php break; ?>
                                 
                                 <?php case "long_textfield": ?>
-                                    <textarea name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="5" maxlength="6000"></textarea>
+                                    <textarea style="min-height: 50px;" name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="5" maxlength="6000"></textarea>
                                 <?php break ?>
 
                                 <?php case "radio": ?>
                                     <p><em>Choix unique - options non disponibles dans la vue.</em></p>
+                                    <div class="radios is-flex is-flex-direction-row">
+
+                                    </div>
                                 <?php break ?>
 
                                 <?php case "check": ?>
                                     <p><em>Choix multiple - options non disponibles dans la vue.</em></p>
+                                    <div class="checkboxes is-flex is-flex-direction-row">
+
+                                    </div>
                                 <?php break ?>
 
                                 <?php case "select": ?>
                                     <p><em>Liste de selection - options non disponibles dans la vue.</em></p>
+                                <?php break ?>
+
+                                <?php case "context": ?>
+                                    <p><em>Context - options non disponibles dans la vue.</em></p>
                                 <?php break ?>
                             <?php endswitch; ?>
                         </div>

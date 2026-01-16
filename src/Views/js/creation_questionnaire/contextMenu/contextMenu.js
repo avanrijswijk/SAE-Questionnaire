@@ -2,7 +2,7 @@ import { TypeQuestion } from "../typeQuestion.js";
 import { ouvrireModalModifierQuestion, TypeModifier } from "../modals/modificationQuestion/modalModifier.js";
 import { ajouterReponseVisualisateurQuestions, supprierQuestionVisualiseurQuestions } from "../afficher/questions.js";
 import { ajouterReponseVisualiseurQuestionnaire, supprimerQuestionVisualiseurQuestionnaire } from "../afficher/questionnaire.js";
-import { notification, TypeNotification } from "../notification/notification.js";
+import { notification, TypeNotification } from "../../utils/notification/notification.js";
 
 const ID = "context-menu";
 
@@ -10,7 +10,7 @@ const style = new CSSStyleSheet();
 style.replaceSync(`
 
 #${ID} {
-    display: none;
+    display : none;
     position: absolute;
     padding: 5px;
     background-color: #d4d4d4;
@@ -93,7 +93,7 @@ function attribuerContexteMenu(divQuestion, type) {
             case TypeQuestion.CHAMPS_COURT:
             case TypeQuestion.CHAMPS_LONG:
             default:
-                menuItemAjouterReponse.style.display = "none";
+                menuItemAjouterReponse.style.display = "none !important";
                 break;
 
             case TypeQuestion.CHECK_BOUTON:

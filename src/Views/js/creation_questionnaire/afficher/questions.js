@@ -1,7 +1,8 @@
 import { attribuerModalModifierQuestionAvaecConteneur, attribuerModalModifierQuestionAvecId, TypeModifier } from '../modals/modificationQuestion/modalModifier.js';
 import {TypeQuestion} from '../typeQuestion.js';
 import { attribuerContexteMenu } from "../contextMenu/contextMenu.js";
-import { notification, TypeNotification } from '../notification/notification.js';
+//import { notification, TypeNotification } from '../notification/notification.js';
+import { notification, TypeNotification } from "../../utils/notification/notification.js";
 
 const style = new CSSStyleSheet();
 style.replaceSync(`
@@ -80,14 +81,9 @@ function creerQuestion(info) {
  * @returns {HTMLDivElement || null} - un div.div-reponses ou null si aucun type ne correspond
  */
 function creerReponse(info) {
-    //const libelle = info["intitule"];
     const _id = info["_id"];
-    //const obligatoire = info["obligatoire"];
     const type = info["type"];
     const nombreReponse = info["nombreReponse"];
-
-    // const divReponses = document.createElement("div");
-    // divReponses.classList.add("div-reponses");
 
     const divReponse = document.createElement("div");
     divReponse.classList.add("box", "div-box", "div-reponse");
@@ -103,7 +99,6 @@ function creerReponse(info) {
             pReponse.classList.add("is-unselectable", "question");
             
             divReponse.appendChild(pReponse);
-            //divReponses.appendChild(divReponse);
             break;
 
         case TypeQuestion.LISTE_DEROULANTE:
@@ -124,7 +119,7 @@ function creerReponse(info) {
  */
 function ajouterQuestionVisualiseurQuestions(parent, info) {
     const type = info["type"];
-    const _id = info["_id"];
+    //const _id = info["_id"];
 
     // conteneur
     const divConteneur = creerQuestion(info);
@@ -142,11 +137,6 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
     }
 
     parent.appendChild(divConteneur);
-    if (divReponses) { // si divReponses est initialisé
-        const divReponse = divReponses.firstChild; // on prend son premier enfant qui est initialisé comme div.div-reponse
-        //attribuerModalModifierQuestionAvecId(divReponse.dataset._id, TypeModifier.REPONSE);
-    }
-    //attribuerModalModifierQuestionAvecId(_id, TypeModifier.QUESTION);
 }
 
 /**
