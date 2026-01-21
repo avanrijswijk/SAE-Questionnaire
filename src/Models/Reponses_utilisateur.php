@@ -53,7 +53,6 @@ class Reponses_utilisateur {
         $stmt->bindParam(':id_utilisateur', $id_utilisateur);
         $stmt->bindParam(':id_choix', $id_choix);
         $stmt->bindParam(':reponse', $reponse);
-
         return $stmt->execute();
     }
 

@@ -145,4 +145,23 @@ class Questionnaire {
             return $titreDuSix;
         }
     }
+
+    public function getQuestionnaireFromIdReponse($id_choix) {
+        $query = "SELECT q.id_questionnaire
+                FROM choix_possible cp, questions q 
+                WHERE cp.id = :id_choix 
+                AND cp.id_question = q.id
+                LIMIT 1;";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_choix', $id_choix, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $id_questionnaire = isset($result['id_questionnaire']) ? (int) $result['id_questionnaire'] : -1;
+
+        return $id_questionnaire;
+    }
+
 }
