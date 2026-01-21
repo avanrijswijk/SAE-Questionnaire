@@ -33,6 +33,7 @@ use App\Controllers\QuestionnaireController;
 use App\Controllers\AcceptesController;
 use App\Controllers\QuestionController;
 use App\Controllers\Reponses_utilisateurController;
+use App\Controllers\Choix_possibleController;
 
 
 // ajout de l'en tête
