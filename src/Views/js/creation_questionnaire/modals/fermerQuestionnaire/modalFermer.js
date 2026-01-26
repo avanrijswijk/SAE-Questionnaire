@@ -8,6 +8,7 @@ import { notification, TypeNotification } from '../../notification/notification.
  * type : str
  * position : int
  * est_obligatoire : bool
+ * reponses : list[str]
  * }]
  * @returns {Array} un fichier JSON contenant les informations
  */
@@ -20,8 +21,9 @@ function listerQuestions() {
     }
 
     for (let index = 0; index < divQuestions.childElementCount; index++) {
-        const divQuestion = divQuestions.children[index];
-        const divReponses = divQuestion.querySelector("div.div-reponses");
+        const divConteneur = divQuestions.children[index];
+        const divQuestion = divConteneur.firstChild;
+        const divReponses = divConteneur.querySelector("div.div-reponses");
 
         const data = {
             "intitule" : divQuestion.dataset.intitule,
@@ -72,6 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         type : str
         position : int
         est_obligatoire : bool
+        choix : [str]
         */
         console.log(listerQuestions());
         const listeQuestions = document.createElement('input');
@@ -83,7 +86,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.type = "hidden";
         listeQuestions.name = "liste-questions";
         listeQuestions.value = JSON.stringify(jsonQuestions);
-        
+
+        console.log(jsonQuestions);
+        // e.preventDefault();
+        // return;
         formMVQ.appendChild(listeQuestions);
     });
 

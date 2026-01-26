@@ -2,18 +2,39 @@ import { TypeQuestion } from '../../typeQuestion.js';
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
 import {modifierQuestionVisualiseurQuestions, donnerQuestionAvecIdVisualiseurQuestions, donnerLibelleQuestionAvecIdVisualiseurQuestions} from '../../afficher/questions.js';
 import {modifierQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
+import { notification, TypeNotification } from '../../notification/notification.js';
 
 const NAME_TEXTAREA = "libelle-question";
 let id;
 
 /**
+ * Type de contenue à modifier : Question ou Reponse
+ */
+const TypeModifier = {
+    QUESTION : "question",
+    REPONSE : "reponse"
+};
+
+/**
  * initialise le modal #dialog-modifier-question
  * @param {HTMLDivElement} modal - le modal modifier
  * @param {int} id - l'identifiant de la question
+ * @param {TypeModifier} type 
  */
-function init_modal(modal, id) {
+function init_modal(modal, id, type) {
     const textarea = modal.querySelector(`[name="${NAME_TEXTAREA}"]`);
     textarea.value = donnerLibelleQuestionAvecIdVisualiseurQuestions(id);
+
+    const pTitreModal = modal.querySelector(`p.modal-card-title`);
+    switch (type) {
+        case TypeModifier.QUESTION:
+            pTitreModal.innerHTML = "Modifier une question";
+            break;
+        case TypeModifier.REPONSE:
+        default :
+            pTitreModal.innerHTML = "Modifier une réponse";
+            break;
+    }
 }
 
 /**
@@ -28,7 +49,6 @@ function mettreLaPremiereLettreEnMajuscule(chaine) {
 
 /**
  * initialise la fermeture et le traitement des données du modal de modification d'une question
- * @param {int} id - identifiant de la question 
  */
 function modalModifierQuestion() {
     //
@@ -46,8 +66,8 @@ function modalModifierQuestion() {
     //const listeRadiosType = document.getElementsByName("type-question");
 
     // ---------- ----------
-    const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
-    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+    // const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
+    // const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
 
     // ---------- MAQ ----------
     
@@ -73,13 +93,19 @@ function modalModifierQuestion() {
          
         //const estObligatoire = formData.get("question-obligatoire") == "obligatoire" ? true : false;     
  
-        console.log("------ Modifier d'une question ------");
-        console.log("Libellé de question :", libelleQuestion);
-        console.log("----------------------------------");
+        // console.log("------ Modifier d'une question ------");
+        // console.log("Libellé de question :", libelleQuestion);
+        // console.log("----------------------------------");
 
         if (id != null) {
-            modifierQuestionVisualiseurQuestions(id, libelleQuestion);
-            modifierQuestionVisualiseurQuestionnaire(id, libelleQuestion);
+            try {
+                modifierQuestionVisualiseurQuestions(id, libelleQuestion);
+                modifierQuestionVisualiseurQuestionnaire(id, libelleQuestion);
+            } catch (e) {
+                notification(TypeNotification.ERREUR, "Une erreur c'est produite lors de la modification.");
+                console.error(e);
+            }
+            
         }
         
 
@@ -93,21 +119,68 @@ function modalModifierQuestion() {
 }
 
 /**
- * ouvre le modal de modification de questions en fonction de son id
- * @param {int} identifiant - son identifiant (id)
+ * ouvre un modal de modification de questions/réponses en fonction de son id
+ * @param {int || string} identifiant - son identifiant (id)
+ * @param {TypeModifier} type - le type de comptenu qui sera modifié 
  */
-export function ouvrireModalModifierQuestion(identifiant) {
-    const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(identifiant);
+function ouvrireModalModifierQuestion(identifiant, type) {
     const form = document.getElementById("form-modifier-question");
     const modal = document.getElementById("dialog-modifier-question");
-    divQuestion.addEventListener("dblclick", () => {
-        id = identifiant;
-        form.reset();
-        init_modal(modal, identifiant);
-        ouvrire_modal(modal);
+    id = identifiant;
+    form.reset();
+    init_modal(modal, identifiant, type);
+    ouvrire_modal(modal);
+}
+
+/**
+ * attribu un modal de modification de questions/réponses en fonction de son conteneur
+ * @param {HTMLDivElement} conteneur - le conteneur de la question
+ * @param {TypeModifier} type - le type de comptenu qui sera modifié
+ */
+function attribuerModalModifierQuestionAvaecConteneur(conteneur, type) {
+    const identifiant = conteneur.dataset["_id"];
+    if (identifiant) {
+        conteneur.addEventListener("dblclick", () => {
+            ouvrireModalModifierQuestion(identifiant, type);
+        });
+    } 
+    
+}
+
+/**
+ * attribu un modal de modification de questions/réponses en fonction de son id
+ * @param {*} identifiant - son identifiant (id)
+ * @param {TypeModifier} type - le type de comptenu qui sera modifié
+ */
+function attribuerModalModifierQuestionAvecId(identifiant, type) {
+    const divConteneur = donnerQuestionAvecIdVisualiseurQuestions(identifiant); // peut etre un divQuestion ou un divReponse
+    if (!divConteneur){console.error("Le conteneur est null pour l'attribution du listener");}
+    divConteneur.addEventListener("dblclick", () => {
+        ouvrireModalModifierQuestion(identifiant, type);
     });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     modalModifierQuestion();
+
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
+
+    divVisualiseurQuestions.addEventListener("dblclick", (e) => {
+            const divReponse = e.target.closest(".div-reponse");
+            const divQuestion = e.target.closest(".div-question").firstChild;
+            if (divQuestion) {
+                const type = divQuestion.dataset.type;
+                const id = (divReponse) ? divReponse.dataset._id : divQuestion.dataset._id;
+                console.log(id);
+
+                ouvrireModalModifierQuestion(id, type);
+            }
+    });
 });
+
+export {
+    attribuerModalModifierQuestionAvecId,
+    attribuerModalModifierQuestionAvaecConteneur,
+    ouvrireModalModifierQuestion,
+    TypeModifier
+}

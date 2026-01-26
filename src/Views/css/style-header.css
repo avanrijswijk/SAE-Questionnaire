@@ -16,14 +16,14 @@ header#header > div#div-header {
     align-items: center;
     justify-content: center;
     position: relative;
-}
+} 
 
 header#header > div#div-header > a > img#img-accueil {
     position: absolute;
     top: 5px;
     width: 3.3%;
     left: 50px;
-}
+} 
 
 
 .header-center {

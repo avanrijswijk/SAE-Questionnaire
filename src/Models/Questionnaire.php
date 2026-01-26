@@ -71,7 +71,7 @@ class Questionnaire {
 
     public function update($id, $titre, $date_expiration) {
         $query = "UPDATE questionnaires 
-                  SET titre = :titre, date_expiration = :date_expiration,
+                  SET titre = :titre, date_expiration = :date_expiration
                   WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
