@@ -1,4 +1,8 @@
 <?php
+
+use App\Controllers\Choix_possibleController;
+$Choix_possibleController = new Choix_possibleController();
+
 if (!isset($questionnaire)) {
 	echo '<p>Questionnaire non fourni.</p>';
 	return;
@@ -28,7 +32,8 @@ $auteur = isset($questionnaire['id_createur']) ? htmlspecialchars($questionnaire
                         $intitule = isset($q['intitule']) ? htmlspecialchars($q['intitule']) : 'Question sans texte';
                         $type = isset($q['type']) ? $q['type'] : "textfield";
                         $required = isset($q['est_obligatoire']) ? $q['est_obligatoire'] : 0;
-                        $name = 'question-'.(isset($q['id']) ? $q['id'] : $index);
+                        $choix = $Choix_possibleController->getChoixDeQuestion($q['id']);
+                        $name = 'choix-'.(isset($q['id']) ? $q['id'] : $index);
                     ?>
                     <hr />
                     <div class="question-block" style="padding: 25px 0;">
@@ -37,10 +42,35 @@ $auteur = isset($questionnaire['id_createur']) ? htmlspecialchars($questionnaire
                             <?php switch ($type):
                                 default:
                                 case "textfield": ?>
-                                    <textarea name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="2" maxlength="1800"></textarea>
+                                    <?php 
+                                        if (!empty($choix) && isset($choix[0]['id'])) {
+                                            $id_choix = $choix[0]['id'];
+                                            $name = 'choix-'.$id_choix;
+                                        } else {
+                                            echo "<p style='color:red'>Erreur : aucun choix associé à ce champ texte.</p>";
+                                            break;
+                                        }
+                                    ?>
+                                    <textarea 
+                                        <?php if ($required) echo "required"; ?> 
+                                        class="textarea" 
+                                        placeholder="Remplir ce champ..." 
+                                        cols="50"
+                                        rows="2" 
+                                        maxlength="1800">
+                                    </textarea>
                                 <?php break; ?>
                                 
                                 <?php case "long_textfield": ?>
+                                    <?php 
+                                        if (!empty($choix) && isset($choix[0]['id'])) {
+                                            $id_choix = $choix[0]['id'];
+                                            $name = 'choix-'.$id_choix;
+                                        } else {
+                                            echo "<p style='color:red'>Erreur : aucun choix associé à ce champ texte.</p>";
+                                            break;
+                                        }
+                                    ?>
                                     <textarea name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="5" maxlength="6000"></textarea>
                                 <?php break ?>
 

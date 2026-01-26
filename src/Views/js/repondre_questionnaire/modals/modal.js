@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // console.log("Données ordonnées :", data);
 
             form.querySelectorAll('input, select, textarea').forEach(entree => {
-                if (entree.name && entree.name.includes('-')) entree.name = String(entree.name).split("-")[1];
+                // if (entree.name && entree.name.includes('-')) entree.name = String(entree.name).split("-")[1];
             });
             /**
              * sous la forme :

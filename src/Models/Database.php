@@ -60,14 +60,15 @@ Class Database
             if (empty($host) && in_array($serverName, $localServers, true)) {
                 $host = '127.0.0.1';
             }
-            $port = $port ?: '3306';
+            $port = $port ?: '3307';
             $dbName = $dbName ?: 'questionnaire_app';
             $username = $username ?: 'root';
             $password = $password ?: '';
 
             $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $dbName);
-
+            
             try {
+                //echo ("last call : new DPO => \$dsn = $dsn ; \$username = $username ; \$password = $password\n");
                 $this->conn = new PDO($dsn, $username, $password);
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $exception) {

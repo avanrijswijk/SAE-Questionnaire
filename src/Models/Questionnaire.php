@@ -112,20 +112,56 @@ class Questionnaire {
     }
 
     public function getResults($id_questionnaire) {
-        $query = "SELECT q.intitule, r.reponse
-                  FROM questionnaires qnaire
-                  LEFT JOIN questions q ON q.id_questionnaire = qnaire.id
-                  LEFT JOIN reponses r ON r.id_question = q.id
-                  GROUP BY q.id, r.id
-                  ORDER BY q.id, r.id";
-
+        $query = "SELECT qt.intitule ,r.reponse
+                  FROM questionnaires qtnaire
+                  where qtnaire.id = :id_questionnaire
+                  LEFT JOIN questions qt ON qt.id_questionnaire = qtnaire.id
+                  left JOIN choix_possible c ON c.id_question = qt.id
+                  left JOIN reponses r ON r.id_choix = c.id
+                  group BY qt.id, r.id
+                  ORDER BY qt.id, r.id";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function lastInsertId() {
         return $this->conn->lastInsertId();
+    }
+
+    public function getTitreWithTireDuSixByID($id_questionnaire) {
+        $query = "SELECT titre FROM questionnaires WHERE id = :id_questionnaire";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!isset($result['titre'])) {
+            echo "Questionnaire introuvable.";
+            return;
+        } else {
+            $titre = $result['titre'];
+            $titreDuSix = str_replace(' ', '-', $titre);
+            return $titreDuSix;
+        }
+    }
+
+    public function getQuestionnaireFromIdReponse($id_choix) {
+        $query = "SELECT q.id_questionnaire
+                FROM choix_possible cp, questions q 
+                WHERE cp.id = :id_choix 
+                AND cp.id_question = q.id
+                LIMIT 1;";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_choix', $id_choix, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $id_questionnaire = isset($result['id_questionnaire']) ? (int) $result['id_questionnaire'] : -1;
+
+        return $id_questionnaire;
     }
 
 }

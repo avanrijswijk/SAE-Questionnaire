@@ -17,6 +17,7 @@ class QuestionController {
     }
 
     public function enregistrerQuestions($id_questionnaire) {
+        $ajoutOk = true;
         if(!isset($id_questionnaire)) {
             $id_questionnaire=-1;
         }
@@ -50,7 +51,7 @@ class QuestionController {
                 echo 'Données de questions invalides.';
             }
         }
-        return false;
+        return $ajoutOk;
     }
 
     public function supprimer($id, $id_questionnaire) {

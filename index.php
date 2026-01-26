@@ -36,13 +36,16 @@ use App\Controllers\Reponses_utilisateurController;
 use App\Controllers\Choix_possibleController;
 
 
-// ajout de l'en tête
-require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'header.php');
 
 // routage simple (normaliser en minuscules)
 $controller = isset($_GET['c'])? strtolower($_GET['c']) : 'home';
 $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
+$isExport = ($controller === 'questionnaire' && $action === 'exporter');
 
+// ajout de l'en tête
+if (!$isExport) {
+require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'header.php');
+}
 
     switch ($controller) {
 
@@ -69,6 +72,9 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
                     break;
                 case 'resultats':
                     $reponses_utilisateurController->resultatsQuestionnaire();
+                    break;
+                case 'exporter':
+                    $questionnaireController->exportToCSV();
                     break;
                 case 'enregistrer':
                     if ($questionnaireController->enregistrerQuestionnaire()) {
@@ -97,5 +103,6 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
             break;
     }
 
-    
+    if (!$isExport) {
     require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'footer.php');
+    }
