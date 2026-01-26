@@ -145,7 +145,7 @@ class QuestionnaireController {
             exit("Questionnaire introuvable.");
         }
 
-        $resultats = $this->reponses_utilisateurModel->getReponseByQuestionnaryId($id);
+        $resultats = $this->reponses_utilisateurModel->getReponseForCSV($id);
         if (empty($resultats)) {
             http_response_code(204); // No content
             exit;
