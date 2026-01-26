@@ -12,6 +12,9 @@ class AcceptesController {
         $this->acceptesModel = $acceptesModel;
     }
 
+    /**
+     * 
+     */
     public function enregistrer() {
         $id_questionnaire = isset($_POST['id_questionnaire']) ? $_POST['id_questionnaire'] : null;
         $id_utilisateur = isset($_POST['id_utilisateur']) ? $_POST['id_utilisateur'] : null; //pour plus tard, permettre de récuppérer plusieurs utilisateurs...
@@ -27,6 +30,9 @@ class AcceptesController {
         }
     }
 
+    /**
+     * 
+     */
     public function supprimer() {
         $id_questionnaire = isset($_POST['id_questionnaire']) ? $_POST['id_questionnaire'] : null;
         $id_utilisateur = isset($_POST['id_utilisateur']) ? $_POST['id_utilisateur'] : null;
@@ -42,12 +48,18 @@ class AcceptesController {
         }
     }
 
+    /**
+     * 
+     */
     public function listerParticipants($id_questionnaire) {
         $participants = $this->acceptesModel->getAcceptesBy(['id_questionnaire' => $id_questionnaire]);
 
         return $participants;
     }
 
+    /**
+     * 
+     */
     public function estParticipant($id_questionnaire, $id_utilisateur) {
         $participant = $this->acceptesModel->getAcceptesBy([
             'id_questionnaire' => $id_questionnaire,
@@ -56,13 +68,19 @@ class AcceptesController {
 
         return !empty($participant);
     }
-
+    
+    /**
+     * 
+     */
     public function listerQuestionnaire() {
         $questionnaires = $this->acceptesModel->getAcceptesParticipeA($_SESSION['id_utilisateur']);
 
         return $questionnaires;
     }
 
+    /**
+     * 
+     */
     public function nombreReponduText($id_questionnaire) {
        $counter = $this->acceptesModel->countRepondu($id_questionnaire);
        $total = $this->acceptesModel->nombreParticipant($id_questionnaire);
