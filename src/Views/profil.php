@@ -5,6 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $prenom = isset($_SESSION['cas_prenom']) ? htmlspecialchars($_SESSION['cas_prenom'], ENT_QUOTES, 'UTF-8') : '';
 $nom = isset($_SESSION['cas_nom']) ? htmlspecialchars($_SESSION['cas_nom'], ENT_QUOTES, 'UTF-8') : '';
 $login = isset($_SESSION['cas_user']) ? htmlspecialchars($_SESSION['cas_user'], ENT_QUOTES, 'UTF-8') : '';
+$email = isset($_SESSION['cas_email']) ? htmlspecialchars($_SESSION['cas_email'], ENT_QUOTES, 'UTF-8') : '';
 // Récupère les groupes depuis la session (peut être array ou string)
 $groupes = [];
 if (isset($_SESSION['cas_groupes'])) {
@@ -24,6 +25,7 @@ $groupes = array_map(function($groupe){ return htmlspecialchars($groupe, ENT_QUO
     <div class="box">
       <p><strong>Prénom :</strong> <?php echo $prenom; ?></p>
       <p><strong>Nom :</strong> <?php echo $nom; ?></p>
+      <p><strong>Email :</strong> <?php echo $email ? $email : 'Non renseigné'; ?></p>
       </br>
       <p><strong>Login (Unilim) :</strong> <?php echo $login; ?></p>
       </br>
