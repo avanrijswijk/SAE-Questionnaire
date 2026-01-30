@@ -7,11 +7,20 @@ use App\Models\Choix_possible;
 class Choix_possibleController {
 
     private $choixPossibleModel;
+
+    /**
+     * Constructeur de la classe Choix_possibleController.
+     * Initialise l'instance du modèle Choix_possible.
+     */
     public function __construct() {
         $choixPossibleModel = new Choix_possible();
         $this->choixPossibleModel = $choixPossibleModel;
     }
 
+    /**
+     * Enregistre un choix possible pour une question.
+     * Utilise les données POST pour l'id_question et le texte.
+     */
     public function enregistrer() {
         $id_question = isset($_POST['id_question']) ? $_POST['id_question'] : null;
         $texte = isset($_POST['texte']) ? $_POST['texte'] : null;
@@ -25,7 +34,13 @@ class Choix_possibleController {
         }
     }
 
-    //enregistre les choix à partir d'une liste de type string[]
+    /**
+     * Enregistre une liste de choix possibles pour une question.
+     *
+     * @param array $ChoixListe Liste des choix à enregistrer.
+     * @param int $id_question ID de la question.
+     * @return bool True si l'enregistrement réussit, false sinon.
+     */
     public function enregistrerListe($ChoixListe, $id_question) {
         if (is_array($ChoixListe)) {
             foreach ($ChoixListe as $choix) {
@@ -43,6 +58,10 @@ class Choix_possibleController {
         }
     }
 
+    /**
+     * Supprime un choix possible.
+     * Utilise l'ID du choix depuis POST.
+     */
     public function supprimer() {
         $id = isset($_POST['id']) ? $_POST['id'] : null;
 
@@ -55,6 +74,12 @@ class Choix_possibleController {
         }
     }
 
+    /**
+     * Récupère les choix possibles pour une question donnée.
+     *
+     * @param int $id_question ID de la question.
+     * @return array Liste des choix.
+     */
     public function getChoixDeQuestion($id_question) {
         $choix = $this->choixPossibleModel->getChoixDeQuestion($id_question);
 

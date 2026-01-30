@@ -10,12 +10,23 @@ class QuestionController {
     private $questionModel;
     private $choix_possibleController;
 
+    /**
+     * Constructeur de la classe QuestionController.
+     * Initialise les instances du modèle Question et du contrôleur Choix_possibleController.
+     */
     public function __construct() {
         $questionModel = new Question();
         $this->questionModel = $questionModel;
         $this->choix_possibleController = new Choix_possibleController();
     }
 
+    /**
+     * Enregistre une liste de questions pour un questionnaire donné.
+     * Traite les données JSON depuis POST, crée les questions et leurs choix associés.
+     *
+     * @param int $id_questionnaire ID du questionnaire.
+     * @return bool True si l'enregistrement réussit, false sinon.
+     */
     public function enregistrerQuestions($id_questionnaire) {
         $ajoutOk = true;
         if(!isset($id_questionnaire)) {
@@ -54,6 +65,13 @@ class QuestionController {
         return $ajoutOk;
     }
 
+    /**
+     * Supprime une question si elle appartient au questionnaire spécifié.
+     *
+     * @param int $id ID de la question.
+     * @param int $id_questionnaire ID du questionnaire.
+     * @return bool True si la suppression réussit, false sinon.
+     */
     public function supprimer($id, $id_questionnaire) {
         if (empty($id) || empty($id_questionnaire)) {
             return false;

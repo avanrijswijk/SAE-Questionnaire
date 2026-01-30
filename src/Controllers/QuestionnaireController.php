@@ -12,6 +12,10 @@ class QuestionnaireController {
     private $questionModel;
     private $reponses_utilisateurModel;
 
+    /**
+     * Constructeur de la classe QuestionnaireController.
+     * Initialise les instances des modèles nécessaires.
+     */
     public function __construct() {
         $questionnaireModel = new Questionnaire();
         $this->questionnaireModel = $questionnaireModel;
@@ -21,6 +25,12 @@ class QuestionnaireController {
         $this->reponses_utilisateurModel = $reponses_utilisateurModel;
     }
 
+    /**
+     * Affiche la vue pour répondre à un questionnaire.
+     * Récupère le questionnaire et ses questions triées par position.
+     *
+     * @param int|null $id ID du questionnaire (optionnel, sinon depuis GET).
+     */
     public function repondre($id = null) {
         if ($id === null) {
             $id = isset($_GET['id']) ? $_GET['id'] : null;
@@ -50,10 +60,16 @@ class QuestionnaireController {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'repondreQuestionnaire.php');
     }
 
+    /**
+     * Affiche la vue de création d'un nouveau questionnaire.
+     */
     public function ajouterQuestionnaire() {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'creationQuestionnaire.php');
     }
 
+    /**
+     * Liste les questionnaires selon l'utilisateur connecté ou tous si non connecté.
+     */
     public function listerQuestionnaires() {
         if (!isset($_SESSION['id_utilisateur'])) {
             $questionnaires = $this->questionnaireModel->getAllQuestionnaires();
@@ -63,6 +79,9 @@ class QuestionnaireController {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'listerQuestionnaire.php');
     }
 
+    /**
+     * Vérifie si l'utilisateur peut voir les résultats du questionnaire (doit être le créateur).
+     */
     public function peutVoirResultatsQuestionnaire() {
         $id_questionnaire = isset($_GET['id_questionnaire']) ? $_GET['id_questionnaire'] : null;
         
@@ -81,6 +100,11 @@ class QuestionnaireController {
         }
     }
 
+    /**
+     * Enregistre ou met à jour un questionnaire avec les données POST.
+     *
+     * @return bool True si l'enregistrement réussit, false sinon.
+     */
     public function enregistrerQuestionnaire() {
         $id = isset($_POST['id']) ? $_POST['id'] : null;
         $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
@@ -104,6 +128,12 @@ class QuestionnaireController {
         return $ajoutOk;
     }
 
+    /**
+     * Supprime un questionnaire de la base de données si il existe.
+     *
+     * @param int|null $id ID du questionnaire à supprimer (optionnel, sinon depuis GET).
+     * @return bool True si la suppression réussit, false sinon.
+     */
     public function supprimer($id = null) {
         if ($id === null) {
             $id = isset($_GET['id']) ? $_GET['id'] : null;
@@ -115,22 +145,26 @@ class QuestionnaireController {
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
 
-        if ($questionnaire) {
-            if($this->questionnaireModel->delete($id)){
-                $questions = $this->questionModel->getQuestionBy(['id_questionnaire' => $id]);
-                foreach ($questions as $question) {
-                    $this->questionModel->delete($question['id']);
-                }
-            }
+        if (isset($questionnaire)) {
+            $supprOK = $this->questionnaireModel->delete($id);  
         }
 
-        return false;
+        return $supprOK;
     }
 
+    /**
+     * Retourne le dernier ID inséré dans la base de données pour les questionnaires.
+     *
+     * @return int Dernier ID inséré.
+     */
     public function lastInsertId() {
         return $this->questionnaireModel->lastInsertId();
     }
 
+    /**
+     * Exporte les résultats d'un questionnaire au format CSV.
+     * Génère un fichier téléchargeable avec les réponses.
+     */
     public function exportToCSV() {
         $id = $_GET['id'] ?? null;
 
