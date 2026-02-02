@@ -39,7 +39,7 @@ if (!$consentement_ok && $page_actuelle != 'logout.php'):
             <p style="color:#666; line-height:1.5; margin: 20px 0;">
                 Pour utiliser notre générateur de questionnaires, nous avons besoin de valider votre profil.
                 En continuant, vous acceptez que votre <strong>Nom, Prénom et Identifiant</strong> 
-                soient enregistrés dans notre base de données pour gérer vos créations et réponses.
+                soient enregistrés dans notre base de données sécurisée pour gérer vos créations et réponses.
             </p>
 
             <button class="btn-gros" onclick="accepterEtContinuer()">J'accepte et je continue</button>

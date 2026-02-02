@@ -60,6 +60,10 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
             require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'profil.php');
             break;
 
+        case 'mentionslegales':
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'mentionsLegales.php');
+            break;
+
         case 'questionnaire':
             $questionnaireController = new QuestionnaireController();
             $acceptesController = new AcceptesController();
