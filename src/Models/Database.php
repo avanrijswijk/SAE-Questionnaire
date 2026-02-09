@@ -8,7 +8,16 @@ use PDOException;
 Class Database 
 { 
     private $conn;
-
+    
+    /**
+     * Établit et retourne une connexion PDO à la base de données MySQL.
+     * Lit les variables d'environnement, charge .env si nécessaire,
+     * applique des valeurs par défaut pour le développement local.
+     * Utilise un singleton pour éviter les connexions multiples.
+     *
+     * @return PDO Instance de connexion PDO.
+     * @throws \RuntimeException En cas d'erreur de connexion.
+     */
     public function getConnection()
     {
         if ($this->conn === null) {

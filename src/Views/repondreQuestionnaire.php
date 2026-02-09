@@ -128,5 +128,3 @@ $auteur = isset($questionnaire['id_createur']) ? htmlspecialchars($questionnaire
         <?php endif; ?>
     </div>
 </main>
-
-

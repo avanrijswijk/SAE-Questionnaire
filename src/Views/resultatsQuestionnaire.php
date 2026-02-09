@@ -5,7 +5,7 @@ use App\Controllers\QuestionController;
 use App\Models\Acceptes;
 use App\Models\Questionnaire;
 $questionnaireBDD = new Questionnaire();
-$questionnaires = $questionnaireBDD->getQuestionnaireBy(["id_createur" => 1]);
+$questionnaires = $questionnaireBDD->getQuestionnairePar(["id_createur" => 1]);
 ?>
 <main style="background-color: #EFEFEF; height: 100%; overflow-y: auto;">
     <script src="./src/Views/js/resultats_questionnaire/afficher/resultat.js"></script>

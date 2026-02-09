@@ -8,18 +8,34 @@ class Reponses_utilisateur {
 
     private $conn;
 
+    /**
+     * Constructeur de la classe Reponses_utilisateur.
+     * Initialise la connexion à la base de données.
+     */
     public function __construct() {
         $database = new Database();
         $this->conn = $database->getConnection();
     }
 
-    public function getAllReponses() {
+    /**
+     * Récupère toutes les réponses des utilisateurs.
+     *
+     * @return array Liste de toutes les réponses.
+     */
+    public function getTousLesReponses() {
         $query = "SELECT * FROM reponses_utilisateur";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Récupère une réponse spécifique d'un utilisateur pour un choix.
+     *
+     * @param int $id_utilisateur L'identifiant de l'utilisateur.
+     * @param int $id_choix L'identifiant du choix.
+     * @return array Les données de la réponse.
+     */
     public function getReponse($id_utilisateur, $id_choix) {
         $query = "SELECT * FROM reponses_utilisateur WHERE id_utilisateur = :id_utilisateur AND id_choix = :id_choix";
         $stmt = $this->conn->prepare($query);
@@ -29,7 +45,13 @@ class Reponses_utilisateur {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getReponseBy(array $params) {
+    /**
+     * Récupère les réponses basées sur des paramètres donnés.
+     *
+     * @param array $params Tableau associatif des paramètres de recherche.
+     * @return array Liste des réponses correspondant aux paramètres.
+     */
+    public function getReponsePar(array $params) {
         $query = "SELECT * FROM reponses_utilisateur WHERE ". implode(' AND ',array_map(function($key) {
             return "$key = :$key";
         }, array_keys($params)));
@@ -44,7 +66,15 @@ class Reponses_utilisateur {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function createReponse($id_utilisateur, $id_choix, $reponse) {
+    /**
+     * Crée une nouvelle réponse d'utilisateur pour un choix.
+     *
+     * @param int $id_utilisateur L'identifiant de l'utilisateur.
+     * @param int $id_choix L'identifiant du choix.
+     * @param string $reponse La réponse donnée.
+     * @return bool Vrai si l'insertion a réussi, faux sinon.
+     */
+    public function creerReponse($id_utilisateur, $id_choix, $reponse) {
         $query = "INSERT INTO reponses_utilisateur (id_utilisateur, id_choix, reponse) 
         VALUES (:id_utilisateur, :id_choix, :reponse)";
        
@@ -56,7 +86,14 @@ class Reponses_utilisateur {
         return $stmt->execute();
     }
 
-    public function delete($id_utilisateur, $id_choix) {
+    /**
+     * Supprime une réponse d'utilisateur pour un choix.
+     *
+     * @param int $id_utilisateur L'identifiant de l'utilisateur.
+     * @param int $id_choix L'identifiant du choix.
+     * @return bool Vrai si la suppression a réussi, faux sinon.
+     */
+    public function supprimer($id_utilisateur, $id_choix) {
         $query = "DELETE FROM reponses_utilisateur WHERE id_utilisateur = :id_utilisateur AND id_choix = :id_choix";
 
         $stmt = $this->conn->prepare($query);
@@ -65,9 +102,16 @@ class Reponses_utilisateur {
         $stmt->execute();
         
         return $stmt->rowCount() > 0;
-    }    
+    }
 
-    public function getReponseForCSV($id_questionnaire) {
+    /**
+     * Récupère les réponses pour un questionnaire au format CSV.
+     * Joint les tables pour obtenir les questions, choix et réponses.
+     *
+     * @param int $id_questionnaire L'identifiant du questionnaire.
+     * @return array Liste des réponses formatées pour CSV.
+     */
+    public function getReponsePourCSV($id_questionnaire) { //a voir si utilisable pour traitement de donnée
         $query = "SELECT qt.intitule as question, c.texte as choix, r.reponse
                 FROM questionnaires qtnaire
                 JOIN questions qt ON qt.id_questionnaire = qtnaire.id 
@@ -82,7 +126,14 @@ class Reponses_utilisateur {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getReponseByQuestionnaryId($id_questionnaire) {
+    /**
+     * Récupère toutes les réponses pour un questionnaire spécifique.
+     * Joint les tables pour obtenir les réponses liées au questionnaire.
+     *
+     * @param int $id_questionnaire L'identifiant du questionnaire.
+     * @return array Liste des réponses pour le questionnaire.
+     */
+    public function getReponseParIdQuestionnaire($id_questionnaire) {
         $query = "SELECT r.* 
                 FROM questionnaires qtnaire
                 JOIN questions qt ON qt.id_questionnaire = qtnaire.id 
@@ -97,7 +148,12 @@ class Reponses_utilisateur {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function lastInsertId() {
+    /**
+     * Récupère l'identifiant de la dernière insertion.
+     *
+     * @return int L'identifiant de la dernière insertion.
+     */
+    public function getIdDerniereInsertion() {
         return $this->conn->lastInsertId();
     }
 
