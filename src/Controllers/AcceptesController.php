@@ -27,7 +27,7 @@ class AcceptesController {
         $id_utilisateur = isset($_POST['id_utilisateur']) ? $_POST['id_utilisateur'] : null; //pour plus tard, permettre de récuppérer plusieurs utilisateurs...
 
         if (isset($id_questionnaire) && isset($id_utilisateur)) {
-            $ajoutOk = $this->acceptesModel->createAcceptes($id_questionnaire, $id_utilisateur); //... pour excéuter cette ligne par utilisateur
+            $ajoutOk = $this->acceptesModel->creerAcceptes($id_questionnaire, $id_utilisateur); //... pour excéuter cette ligne par utilisateur
         }
 
         if ($ajoutOk) {
@@ -47,7 +47,7 @@ class AcceptesController {
         $id_utilisateur = isset($_POST['id_utilisateur']) ? $_POST['id_utilisateur'] : null;
 
         if (isset($id_questionnaire) && isset($id_utilisateur)) {
-            $suppressionOk = $this->acceptesModel->delete($id_questionnaire, $id_utilisateur);
+            $suppressionOk = $this->acceptesModel->supprimer($id_questionnaire, $id_utilisateur);
         }
 
         if ($suppressionOk) {
@@ -64,7 +64,7 @@ class AcceptesController {
      * @return array Liste des participants.
      */
     public function listerParticipants($id_questionnaire) {
-        $participants = $this->acceptesModel->getAcceptesBy(['id_questionnaire' => $id_questionnaire]);
+        $participants = $this->acceptesModel->getAcceptesPar(['id_questionnaire' => $id_questionnaire]);
 
         return $participants;
     }
@@ -77,7 +77,7 @@ class AcceptesController {
      * @return bool Vrai si l'utilisateur est participant, faux sinon.
      */
     public function estParticipant($id_questionnaire, $id_utilisateur) {
-        $participant = $this->acceptesModel->getAcceptesBy([
+        $participant = $this->acceptesModel->getAcceptesPar([
             'id_questionnaire' => $id_questionnaire,
             'id_utilisateur' => $id_utilisateur
         ]);
@@ -104,11 +104,10 @@ class AcceptesController {
      * @return string Chaîne formatée comme "compte/total".
      */
     public function nombreReponduText($id_questionnaire) {
-       $compteur = $this->acceptesModel->countRepondu($id_questionnaire);
+       $compteur = $this->acceptesModel->compteLesRepondu($id_questionnaire);
        $total = $this->acceptesModel->nombreParticipant($id_questionnaire);
 
        return $compteur . '/' . $total;
     }
 }
-
-    
+   

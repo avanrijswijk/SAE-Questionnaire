@@ -74,11 +74,11 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                     $reponses_utilisateurController->resultatsQuestionnaire();
                     break;
                 case 'exporter':
-                    $questionnaireController->exportToCSV();
+                    $questionnaireController->exporterEnCSV();
                     break;
                 case 'enregistrer':
                     if ($questionnaireController->enregistrerQuestionnaire()) {
-                        if ($questionController->enregistrerQuestions($questionnaireController->lastInsertId())) {
+                        if ($questionController->enregistrerQuestions($questionnaireController->getIdDerniereInsertion())) {
                             $acceptesController->enregistrer();
                         }
                     }

@@ -26,7 +26,7 @@ class Choix_possibleController {
         $texte = isset($_POST['texte']) ? $_POST['texte'] : null;
 
         if (isset($id_question) && isset($texte)) {
-            $ajoutOk = $this->choixPossibleModel->createChoix($id_question, $texte); //... pour excéuter cette ligne par utilisateur
+            $ajoutOk = $this->choixPossibleModel->creerChoix($id_question, $texte); //... pour excéuter cette ligne par utilisateur
         }
 
         if (!$ajoutOk) {
@@ -45,7 +45,7 @@ class Choix_possibleController {
         if (is_array($ChoixListe)) {
             foreach ($ChoixListe as $choix) {
                 if (isset($id_question) && (isset($choix) || is_null($choix))) {
-                    $ajoutOk = $this->choixPossibleModel->createChoix($id_question, $choix);
+                    $ajoutOk = $this->choixPossibleModel->creerChoix($id_question, $choix);
                     if (!$ajoutOk) {
                         echo 'Erreur lors de l\'enregistrement des choix de la question :' . $id_question;
                     }
@@ -66,7 +66,7 @@ class Choix_possibleController {
         $id = isset($_POST['id']) ? $_POST['id'] : null;
 
         if (isset($id)) {
-            $suppressionOk = $this->choixPossibleModel->delete($id);
+            $suppressionOk = $this->choixPossibleModel->supprimer($id);
         }
 
         if (!$suppressionOk) {
@@ -86,5 +86,3 @@ class Choix_possibleController {
         return $choix;
     }
 }
-
-    

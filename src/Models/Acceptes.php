@@ -22,7 +22,7 @@ class Acceptes {
      *
      * @return array Liste de toutes les acceptations.
      */
-    public function getAllAcceptes() {
+    public function getTousLesAcceptes() {
         $query = "SELECT * FROM acceptes";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -63,7 +63,7 @@ class Acceptes {
      * @param array $params Tableau associatif des paramètres de recherche.
      * @return array Liste des acceptations correspondant aux paramètres.
      */
-    public function getAcceptesBy(array $params) {
+    public function getAcceptesPar(array $params) {
         $query = "SELECT * FROM acceptes WHERE ". implode(' AND ',array_map(function($key) {
             return "$key = :$key";
         }, array_keys($params)));
@@ -85,7 +85,7 @@ class Acceptes {
      * @param int $id_utilisateur L'identifiant de l'utilisateur.
      * @return int L'identifiant de la nouvelle insertion.
      */
-    public function createAcceptes($id_questionnaire, $id_utilisateur) {
+    public function creerAcceptes($id_questionnaire, $id_utilisateur) {
         $query = "INSERT INTO acceptes (id_questionnaire, id_utilisateur) 
         VALUES (:id_questionnaire, :id_utilisateur)";
 
@@ -106,7 +106,7 @@ class Acceptes {
      * @param int $id_utilisateur L'identifiant de l'utilisateur.
      * @param int $repondu Le statut de réponse (0 ou 1).
      */
-    public function update($id_questionnaire, $id_utilisateur, $repondu) {
+    public function modifier($id_questionnaire, $id_utilisateur, $repondu) {
         $query = "UPDATE acceptes 
                   SET repondu = :repondu
                   WHERE id_questionnaire = :id_questionnaire AND id_utilisateur = :id_utilisateur";
@@ -127,7 +127,7 @@ class Acceptes {
      * @param int $id_utilisateur L'identifiant de l'utilisateur.
      * @return bool Vrai si la suppression a réussi, faux sinon.
      */
-    public function delete($id_questionnaire, $id_utilisateur) {
+    public function supprimer($id_questionnaire, $id_utilisateur) {
         $query = "DELETE FROM acceptes WHERE id_questionnaire = :id_questionnaire AND id_utilisateur = :id_utilisateur";
 
         $stmt = $this->conn->prepare($query);
@@ -145,7 +145,7 @@ class Acceptes {
      * @param int $id_questionnaire L'identifiant du questionnaire.
      * @return bool Vrai si l'utilisateur a répondu, faux sinon.
      */
-    public function asAnswered($id_utilisateur, $id_questionnaire) { //true = a déjà répondu, false = n'a pas répondu
+    public function aRepondu($id_utilisateur, $id_questionnaire) { //true = a déjà répondu, false = n'a pas répondu
         $query = "SELECT repondu FROM acceptes WHERE id_utilisateur = :id_utilisateur AND id_questionnaire = :id_questionnaire";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_utilisateur', $id_utilisateur);
@@ -164,13 +164,13 @@ class Acceptes {
      * @param int $id_questionnaire L'identifiant du questionnaire.
      * @return int Le nombre de réponses.
      */
-    public function countRepondu($id_questionnaire) {
-        $query = "SELECT COUNT(*) as count FROM acceptes WHERE id_questionnaire = :id_questionnaire AND repondu = 1";
+    public function compteLesRepondu($id_questionnaire) {
+        $query = "SELECT COUNT(*) as compteur FROM acceptes WHERE id_questionnaire = :id_questionnaire AND repondu = 1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_questionnaire', $id_questionnaire);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['count'];
+        return $result['compteur'];
     }
 
     //alt
@@ -192,12 +192,12 @@ class Acceptes {
      * @return int Le nombre de participants.
      */
     public function nombreParticipant($id_questionnaire) {
-        $query = "SELECT COUNT(*) as count FROM acceptes WHERE id_questionnaire = :id_questionnaire";
+        $query = "SELECT COUNT(*) as compteur FROM acceptes WHERE id_questionnaire = :id_questionnaire";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_questionnaire', $id_questionnaire);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['count'];
+        return $result['compteur'];
     }
 
     /**

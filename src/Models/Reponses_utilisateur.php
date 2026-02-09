@@ -22,7 +22,7 @@ class Reponses_utilisateur {
      *
      * @return array Liste de toutes les réponses.
      */
-    public function getAllReponses() {
+    public function getTousLesReponses() {
         $query = "SELECT * FROM reponses_utilisateur";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -51,7 +51,7 @@ class Reponses_utilisateur {
      * @param array $params Tableau associatif des paramètres de recherche.
      * @return array Liste des réponses correspondant aux paramètres.
      */
-    public function getReponseBy(array $params) {
+    public function getReponsePar(array $params) {
         $query = "SELECT * FROM reponses_utilisateur WHERE ". implode(' AND ',array_map(function($key) {
             return "$key = :$key";
         }, array_keys($params)));
@@ -74,7 +74,7 @@ class Reponses_utilisateur {
      * @param string $reponse La réponse donnée.
      * @return bool Vrai si l'insertion a réussi, faux sinon.
      */
-    public function createReponse($id_utilisateur, $id_choix, $reponse) {
+    public function creerReponse($id_utilisateur, $id_choix, $reponse) {
         $query = "INSERT INTO reponses_utilisateur (id_utilisateur, id_choix, reponse) 
         VALUES (:id_utilisateur, :id_choix, :reponse)";
        
@@ -93,7 +93,7 @@ class Reponses_utilisateur {
      * @param int $id_choix L'identifiant du choix.
      * @return bool Vrai si la suppression a réussi, faux sinon.
      */
-    public function delete($id_utilisateur, $id_choix) {
+    public function supprimer($id_utilisateur, $id_choix) {
         $query = "DELETE FROM reponses_utilisateur WHERE id_utilisateur = :id_utilisateur AND id_choix = :id_choix";
 
         $stmt = $this->conn->prepare($query);
@@ -111,7 +111,7 @@ class Reponses_utilisateur {
      * @param int $id_questionnaire L'identifiant du questionnaire.
      * @return array Liste des réponses formatées pour CSV.
      */
-    public function getReponseForCSV($id_questionnaire) {
+    public function getReponsePourCSV($id_questionnaire) { //a voir si utilisable pour traitement de donnée
         $query = "SELECT qt.intitule as question, c.texte as choix, r.reponse
                 FROM questionnaires qtnaire
                 JOIN questions qt ON qt.id_questionnaire = qtnaire.id 
@@ -133,7 +133,7 @@ class Reponses_utilisateur {
      * @param int $id_questionnaire L'identifiant du questionnaire.
      * @return array Liste des réponses pour le questionnaire.
      */
-    public function getReponseByQuestionnaryId($id_questionnaire) {
+    public function getReponseParIdQuestionnaire($id_questionnaire) {
         $query = "SELECT r.* 
                 FROM questionnaires qtnaire
                 JOIN questions qt ON qt.id_questionnaire = qtnaire.id 
@@ -153,7 +153,7 @@ class Reponses_utilisateur {
      *
      * @return int L'identifiant de la dernière insertion.
      */
-    public function lastInsertId() {
+    public function getIdDerniereInsertion() {
         return $this->conn->lastInsertId();
     }
 

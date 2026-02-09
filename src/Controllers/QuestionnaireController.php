@@ -48,7 +48,7 @@ class QuestionnaireController {
             return;
         }
 
-        $questions = $this->questionModel->getQuestionBy(['id_questionnaire' => $id]);
+        $questions = $this->questionModel->getQuestionPar(['id_questionnaire' => $id]);
 
         // trier par position si disponible
         usort($questions, function($a, $b) {
@@ -72,9 +72,9 @@ class QuestionnaireController {
      */
     public function listerQuestionnaires() {
         if (!isset($_SESSION['id_utilisateur'])) {
-            $questionnaires = $this->questionnaireModel->getAllQuestionnaires();
+            $questionnaires = $this->questionnaireModel->getTousLesQuestionnaires();
         } else {
-            $questionnaires = $this->questionnaireModel->getQuestionnairesByUserId($_SESSION['id_utilisateur']);
+            $questionnaires = $this->questionnaireModel->getQuestionnairesParIdUtilisateur($_SESSION['id_utilisateur']);
         }
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'listerQuestionnaire.php');
     }
@@ -87,7 +87,7 @@ class QuestionnaireController {
         
         if (!is_null($id_questionnaire)) {
             if ($_SESSION['id'] != $this->questionnaireModel->getQuestionnaire($id_questionnaire)['id_createur']) {
-                echo 'error : you are not the creator of this questionnaire.';
+                echo "erreur : vous n'êtes pas le créateur de ce questionnaire.";
                 return;
             } else {
                 $resultats = $this->reponses_utilisateurModel->getReponse($id_questionnaire, $_SESSION['id_utilisateur']);
@@ -95,7 +95,7 @@ class QuestionnaireController {
             }
             
         } else {
-            echo 'error : unable to find the questionnaire id.';
+            echo 'erreur : id du questionnaire introuvable.';
             return;
         }
     }
@@ -113,10 +113,10 @@ class QuestionnaireController {
         $code = isset($_POST['code']) ? $_POST['code'] : null;
 
         if (isset($id)) {
-            $ajoutOk = $this->questionnaireModel->update($id, $titre, $date_expiration);
+            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration);
         } else {
             //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
-            $ajoutOk = $this->questionnaireModel->createQuestionnaire($titre, $id_createur, $date_expiration, $code);
+            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code);
         }
 
         if ($ajoutOk) {
@@ -146,7 +146,7 @@ class QuestionnaireController {
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
 
         if (isset($questionnaire)) {
-            $supprOK = $this->questionnaireModel->delete($id);  
+            $supprOK = $this->questionnaireModel->supprimer($id);  
         }
 
         return $supprOK;
@@ -157,15 +157,15 @@ class QuestionnaireController {
      *
      * @return int Dernier ID inséré.
      */
-    public function lastInsertId() {
-        return $this->questionnaireModel->lastInsertId();
+    public function getIdDerniereInsertion() {
+        return $this->questionnaireModel->getIdDerniereInsertion();
     }
 
     /**
      * Exporte les résultats d'un questionnaire au format CSV.
      * Génère un fichier téléchargeable avec les réponses.
      */
-    public function exportToCSV() {
+    public function exporterEnCSV() {
         $id = $_GET['id'] ?? null;
 
         if (!$id) {
@@ -173,15 +173,15 @@ class QuestionnaireController {
             exit("ID manquant.");
         }
 
-        $titre = $this->questionnaireModel->getTitreWithTireDuSixByID($id);
+        $titre = $this->questionnaireModel->getTitreAvecTireParID($id);
         if (!$titre) {
             http_response_code(404);
             exit("Questionnaire introuvable.");
         }
 
-        $resultats = $this->reponses_utilisateurModel->getReponseForCSV($id);
+        $resultats = $this->reponses_utilisateurModel->getReponsePourCSV($id);
         if (empty($resultats)) {
-            http_response_code(204); // No content
+            http_response_code(204); // pas de contenu
             exit;
         }
         

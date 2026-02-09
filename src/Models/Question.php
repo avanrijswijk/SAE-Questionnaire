@@ -22,7 +22,7 @@ class Question {
      *
      * @return array|false Les données de la première question ou false si aucune.
      */
-    public function getAllQuestions() {
+    public function getTousLesQuestions() {
         $query = "SELECT * FROM questions";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -48,7 +48,7 @@ class Question {
      * @param array $params Tableau associatif des paramètres de recherche.
      * @return array Liste des questions correspondantes.
      */
-    public function getQuestionBy(array $params) {
+    public function getQuestionPar(array $params) {
         $query = "SELECT * FROM questions WHERE ". implode(' AND ',array_map(function($key) {
             return "$key = :$key";
         }, array_keys($params)));
@@ -73,7 +73,7 @@ class Question {
      * @param bool $est_obligatoire Si la question est obligatoire.
      * @return bool True si la création réussit, false sinon.
      */
-    public function createQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire) {
+    public function creerQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire) {
         $query = "INSERT INTO questions (id_questionnaire, intitule, type, position, est_obligatoire) 
         VALUES (:id_questionnaire, :intitule, :type, :position, :est_obligatoire)";
         $lastInsertId = $this->conn->lastInsertId();
@@ -101,7 +101,7 @@ class Question {
      * @param int $position Nouvelle position.
      * @param bool $est_obligatoire Si obligatoire.
      */
-    public function update($id, $intitule, $id_type, $position, $est_obligatoire) {
+    public function modifer($id, $intitule, $id_type, $position, $est_obligatoire) {
         $query = "UPDATE questions 
                   SET intitule = :intitule, id_type = :id_type, position = :position, est_obligatoire = :est_obligatoire 
                   WHERE id = :id";
@@ -123,7 +123,7 @@ class Question {
      * @param int $id ID de la question à supprimer.
      * @return bool True si la suppression a affecté au moins une ligne, false sinon.
      */
-    public function delete($id) {
+    public function supprimer($id) {
         $query = "DELETE FROM questions WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
@@ -137,7 +137,7 @@ class Question {
      *
      * @return string Dernier ID inséré.
      */
-    public function getLastInsertId() {
+    public function getIdDerniereInsertion() {
         return $this->conn->lastInsertId();
     }
 

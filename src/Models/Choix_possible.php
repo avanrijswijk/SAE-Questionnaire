@@ -22,7 +22,7 @@ class Choix_possible {
      *
      * @return array Liste de tous les choix possibles.
      */
-    public function getAllChoix() {
+    public function getTousLesChoix() {
         $query = "SELECT * FROM choix_possible";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -49,7 +49,7 @@ class Choix_possible {
      * @param array $params Tableau associatif des paramètres de recherche.
      * @return array Liste des choix correspondant aux paramètres.
      */
-    public function getChoixBy(array $params) {
+    public function getChoixPar(array $params) {
         $query = "SELECT * FROM choix_possible WHERE ". implode(' AND ',array_map(function($key) {
             return "$key = :$key";
         }, array_keys($params)));
@@ -71,7 +71,7 @@ class Choix_possible {
      * @param string $texte Le texte du choix.
      * @return int L'identifiant de la nouvelle insertion.
      */
-    public function createChoix($id_question, $texte) {
+    public function creerChoix($id_question, $texte) {
         $query = "INSERT INTO choix_possible (id_question, texte) 
         VALUES (:id_question, :texte)";
 
@@ -111,7 +111,7 @@ class Choix_possible {
      * @param int $id L'identifiant du choix à supprimer.
      * @return bool Vrai si la suppression a réussi, faux sinon.
      */
-    public function delete($id) {
+    public function supprimer($id) {
         $query = "DELETE FROM choix_possible WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
@@ -127,7 +127,7 @@ class Choix_possible {
      * @param int $id_question L'identifiant de la question.
      * @return int Le nombre de choix.
      */
-    public function countChoix($id_question) {
+    public function compteLesChoix($id_question) {
         $query = "SELECT COUNT(*) as count FROM choix_possible WHERE id_question = :id_question";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id_question', $id_question);
@@ -141,7 +141,7 @@ class Choix_possible {
      *
      * @return int L'identifiant de la dernière insertion.
      */
-    public function getLastInsertId() {
+    public function getIdDerniereInsertion() {
         return $this->conn->lastInsertId();
     }
 }

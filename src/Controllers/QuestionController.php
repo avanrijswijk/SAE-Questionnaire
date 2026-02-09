@@ -48,11 +48,11 @@ class QuestionController {
                         $est_obligatoire = 0;
                     }
                     
-                    $ajoutOk = $this->questionModel->createQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire);
+                    $ajoutOk = $this->questionModel->creerQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire);
                     if (!$ajoutOk) {
                         echo 'Erreur lors de l\'enregistrement des questions.';
                     }
-                    $ajoutOk = $this->choix_possibleController->enregistrerListe($choixListe, $this->questionModel->getLastInsertId());
+                    $ajoutOk = $this->choix_possibleController->enregistrerListe($choixListe, $this->questionModel->getIdDerniereInsertion());
                     if (!$ajoutOk) {
                         echo 'Erreur lors de l\'enregistrement des choix pour la question :' . $intitule;
                     }
@@ -80,7 +80,7 @@ class QuestionController {
         $question = $this->questionModel->getQuestion($id);
 
         if ($question && $question['id_questionnaire'] == $id_questionnaire) {
-            return $this->questionModel->delete($id);
+            return $this->questionModel->supprimer($id);
         }
 
         return false;
