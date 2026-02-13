@@ -134,7 +134,7 @@ class QuestionnaireController {
      * @param int|null $id ID du questionnaire à supprimer (optionnel, sinon depuis GET).
      * @return bool True si la suppression réussit, false sinon.
      */
-    public function supprimer($id = null) {
+    public function supprimerParId($id = null) {
         if ($id === null) {
             $id = isset($_GET['id']) ? $_GET['id'] : null;
         }
@@ -149,6 +149,34 @@ class QuestionnaireController {
             $supprOK = $this->questionnaireModel->supprimer($id);  
         }
 
+        return $supprOK;
+    }
+
+    /**
+     * Supprime un questionnaire de la base de données si il existe.
+     *
+     * @param int|null $id ID du questionnaire à supprimer (optionnel, sinon depuis GET).
+     * @return bool True si la suppression réussit, false sinon.
+     */
+    public function supprimer() {
+        $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            http_response_code(400);
+            exit("ID manquant.");
+        }
+
+        if (empty($id)) {
+            return false;
+        }
+
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+
+        if (isset($questionnaire)) {
+            $supprOK = $this->questionnaireModel->supprimer($id);  
+        }
+
+        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'resultatsQuestionnaire.php');
         return $supprOK;
     }
 

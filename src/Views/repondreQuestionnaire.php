@@ -52,13 +52,13 @@ $auteur = isset($questionnaire['id_createur']) ? htmlspecialchars($questionnaire
                                         }
                                     ?>
                                     <textarea 
+                                        name="<?php echo $name; ?>"
                                         <?php if ($required) echo "required"; ?> 
                                         class="textarea" 
                                         placeholder="Remplir ce champ..." 
                                         cols="50"
                                         rows="2" 
-                                        maxlength="1800">
-                                    </textarea>
+                                        maxlength="1800"></textarea>
                                 <?php break; ?>
                                 
                                 <?php case "long_textfield": ?>

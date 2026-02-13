@@ -83,6 +83,9 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                 case 'exporter':
                     $questionnaireController->exporterEnCSV();
                     break;
+                case 'supprimer':
+                    $questionnaireController->supprimer();
+                    break;
                 case 'enregistrer':
                     if ($questionnaireController->enregistrerQuestionnaire()) {
                         if ($questionController->enregistrerQuestions($questionnaireController->getIdDerniereInsertion())) {
