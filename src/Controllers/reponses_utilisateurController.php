@@ -12,6 +12,10 @@ class Reponses_utilisateurController {
     private $acceptesModel;
     private $questionnaireModel;
 
+    /**
+     * Constructeur de la classe Reponses_utilisateurController.
+     * Initialise les instances des modèles nécessaires.
+     */
     public function __construct() {
         $reponses_utilisateurModel = new Reponses_utilisateur();
         $this->reponses_utilisateurModel = $reponses_utilisateurModel;
@@ -21,6 +25,13 @@ class Reponses_utilisateurController {
         $this->questionnaireModel = $questionnaireModel;
     }
 
+    /**
+     * Enregistre les réponses de l'utilisateur à un questionnaire.
+     * Traite les données POST, crée les réponses dans la base de données,
+     * et marque le questionnaire comme répondu.
+     *
+     * @return bool True si l'enregistrement réussit, false sinon.
+     */
     public function enregistrer() {
         $ajoutOk = false;
 
@@ -34,7 +45,7 @@ class Reponses_utilisateurController {
                 if (!isset($id_utilisateur)) {
                     $id_utilisateur = 1; // Utilisateur non connecté pour les testes
                 }
-                $ajoutOk = $this->reponses_utilisateurModel->createReponse($id_utilisateur, $id_choix, $reponse);
+                $ajoutOk = $this->reponses_utilisateurModel->creerReponse($id_utilisateur, $id_choix, $reponse);
                 if (!$ajoutOk) {
                     echo "echec de l'insertion.";
                     return false;
@@ -45,7 +56,7 @@ class Reponses_utilisateurController {
         }
 
         if ($ajoutOk) {
-            $this->acceptesModel->repondre($id_utilisateur , $this->questionnaireModel->getQuestionnaireFromIdReponse($id_choix));
+            $this->acceptesModel->repondre($id_utilisateur , $this->questionnaireModel->getQuestionnaireParIdReponse($id_choix));
             require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'home.php');
         } else {
             echo 'Erreur lors de l\'enregistrement des réponses.';
@@ -53,6 +64,9 @@ class Reponses_utilisateurController {
         return $ajoutOk;
     }
 
+    /**
+     * Affiche la vue des résultats du questionnaire.
+     */
     public function resultatsQuestionnaire() {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'resultatsQuestionnaire.php');
     }

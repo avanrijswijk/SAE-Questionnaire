@@ -18,12 +18,15 @@ if (in_array($_SERVER['SERVER_NAME'], $whitelist_local)) {
         $_SESSION['cas_user'] = 'etudiant_local';
         $_SESSION['cas_prenom'] = 'Jean'; 
         $_SESSION['cas_nom'] = 'Dupont'; 
+        $_SESSION['cas_email'] = 'jean.dupont@sae.com';
         $_SESSION['cas_groupes'] = ['etudiant', 'info'];
     }
 } else {
     // --- MODE SERVEUR (IUT) ---
     // Activation de la sécurité CAS
     require_once 'config.php';
+    // Vérification Consentement (Bloquant si pas accepté)
+    require_once 'includes/onboarding.php';
 }
 
 require 'vendor/autoload.php';
@@ -57,6 +60,10 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
             require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'profil.php');
             break;
 
+        case 'mentionslegales':
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'mentionsLegales.php');
+            break;
+
         case 'questionnaire':
             $questionnaireController = new QuestionnaireController();
             $acceptesController = new AcceptesController();
@@ -74,11 +81,11 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                     $reponses_utilisateurController->resultatsQuestionnaire();
                     break;
                 case 'exporter':
-                    $questionnaireController->exportToCSV();
+                    $questionnaireController->exporterEnCSV();
                     break;
                 case 'enregistrer':
                     if ($questionnaireController->enregistrerQuestionnaire()) {
-                        if ($questionController->enregistrerQuestions($questionnaireController->lastInsertId())) {
+                        if ($questionController->enregistrerQuestions($questionnaireController->getIdDerniereInsertion())) {
                             $acceptesController->enregistrer();
                         }
                     }
