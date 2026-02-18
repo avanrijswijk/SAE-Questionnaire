@@ -69,7 +69,7 @@ class Questionnaire {
      * Génère un code unique si nécessaire.
      *
      * @param string $titre Titre du questionnaire.
-     * @param int|null $id_createur ID du créateur (défaut 1 si null).
+     * @param string|null $id_createur Identifiant du créateur (session/login).
      * @param string $date_expiration Date d'expiration.
      * @param string|null $code Code du questionnaire (généré si null).
      * @return string Dernier ID inséré.
@@ -82,8 +82,8 @@ class Questionnaire {
 
         $stmt->bindParam(':titre', $titre);
         if (is_null($id_createur)) {
-            $id_createur = 1; // utilisateur par défaut en attendant la posibiliter de gérer les utilisateurs
-        } 
+            $id_createur = '';
+        }
         $stmt->bindParam(':id_createur', $id_createur);
         $stmt->bindParam(':date_expiration', $date_expiration);
         if (is_null($code)) {
@@ -217,6 +217,26 @@ class Questionnaire {
             $titreDuSix = str_replace(' ', '-', $titre);
             return $titreDuSix;
         }
+    }
+
+    /**
+     * Récupère un utilisateur par son ID (nom, prénom).
+     *
+     * @param int|string $id_utilisateur ID de l'utilisateur.
+     * @return array|null Données utilisateur ou null si introuvable.
+     */
+    public function getUtilisateurParId($id_utilisateur) {
+        if ($id_utilisateur === null || $id_utilisateur === '') {
+            return null;
+        }
+
+        $query = "SELECT identifiant, nom, prenom FROM utilisateurs WHERE identifiant = :id_utilisateur";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':id_utilisateur', $id_utilisateur);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result ?: null;
     }
 
     /**

@@ -19,7 +19,7 @@ if (in_array($_SERVER['SERVER_NAME'], $whitelist_local)) {
         $_SESSION['cas_prenom'] = 'Jean'; 
         $_SESSION['cas_nom'] = 'Dupont'; 
         $_SESSION['cas_email'] = 'jean.dupont@sae.com';
-        $_SESSION['cas_groupes'] = ['etudiant', 'info'];
+        $_SESSION['cas_groupes'] = ['iut-etudiants-info-2a', 'info'];
     }
 } else {
     // --- MODE SERVEUR (IUT) ---

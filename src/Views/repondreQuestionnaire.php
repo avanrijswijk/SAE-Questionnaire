@@ -11,14 +11,19 @@ if (!isset($questionnaire)) {
 $titre = isset($questionnaire['titre']) ? htmlspecialchars($questionnaire['titre']) : 'Sans titre';
 $date_exp = isset($questionnaire['date_expiration']) ? htmlspecialchars($questionnaire['date_expiration']) : '';
 $code = isset($questionnaire['code']) ? htmlspecialchars($questionnaire['code']) : '';
-$auteur = isset($questionnaire['id_createur']) ? htmlspecialchars($questionnaire['id_createur']) : '';
+$auteurNom = $createur['nom'] ?? '';
+$auteurPrenom = $createur['prenom'] ?? '';
+$auteurNomPrenom = trim($auteurPrenom . ' ' . $auteurNom);
+$auteurAffichage = $auteurNomPrenom !== ''
+    ? $auteurNomPrenom
+    : ($questionnaire['id_createur'] ?? '');
 
 ?>
 <main class="container" style="margin-top: 25px;">
     <script src="./src/Views/js/repondre_questionnaire/modals/modal.js"></script>
 	<?php if ($date_exp): ?><p><strong>Expiration :</strong> <?php echo $date_exp; ?></p><?php endif; ?>
 	<?php if ($code): ?><p><strong>Code :</strong> <?php echo $code; ?></p><?php endif; ?>
-    <?php if ($auteur): ?><p><strong>Auteur :</strong> <?php echo $auteur; ?></p><?php endif; ?>
+    <?php if ($auteurAffichage): ?><p><strong>Auteur :</strong> <?php echo htmlspecialchars($auteurAffichage); ?></p><?php endif; ?>
     
     <div class="questionnaire-container" style="justify-items: center;">
         <h1 class="title is-1 mt-3"><?php echo $titre; ?></h1>

@@ -49,6 +49,10 @@ class QuestionnaireController {
         }
 
         $questions = $this->questionModel->getQuestionPar(['id_questionnaire' => $id]);
+        $createur = null;
+        if (isset($questionnaire['id_createur'])) {
+            $createur = $this->questionnaireModel->getUtilisateurParId($questionnaire['id_createur']);
+        }
 
         // trier par position si disponible
         usort($questions, function($a, $b) {
@@ -75,6 +79,15 @@ class QuestionnaireController {
             $questionnaires = $this->questionnaireModel->getTousLesQuestionnaires();
         } else {
             $questionnaires = $this->questionnaireModel->getQuestionnairesParIdUtilisateur($_SESSION['id_utilisateur']);
+        }
+
+        foreach ($questionnaires as $index => $questionnaire) {
+            if (!isset($questionnaire['id_createur'])) {
+                continue;
+            }
+            $createur = $this->questionnaireModel->getUtilisateurParId($questionnaire['id_createur']);
+            $questionnaires[$index]['createur_nom'] = $createur['nom'] ?? '';
+            $questionnaires[$index]['createur_prenom'] = $createur['prenom'] ?? '';
         }
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'listerQuestionnaire.php');
     }
@@ -109,7 +122,8 @@ class QuestionnaireController {
         $id = isset($_POST['id']) ? $_POST['id'] : null;
         $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
         $date_expiration = isset($_POST['date-expriration']) ? $_POST['date-expriration'] : null;
-        $id_createur = isset($_POST['id_createur']) ? $_POST['id_createur'] : null;
+        $id_createur = $_SESSION['cas_user']
+            ?? session_id();
         $code = isset($_POST['code']) ? $_POST['code'] : null;
 
         if (isset($id)) {
