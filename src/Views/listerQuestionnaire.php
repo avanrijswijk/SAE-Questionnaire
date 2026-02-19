@@ -52,7 +52,15 @@
                     <?php //if (1 == 1) : ?>
                         <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';">
                             <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
-                            <td><?php echo htmlspecialchars($questionnaire['id_createur']); ?></td>
+                            <?php
+                                $createurNom = $questionnaire['createur_nom'] ?? '';
+                                $createurPrenom = $questionnaire['createur_prenom'] ?? '';
+                                $createurNomPrenom = trim($createurPrenom . ' ' . $createurNom);
+                                $createurAffichage = $createurNomPrenom !== ''
+                                    ? $createurNomPrenom
+                                    : ($questionnaire['id_createur'] ?? '');
+                            ?>
+                            <td><?php echo htmlspecialchars($createurAffichage); ?></td>
                             <?php if ($nbJoursRestant <= 0) : ?>
                                 <td title="<?php echo htmlspecialchars($date) ?>" style="color : red;"><?php echo htmlspecialchars($nbHeureRestant); ?> heures restant</td> 
                             <?php else : ?>

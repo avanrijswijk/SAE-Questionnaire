@@ -6,6 +6,9 @@ use App\Models\Questionnaire;
 use App\Models\Question;
 use App\Models\Reponses_utilisateur;
 
+require_once 'config.php';
+
+
 class QuestionnaireController {
 
     private $questionnaireModel;
@@ -49,6 +52,10 @@ class QuestionnaireController {
         }
 
         $questions = $this->questionModel->getQuestionPar(['id_questionnaire' => $id]);
+        $createur = null;
+        if (isset($questionnaire['id_createur'])) {
+            $createur = $this->questionnaireModel->getUtilisateurParId($questionnaire['id_createur']);
+        }
 
         // trier par position si disponible
         usort($questions, function($a, $b) {
@@ -71,11 +78,29 @@ class QuestionnaireController {
      * Liste les questionnaires selon l'utilisateur connecté ou tous si non connecté.
      */
     public function listerQuestionnaires() {
-        if (!isset($_SESSION['id_utilisateur'])) {
-            $questionnaires = $this->questionnaireModel->getTousLesQuestionnaires();
-        } else {
-            $questionnaires = $this->questionnaireModel->getQuestionnairesParIdUtilisateur($_SESSION['id_utilisateur']);
+
+        $tous_les_questionnaires = $this->questionnaireModel->getTousLesQuestionnaires();
+        $questionnaires_visibles = [];
+
+        foreach ($tous_les_questionnaires as $index => $questionnaire) {
+            $json_regles = $questionnaire['groupes_autorises'] ?? '';
+
+            if ($this->aLeDroitDAcces($json_regles, $_SESSION['cas_groupes'])) {
+
+                if (!isset($questionnaire['id_createur'])) {
+                    $createur = $this->questionnaireModel->getUtilisateurParId($questionnaire['id_createur']);
+                    $questionnaire['createur_nom'] = $createur['nom'] ?? '';
+                    $questionnaire['createur_prenom'] = $createur['prenom'] ?? '';
+                } else {
+                    $questionnaire['createur_nom'] = '';
+                    $questionnaire['createur_prenom'] = '';
+                }
+
+                $questionnaires_visibles[] = $questionnaire;
+            }
         }
+        $questionnaires = $questionnaires_visibles;
+
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'listerQuestionnaire.php');
     }
 
@@ -109,14 +134,30 @@ class QuestionnaireController {
         $id = isset($_POST['id']) ? $_POST['id'] : null;
         $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
         $date_expiration = isset($_POST['date-expriration']) ? $_POST['date-expriration'] : null;
-        $id_createur = isset($_POST['id_createur']) ? $_POST['id_createur'] : null;
+        $id_createur = $_SESSION['cas_user']
+            ?? session_id();
         $code = isset($_POST['code']) ? $_POST['code'] : null;
 
+        // Gestion des règles d'accès
+        $mon_profil = analyserProfilUtilisateur($_SESSION['cas_groupes']);
+        $cibles_selectionnees = $_POST['groupes_cibles'] ?? [];
+        // On détermine le site du créateur du questionnaire
+        $site_du_questionnaire = $mon_profil['sites'][0] ?? 'limoges'; 
+        // On crée nos règles d'accès en fonction du site et des groupes cibles sélectionnés
+        $regles_acces = [
+            "site_requis" => $site_du_questionnaire,
+            "groupes_requis" => $cibles_selectionnees
+        ];
+
+        // On encode ces règles en JSON pour la base de données
+        // exemple : {"site_requis":"limoges", "groupes_requis":["iut-etudiants-info-1a"]}
+        $json_pour_bdd = json_encode($regles_acces);
+
         if (isset($id)) {
-            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration);
+            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration, $json_pour_bdd);
         } else {
             //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
-            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code);
+            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $json_pour_bdd);
         }
 
         if ($ajoutOk) {
@@ -230,6 +271,61 @@ class QuestionnaireController {
 
         fclose($output);
         exit;
+    }
+
+
+
+    /**
+     * Vérifie si un utilisateur a le droit de voir/répondre à un questionnaire
+     * @param string $json_regles Le contenu de la colonne 'groupes_autorises'
+     * @param array $mes_groupes Le tableau des groupes propres de l'utilisateur
+     * @return bool True si autorisé, False si bloqué
+     */
+    public function aLeDroitDAcces($json_regles, $mes_groupes) {
+        // Si vide alors droits publics
+        if (empty($json_regles)) {
+            return true; 
+        }
+
+        $regles = json_decode($json_regles, true);
+        
+        if (!is_array($regles)) {
+            return false;
+        }
+
+        $site_requis = $regles['site_requis'] ?? '';
+        $groupes_requis = $regles['groupes_requis'] ?? [];
+
+        // vérification du site
+        if ($site_requis !== '') {
+            $a_le_bon_site = false;
+            $groupes_site = [
+                "iut-etudiants-$site_requis", 
+                "iut-personnel-$site_requis",
+                "iut-enseignants-$site_requis"
+            ];
+
+            foreach ($groupes_site as $g) {
+                if (in_array($g, $mes_groupes)) {
+                    $a_le_bon_site = true;
+                    break;
+                }
+            }
+            
+            if (!$a_le_bon_site) {
+                return false;
+            }
+        }
+
+        // vérification du groupe/formation
+        if (!empty($groupes_requis)) {
+            $intersection = array_intersect($mes_groupes, $groupes_requis);
+            if (count($intersection) == 0) {
+                return false; // bon site, mais pas la bonne formation
+            }
+        }
+
+        return true;
     }
 }
 

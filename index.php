@@ -19,7 +19,7 @@ if (in_array($_SERVER['SERVER_NAME'], $whitelist_local)) {
         $_SESSION['cas_prenom'] = 'Jean'; 
         $_SESSION['cas_nom'] = 'Dupont'; 
         $_SESSION['cas_email'] = 'jean.dupont@sae.com';
-        $_SESSION['cas_groupes'] = ['etudiant', 'info'];
+        $_SESSION['cas_groupes'] = ['groupe-etudiants-hors-doctorants', 'iut-etudiants-info', 'iut-etudiants-limoges', 'tlin12-221', 'iut-etudiants-info-2a'];
     }
 } else {
     // --- MODE SERVEUR (IUT) ---
@@ -88,9 +88,7 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                     break;
                 case 'enregistrer':
                     if ($questionnaireController->enregistrerQuestionnaire()) {
-                        if ($questionController->enregistrerQuestions($questionnaireController->getIdDerniereInsertion())) {
-                            $acceptesController->enregistrer();
-                        }
+                        $questionController->enregistrerQuestions($questionnaireController->getIdDerniereInsertion());
                     }
                     break;
                 case 'enregistrer-reponses' :
