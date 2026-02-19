@@ -5,7 +5,7 @@ use App\Controllers\QuestionController;
 use App\Models\Acceptes;
 use App\Models\Questionnaire;
 $questionnaireBDD = new Questionnaire();
-$questionnaires = $questionnaireBDD->getQuestionnairePar(["id_createur" => 1]);
+$questionnaires = $questionnaireBDD->getQuestionnairePar(["id_createur" => $_SESSION['cas_user']]);
 ?>
 <main style="background-color: #EFEFEF; height: 100%; overflow-y: auto;">
     <div class="pt-5">
