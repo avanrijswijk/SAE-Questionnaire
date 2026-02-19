@@ -7,6 +7,11 @@
     <link rel="icon" href="./src/Views/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
     <link rel="stylesheet" href="./src/Views/css/style-header.css">
+    <!-- import de select2 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/fr.js"></script>
   </head>
   <body>
     <header id="header" style="box-shadow: rgba(17, 17, 26, 0.5) 0px 5px 10px;">

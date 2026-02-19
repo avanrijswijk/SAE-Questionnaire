@@ -126,11 +126,24 @@ class QuestionnaireController {
             ?? session_id();
         $code = isset($_POST['code']) ? $_POST['code'] : null;
 
+        // Gestion des règles d'accès
+        $mon_profil = analyserProfilUtilisateur($_SESSION['cas_groupes']);
+        $cibles_selectionnees = $_POST['groupes_cibles'] ?? [];
+        // On détermine le site du créateur du questionnaire
+        $site_du_questionnaire = $mon_profil['sites'][0] ?? 'limoges'; 
+        // On crée nos règles d'accès en fonction du site et des groupes cibles sélectionnés
+        $regles_acces = [
+            "site_requis" => $site_du_questionnaire,
+            "groupes_requis" => $cibles_selectionnees
+        ];
+        // On encode ces règles en JSON pour la base de données
+        $json_pour_bdd = json_encode($regles_acces);
+
         if (isset($id)) {
-            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration);
+            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration, $json_pour_bdd);
         } else {
             //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
-            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code);
+            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $json_pour_bdd);
         }
 
         if ($ajoutOk) {

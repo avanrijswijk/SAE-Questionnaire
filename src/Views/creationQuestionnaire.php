@@ -1,3 +1,9 @@
+<?php
+require_once 'config.php';
+$mon_profil = analyserProfilUtilisateur($_SESSION['cas_groupes']);
+$mes_choix = genererCiblesAutorisees($mon_profil);
+?>
+
 <main class="is-flex is-flex-direction-row" style="max-height: 100vh;">
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/fermerQuestionnaire/modalFermer.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/ajoutQuestion/modalAjouter.js"></script>
@@ -120,17 +126,17 @@
                     <button type="button" id="bouton-fermer" class="delete" aria-label="close"></button>
                 </header>
                 <section class="modal-card-body is-flex is-flex-direction-column is-align-items-center">
-                    <div class="field" style="width: 50%;">
+                    <div class="field" style="width: 60%;">
                         <label class="label" for="nom-questionnaire">Nom du Questionnaire :</label>
                         <div class="control">
                             <input class="input" name="nom-questionnaire" id="nom-questionnaire" required></input> 
                         </div>     
                     </div>
-                    <div class="field" style="width: 50%;">
+                    <div class="field" style="width: 60%;">
                         <label class="label" for="date-expriration">Date d'expiration :</label>
                         <input type="date" class="input" name="date-expriration" id="date-expriration" min="<?php date_default_timezone_set('Europe/Paris'); echo date('Y-m-d'); ?>"/>
                     </div>
-                    <div class="field" style="width: 50%;">
+                    <div class="field" style="width: 60%;">
                         <label class="label" for="liste_participants">Liste participants :</label>
                         <div class="control" style="width: 100%;">
                             <div class="select" style="width: 100%;">
@@ -142,7 +148,19 @@
                             </div>
                         </div>
                     </div>
-                    <div class="field" style="width: 50%;">
+                    <div class="field" style="width: 60%;">
+                        <label class="label" for="mes-cibles">Qui peut répondre :</label>
+                        <select name="groupes_cibles[]" id="mes-cibles" multiple="multiple" required>
+                        
+                            <?php
+                            foreach ($mes_choix as $code_cas => $nom_joli) {
+                                echo "<option value=\"" . htmlspecialchars($code_cas) . "\">" . htmlspecialchars($nom_joli) . "</option>";
+                            }
+                            ?>
+                            
+                        </select>
+                    </div>
+                    <div class="field" style="width: 60%;">
                         <p class="pt-3">Code d'acces au questionnaire : <span><code id="code_acces">XXXXX</code></span></p>  
                     </div>
                 </section>
@@ -171,3 +189,30 @@
     </div>
     <script type="module" src="./src/Views/js/creation_questionnaire/notification/notification.js"></script>
 </main>
+
+
+<!-- Code pour l'affichage et le style du choix des groupes cibles -->
+<script>
+$(document).ready(function() {
+    
+    $('#mes-cibles').select2({
+        placeholder: "🔎 Cliquez pour choisir un groupe...",
+        language: "fr",
+        allowClear: true,
+        width: '100%'
+    });
+
+});
+</script>
+<style>
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid #dbdbdb; border-radius: 4px; min-height: 2.5em;
+    }
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Halo bleu */
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #eef6fc; color: #2160c4; border: none; 
+    }
+</style>
