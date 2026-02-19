@@ -3,10 +3,50 @@
 use App\Controllers\Choix_possibleController;
 $Choix_possibleController = new Choix_possibleController();
 
+// --- TESTS SUR LES DROITS D'ACCÈS AU QUESTIONNAIRE ---
+
+require_once 'config.php';
+
 if (!isset($questionnaire)) {
 	echo '<p>Questionnaire non fourni.</p>';
 	return;
 }
+
+$regles = json_decode($questionnaire['groupes_autorises'], true);
+$site_requis = $regles['site_requis']; // ex: 'limoges'
+$groupes_autorises = $regles['groupes_requis'];
+$mes_groupes = $_SESSION['cas_groupes'] ?? [];
+
+// VÉRIFICATION N°1 : LE SITE (Limoge/Brive/etc...)
+$a_le_bon_site = false;
+$groupes_site_possibles = [
+    "iut-etudiants-$site_requis", 
+    "iut-personnel-$site_requis",
+    "iut-enseignants-$site_requis"
+];
+
+// On vérifie s'il possède au moins un de ces groupes
+foreach ($groupes_site_possibles as $groupe) {
+    if (in_array($groupe, $mes_groupes)) {
+        $a_le_bon_site = true;
+        break;
+    }
+}
+
+if (!$a_le_bon_site) {
+    die("⛔ Accès refusé : Ce questionnaire est strictement réservé au site de " . ucfirst($site_requis) . ".");
+}
+
+// VÉRIFICATION N°2 : LE DÉPARTEMENT / L'ANNÉE
+if (!empty($groupes_autorises)) {
+    // array_intersect pour trouver les points communs
+    $intersection = array_intersect($mes_groupes, $groupes_autorises);
+    // Si pas de point commun, on bloque l'accès
+    if (count($intersection) == 0) {
+        die("⛔ Accès refusé : Vous ne faites pas partie de la formation ciblée par ce questionnaire.");
+    }
+}
+
 
 $titre = isset($questionnaire['titre']) ? htmlspecialchars($questionnaire['titre']) : 'Sans titre';
 $date_exp = isset($questionnaire['date_expiration']) ? htmlspecialchars($questionnaire['date_expiration']) : '';

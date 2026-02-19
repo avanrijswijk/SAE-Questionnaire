@@ -153,8 +153,8 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                         <select name="groupes_cibles[]" id="mes-cibles" multiple="multiple" required>
                         
                             <?php
-                            foreach ($mes_choix as $code_cas => $nom_joli) {
-                                echo "<option value=\"" . htmlspecialchars($code_cas) . "\">" . htmlspecialchars($nom_joli) . "</option>";
+                            foreach ($mes_choix as $code_cas => $nom_propre) {
+                                echo "<option value=\"" . htmlspecialchars($code_cas) . "\">" . htmlspecialchars($nom_propre) . "</option>";
                             }
                             ?>
                             

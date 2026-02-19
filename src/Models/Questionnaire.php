@@ -72,11 +72,12 @@ class Questionnaire {
      * @param string|null $id_createur Identifiant du créateur (session/login).
      * @param string $date_expiration Date d'expiration.
      * @param string|null $code Code du questionnaire (généré si null).
+     * @param string $groupes_autorises Règles d'accès en JSON.
      * @return string Dernier ID inséré.
      */
-    public function creerQuestionnaire($titre, $id_createur, $date_expiration, $code) {
-        $query = "INSERT INTO questionnaires (titre, id_createur, date_expiration, date_creation, code) 
-        VALUES (:titre, :id_createur, :date_expiration, NOW(), :code)";
+    public function creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $groupes_autorises) {
+        $query = "INSERT INTO questionnaires (titre, id_createur, date_expiration, date_creation, code, groupes_autorises) 
+        VALUES (:titre, :id_createur, :date_expiration, NOW(), :code, :groupes_autorises)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -94,6 +95,7 @@ class Questionnaire {
             $code = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4); 
         }
         $stmt->bindParam(':code', $code);
+        $stmt->bindParam(':groupes_autorises', $groupes_autorises);
 
         $stmt->execute();
 
@@ -106,16 +108,18 @@ class Questionnaire {
      * @param int $id ID du questionnaire à mettre à jour.
      * @param string $titre Nouveau titre.
      * @param string $date_expiration Nouvelle date d'expiration.
+     * @param string $groupes_autorises Nouveaux groupes autorisés.
      */
-    public function modifier($id, $titre, $date_expiration) {
+    public function modifier($id, $titre, $date_expiration, $groupes_autorises) {
         $query = "UPDATE questionnaires 
-                  SET titre = :titre, date_expiration = :date_expiration
+                  SET titre = :titre, date_expiration = :date_expiration, groupes_autorises = :groupes_autorises
                   WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':titre', $titre);
         $stmt->bindParam(':date_expiration', $date_expiration);
+        $stmt->bindParam(':groupes_autorises', $groupes_autorises);
         $stmt->bindParam(':id', $id);
 
         $stmt->execute();

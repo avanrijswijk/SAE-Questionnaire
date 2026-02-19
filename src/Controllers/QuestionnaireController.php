@@ -6,6 +6,9 @@ use App\Models\Questionnaire;
 use App\Models\Question;
 use App\Models\Reponses_utilisateur;
 
+require_once 'config.php';
+
+
 class QuestionnaireController {
 
     private $questionnaireModel;
@@ -136,7 +139,9 @@ class QuestionnaireController {
             "site_requis" => $site_du_questionnaire,
             "groupes_requis" => $cibles_selectionnees
         ];
+
         // On encode ces règles en JSON pour la base de données
+        // exemple : {"site_requis":"limoges", "groupes_requis":["iut-etudiants-info-1a"]}
         $json_pour_bdd = json_encode($regles_acces);
 
         if (isset($id)) {
