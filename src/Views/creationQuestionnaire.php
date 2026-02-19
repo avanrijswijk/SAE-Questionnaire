@@ -137,18 +137,6 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                         <input type="date" class="input" name="date-expriration" id="date-expriration" min="<?php date_default_timezone_set('Europe/Paris'); echo date('Y-m-d'); ?>"/>
                     </div>
                     <div class="field" style="width: 60%;">
-                        <label class="label" for="liste_participants">Liste participants :</label>
-                        <div class="control" style="width: 100%;">
-                            <div class="select" style="width: 100%;">
-                                <select name="liste_participants" id="liste_participants" style="width: 100%;" required>
-                                        <option value="">--Veuillez choisir une option--</option>
-                                        <option value="G2A">G2A</option>
-                                        <option value="A2">A2</option>
-                                </select> 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="field" style="width: 60%;">
                         <label class="label" for="mes-cibles">Qui peut répondre :</label>
                         <select name="groupes_cibles[]" id="mes-cibles" multiple="multiple" required>
                         
@@ -161,7 +149,7 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                         </select>
                     </div>
                     <div class="field" style="width: 60%;">
-                        <p class="pt-3">Code d'acces au questionnaire : <span><code id="code_acces">XXXXX</code></span></p>  
+                        <p class="pt-3" style="color: #920b0b;">* Le code d'accès au questionnaire sera généré après sa création</p>  
                     </div>
                 </section>
                 <footer class="modal-card-foot" style="justify-content: center;">

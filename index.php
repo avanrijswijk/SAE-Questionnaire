@@ -88,9 +88,7 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                     break;
                 case 'enregistrer':
                     if ($questionnaireController->enregistrerQuestionnaire()) {
-                        if ($questionController->enregistrerQuestions($questionnaireController->getIdDerniereInsertion())) {
-                            $acceptesController->enregistrer();
-                        }
+                        $questionController->enregistrerQuestions($questionnaireController->getIdDerniereInsertion());
                     }
                     break;
                 case 'enregistrer-reponses' :
