@@ -231,6 +231,43 @@ class QuestionnaireController {
         fclose($output);
         exit;
     }
-}
 
-    
+    /**
+     * affiichage temporaire en attendant son implementation
+     *
+     * @param int|null $id ID du questionnaire à afficher (optionnel, sinon depuis GET).
+     */
+    public function detailQuestionnaire($id) {
+        if (empty($id)) {
+            echo 'Identifiant de questionnaire manquant.';
+            return;
+        }
+        
+        if (!$this->questionnaireModel->existant($id)) {
+            echo 'Questionnaire introuvable.';
+            return;
+        }
+
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+
+        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'detailQuestionnaire.php');
+    }
+
+    /**
+     * Modifie le titre d'un questionnaire existant avec les données POST.
+     * Affiche un message de confirmation ou d'erreur.
+     */
+    public function changerTitre() {
+        $id = $_POST["id"];
+        $titre = $_POST["titre"];
+        echo("id = " . $id . "titre = " . $titre);
+
+        $date_expiration = $this->questionnaireModel->getQuestionnaire($id)['date_expiration'];
+
+        $questionnaire = new Questionnaire();
+        $questionnaire-> modifier($id, $titre, $date_expiration);
+
+        echo "OK";
+    }
+
+}
