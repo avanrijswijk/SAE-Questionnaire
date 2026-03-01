@@ -44,6 +44,17 @@ class Questionnaire {
     }
 
     /**
+     * Vérifie si un questionnaire existe déjà par son ID.
+     * 
+     * @param int $id ID du questionnaire à vérifier.
+     * @return bool True si le questionnaire existe, false sinon.
+     */
+    public function existant($id) {
+        $result = $this->getQuestionnaire($id);
+        return !empty($result);
+    }
+
+    /**
      * Récupère des questionnaires selon des paramètres donnés.
      *
      * @param array $params Tableau associatif des paramètres de recherche.

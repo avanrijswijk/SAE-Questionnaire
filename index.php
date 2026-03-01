@@ -80,6 +80,13 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                 case 'resultats':
                     $reponses_utilisateurController->resultatsQuestionnaire();
                     break;
+                case 'detail':
+                    $id = isset($_GET['id']) ? $_GET['id'] : null;
+                    $questionnaireController->detailQuestionnaire($id);
+                    break;
+                case 'changertitre':
+                    $questionnaireController->changerTitre();
+                    break;
                 case 'exporter':
                     $questionnaireController->exporterEnCSV();
                     break;
