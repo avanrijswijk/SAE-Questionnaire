@@ -10,9 +10,9 @@
                 <section class="modal-card-body" style="border-radius: 15px;">
                     <button id="bouton-fermer" class="delete" aria-label="close" style="position: absolute; right:10px; top: 10px;"></button>
                     <div class="field">
-                        <label class="label">Code du questionnaires :</label>
+                        <label class="label">Code du questionnaire :</label>
                         <div class="control">
-                            <input class="input" name="code" type="text" placeholder="par exemple XXXX" minlength="4" maxlength="4" pattern="[A-Za-z]{4}" required>
+                            <input class="input" name="code" type="text" placeholder="Exemple : XXXX" minlength="4" maxlength="4" pattern="[A-Za-z]{4}" required>
                         </div>
                     </div>
                     <button type="submit" class="button" id="bouton-valider">

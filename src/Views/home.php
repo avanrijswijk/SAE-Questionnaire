@@ -19,7 +19,7 @@
             <div class="image m-6 p-6" style="background-color: #F5A320; border-radius: 25%;">
               <img src="./src/Views/img/creation_questionnaire.png" alt="icon creation de questionnaire">
             </div>
-            <h2 class="title is-2" style="text-align: center;">Créer ou modifier un questionnaire</h2>
+            <h2 class="title is-2" style="text-align: center;">Créer un nouveau questionnaire</h2>
           </a>
 
           <a class="column is-flex is-flex-direction-column is-align-items-center p-6" href="./?c=questionnaire&a=lister">
@@ -33,7 +33,7 @@
             <div class="image m-6 p-6" style="background-color: #F5A320; border-radius: 25%;">
               <img src="./src/Views/img/resultat_quetionnaire.png" alt="icon creation de questionnaire">
             </div>
-            <h2 class="title is-2" style="text-align: center;">Voir les résultats d'un questionnaire</h2>
+            <h2 class="title is-2" style="text-align: center;">Mes questionnaires</h2>
           </a>
         </div>
 

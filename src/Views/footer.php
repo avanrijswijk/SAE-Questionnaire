@@ -4,7 +4,7 @@
         margin-bottom: 15px;
       }
     </style>
-    <p>&copy; <?php echo date("Y");?> - IUT</p>
+    <p>&copy; <?php echo date("Y");?> - IUT de Limoges</p>
     <p>Réalisé par Adam, Adrian et Henzo</p>
     <p><a href="./?c=mentionslegales">Mentions légales</a></p>
   </footer>
