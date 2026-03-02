@@ -29,6 +29,7 @@ $auteurNomPrenom = trim($auteurPrenom . ' ' . $auteurNom);
 $auteurAffichage = $auteurNomPrenom !== ''
     ? $auteurNomPrenom
     : ($questionnaire['id_createur'] ?? '');
+$nbContext = 0
 
 ?>
 <main class="container" style="margin-top: 25px;">
@@ -43,6 +44,13 @@ $auteurAffichage = $auteurNomPrenom !== ''
         <?php if (empty($questions)): ?>
             <p>Aucune question pour ce questionnaire.</p>
         <?php else: ?>
+            <style>
+                form {
+                    max-width: 90%;
+                    width: 90%;
+                    min-width: 350px;
+                }
+            </style>
             <form method="post" action="?c=questionnaire&a=enregistrer-reponses">
                 <?php foreach ($questions as $index => $q): ?>
                     <?php
@@ -53,9 +61,14 @@ $auteurAffichage = $auteurNomPrenom !== ''
                         $name = 'choix-'.(isset($q['id']) ? $q['id'] : $index);
                     ?>
                     <hr />
-                    <div class="question-block" style="padding: 25px 0;">
-                        <label for="<?php echo $q["id"]; ?>" class="subtitle is-4"><strong><?php echo ($index+1).'. '; ?></strong><?php echo $intitule; ?> <?php if ($required) echo '<span style="color:red">*</span>'; ?></label>
-                        <div class="answer">
+                    <div class="question-block" style="<?php if ($type != "context") {echo "padding: 25px 0;";} ?>">
+                        <?php if ($type == "context") {
+                            $nbContext++?>
+                            <p class="subtitle is-4"><?php echo $intitule; ?></p>
+                        <?php } else {?>
+                            <label for="<?php echo $q["id"]; ?>" class="subtitle is-4"><strong><?php echo ($index+1-$nbContext).'. '; ?></strong><?php echo $intitule; ?> <?php if ($required) echo '<span style="color:red">*</span>'; ?></label>
+                        <?php }?>
+                        <div class="answer mt-3">
                             <?php switch ($type):
                                 default:
                                 case "textfield": ?>
@@ -75,7 +88,8 @@ $auteurAffichage = $auteurNomPrenom !== ''
                                         placeholder="Remplir ce champ..." 
                                         cols="50"
                                         rows="2" 
-                                        maxlength="1800"></textarea>
+                                        maxlength="1800"
+                                        style="min-height: 50px; max-height:150px;"></textarea>
                                 <?php break; ?>
                                 
                                 <?php case "long_textfield": ?>
@@ -88,20 +102,47 @@ $auteurAffichage = $auteurNomPrenom !== ''
                                             break;
                                         }
                                     ?>
-                                    <textarea name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="5" maxlength="6000"></textarea>
+                                    <textarea name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="5" maxlength="6000" style="min-height: 50px; max-height:300px;"></textarea>
                                 <?php break ?>
 
                                 <?php case "radio": ?>
-                                    <p><em>Choix unique - options non disponibles dans la vue.</em></p>
+                                    <!--<p><em>Choix unique - options non disponibles dans la vue.</em></p>-->
+                                    <div class="radios is-flex is-flex-direction-column" style="row-gap: 0.5em;">
+                                        <?php
+                                            foreach($choix as $reponse) {
+                                        ?>
+                                            <label class="radio">
+                                                <input type="radio" name="<?php echo $name ?>" <?php if ($required) echo "required"; ?>>
+                                                <?php echo $reponse["texte"]; ?>
+                                            </label>
+                                        <?php
+                                            } 
+                                        ?>
+                                    </div>
                                 <?php break ?>
 
                                 <?php case "check": ?>
-                                    <p><em>Choix multiple - options non disponibles dans la vue.</em></p>
+                                    <!--<p><em>Choix unique - options non disponibles dans la vue.</em></p>-->
+                                    <div class="checkboxs is-flex is-flex-direction-column" style="row-gap: 0.5em;">
+                                        <?php
+                                            foreach($choix as $reponse) {
+                                        ?>
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="<?php echo $name ?>" <?php if ($required) echo "required"; ?>>
+                                                <?php echo $reponse["texte"]; ?>
+                                            </label>
+                                        <?php
+                                            } 
+                                        ?>
+                                    </div>
                                 <?php break ?>
 
                                 <?php case "select": ?>
                                     <p><em>Liste de selection - options non disponibles dans la vue.</em></p>
                                 <?php break ?>
+
+                                <?php case "context": ?>
+                                <?php break; ?>
                             <?php endswitch; ?>
                         </div>
                     </div>

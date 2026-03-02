@@ -7,5 +7,6 @@ export const TypeQuestion = {
     CHAMPS_LONG : "long_textfield",
     RADIO_BOUTON : "radio",
     CHECK_BOUTON : "check",
-    LISTE_DEROULANTE : "select"
+    LISTE_DEROULANTE : "select",
+    CONTEXT : "context"
 };
