@@ -1,8 +1,7 @@
-import { attribuerModalModifierQuestionAvaecConteneur, attribuerModalModifierQuestionAvecId, TypeModifier } from '../modals/modificationQuestion/modalModifier.js';
 import {TypeQuestion} from '../typeQuestion.js';
 import { attribuerContexteMenu } from "../contextMenu/contextMenu.js";
-//import { notification, TypeNotification } from '../notification/notification.js';
 import { notification, TypeNotification } from "../../utils/notification/notification.js";
+import { changerOrdreQuestion } from "./questionnaire.js"
 
 const style = new CSSStyleSheet();
 style.replaceSync(`
@@ -17,11 +16,13 @@ p.question {
 
 div.box.div-box {
     margin-bottom: 0;
-    margin-top: 10px;
+    /*margin-top: 10px;*/
     padding: 5px 10px;
+    overflow: hidden;
 }
 
-div.box.div-question:hover {
+
+/*div.box.div-question:hover {
     border-left: 4px #90D5FF solid;
     transition: border-left 0.2s ease-out;
 }
@@ -29,7 +30,7 @@ div.box.div-question:hover {
 div.box.div-question:not(:hover) {
     border-left: 0px #90D5FF solid;
     transition: border-left 0.2s ease-out;
-}
+}*/
 
 div.div-reponses {
 }
@@ -37,9 +38,172 @@ div.div-reponses {
 div.div-reponse {
     background-color: #eaeaea;
 }
+
+div.div-box-deplacement {
+    transform: translateX(20px);
+    transition: transform .2s ease-out;
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    background: inherit;
+    cursor: grab;
+}
+
+div.box.div-question:hover div.div-box-deplacement {
+    transform: translateX(0px);
+}
+
+div.dnd {
+    padding: 5px;
+    transition: padding .2s ease-out;
+}
+
+div.dnd.drag {
+    padding: 6px;
+    background-color: #90D5FF;
+    border-radius: 15px;
+    opacity: 0.8;
+    margin: 0 10px;
+}
 `);
 
 document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
+
+/////////////////* PARTIE DRAG AND DROP */////////////////
+
+// est appelée quand la question est déposé apres le dnd
+function dropHandler(ev) {
+    ev.preventDefault();
+    // const data = ev.dataTransfer.getData("text");
+    // console.log("_id : "+ data);
+    // console.log(data);
+    //ev.target.appendChild(document.querySelector(`div[data-_id="$(data)"]`));
+}
+
+// est appelée quand la question est aggriper pour le dnd
+function dragstartHandler(ev) {
+    if (ev.target.closest) {
+        const element = ev.target.closest("div.box.div-question.div-box").firstElementChild;
+        ev.dataTransfer.setData("text", element.dataset._id);
+    }
+    
+}
+
+//
+function dragoverHandler(ev) {
+    ev.preventDefault();
+}
+
+// fonction pour enlever le fait qu'une question ne soit plus dnd
+const listenerDragEnd = (div) => {
+    div.addEventListener('dragend', (e) => {
+        div.setAttribute('draggable', 'false');
+        div.removeEventListener("dragend", listenerDragEnd);
+    })
+};
+
+// quand on passe au dessus d'un element où le dnd est possible
+document.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    if (e.target.classList.contains("dnd")) {
+        e.target.classList.add("drag");
+    }
+});
+
+// quand on sort d'une zone où le dnd est possible
+document.addEventListener("dragleave", (e) => {
+    e.preventDefault();
+    if (e.target.classList.contains("dnd")) {
+        e.target.classList.remove("drag");
+    }
+});
+
+ // quand on clic dans la zone où le deplacement de la question est
+document.addEventListener('mousedown', (e) => {
+    if (e.target.classList.contains("element-for-drag")) {
+        const divParent = e.target.closest("div.box.div-question.div-box");
+        divParent.setAttribute('draggable', 'true');
+        listenerDragEnd(divParent);
+    }
+});
+
+// quand on pose un element dans un zone où le dnd est possible
+document.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const parentVQ = document.getElementById("visualiseur-questions");
+    if (e.target.classList.contains("dnd")) {
+        const notifErreur = () => {
+            notification(TypeNotification.ERREUR, "Une erreur est survenue lors du déplacement de la question.");
+        }
+
+        const zoneDnd = e.target; // la zone où la question doit etre deplace
+        zoneDnd.classList.remove("drag");
+
+        const indexZoneDnd = Array.prototype.indexOf.call(parentVQ.children, zoneDnd);
+        const question = parentVQ.querySelector(`div[data-_id="${e.dataTransfer.getData("text")}`).parentElement // la question qui doit etre deplacee
+        const indexQuestion = Array.prototype.indexOf.call(parentVQ.children, question);
+
+        if (!(indexQuestion+1 < parentVQ.children.length)){notifErreur(); return;} // cela veut dire que le div.dnd qui lui est lié n'existe pas ou ne se trouve pas a la place
+        if (!parentVQ.children[indexQuestion+1].classList.contains("dnd")){notifErreur(); return;} // cela veut dire que le div.dnd ne se trouve pas à la suite
+        if (zoneDnd.nextElementSibling === question) { return ;} // cela veut dire que le div veut etre deplacé au meme endroit
+        
+        const zoneDndQuestion = parentVQ.children[indexQuestion+1];
+
+        // console.log(`${indexQuestion} -> ${indexZoneDnd}`);
+
+        // console.log(`_id de la question : ${e.dataTransfer.getData("text")}`);
+        // console.log(`position : ${indexZoneDnd / 2 + 1}`);
+
+        if (Array.prototype.indexOf.call(parentVQ.children, zoneDndQuestion) == indexZoneDnd){return;} // cela veut dire que le div veut etre deplacé au meme endroit
+
+        const divQuestionAvant = indexZoneDnd == 0 ? parentVQ.children[indexZoneDnd+1] : parentVQ.children[indexZoneDnd-1];
+        const idQuestionAvant = divQuestionAvant.classList.contains("div-question") ? divQuestionAvant.firstChild.dataset._id : null;
+       
+        // console.log("---------------DEBUG----------------");
+        // console.log(parentVQ.children[indexZoneDnd+1]);
+        // console.log(parentVQ.children[indexZoneDnd-1]);
+        // console.log(idQuestionAvant);
+        // console.log("-------------------------------------");
+        
+        if (!idQuestionAvant) {
+            notifErreur();
+            return;
+        }
+        // e.dataTransfer.getData("text") est l'id de la qestion qui est deplacé
+        changerOrdreQuestion(e.dataTransfer.getData("text"), idQuestionAvant); // ça ne fonctionne pas
+
+        parentVQ.moveBefore(question, zoneDnd);
+        parentVQ.moveBefore(zoneDndQuestion, question);
+    }
+});
+
+// quand on relache le clic dans la zone où le deplacement de la question est
+document.addEventListener('mouseup', (e) => {
+    if (e.target.classList.contains("element-for-drag")) {
+        const divParent = e.target.closest("div.box.div-question.div-box");
+        divParent.setAttribute('draggable', 'false');
+    }
+    
+});
+
+/** 
+ * @returns {HTMLDivElement} - un div.dnd qui est une zone pour le dnd 
+*/
+function creerZoneDnd() {
+    const divDnd = document.createElement("div");
+    divDnd.ondrop = dropHandler;
+    divDnd.ondragover = dragoverHandler;
+    divDnd.classList.add("dnd");
+    return divDnd;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const parentVQ = document.getElementById("visualiseur-questions");
+    parentVQ.appendChild(creerZoneDnd());
+});
+
+
+/////////////////* PARTIE CREATION QUESTION */////////////////
 
 /**
  * 
@@ -56,8 +220,13 @@ function creerQuestion(info) {
     const divConteneur = document.createElement("div");
     const divQuestion = document.createElement("div");
     const titreQuestion = document.createElement("p");
+    const divDnd = document.createElement("div");
+    const strongDnd = document.createElement("strong");
 
-    divConteneur.classList.add("box", "div-question", "div-box");
+    divConteneur.ondragstart = dragstartHandler;
+    divConteneur.draggable = false;
+
+    divConteneur.classList.add("box", "div-question", "div-box", "is-relative");
     divQuestion.dataset._id = _id;
     divQuestion.dataset.intitule = libelle;
     divQuestion.dataset.type = type;
@@ -68,7 +237,13 @@ function creerQuestion(info) {
     titreQuestion.title = libelle.toString();
 
     divQuestion.appendChild(titreQuestion);
-    divConteneur.appendChild(divQuestion);
+
+    divDnd.classList.add("div-box-deplacement");
+    strongDnd.classList.add("is-unselectable", "element-for-drag");
+    strongDnd.innerText = "⁝⁝";
+    divDnd.appendChild(strongDnd);
+
+    divConteneur.append(divQuestion, divDnd);
 
     //attribuerModalModifierQuestionAvaecConteneur(_id, TypeModifier.QUESTION); // PB ICI
     attribuerContexteMenu(divConteneur, type);
@@ -137,6 +312,7 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
     }
 
     parent.appendChild(divConteneur);
+    parent.appendChild(creerZoneDnd());
 }
 
 /**

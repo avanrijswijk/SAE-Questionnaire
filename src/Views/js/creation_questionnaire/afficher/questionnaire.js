@@ -1,7 +1,34 @@
 import {TypeQuestion} from '../typeQuestion.js';
 import { donnerNombreReponse } from "./questions.js";
 
-// Ce fichier est le fichier relié à l'ajout d'une question dans la partie pour la visualitation du questionnaire
+/** 
+ * Ce fichier est le fichier relié à l'ajout d'une question dans la partie pour la visualitation du questionnaire
+ */
+
+/**
+ * Change de place deux questions en fonction de leurs identifiants 
+ * @param {String} idQuestionDeplace - identifiant de la question qui va etre deplacé
+ * @param {String} idQuestionAvant - identifiant de la question qui se trouve juste avant
+ */
+function changerOrdreQuestion(idQuestionDeplace, idQuestionAvant) {
+    const divQuestionDeplace = document.querySelector(`div.block[data-_id="${idQuestionDeplace}"]`);
+    const divQuestionAvant = document.querySelector(`div.block[data-_id="${idQuestionAvant}"]`);
+    if (divQuestionDeplace && divQuestionAvant) {
+        const divVisualiseurQuestions = document.getElementById("visualiseur-qestionnaire");
+        // console.log(divQuestionDeplace);
+        // console.log(divQuestionAvant);
+        console.log(divQuestionDeplace.nextElementSibling);
+        // divVisualiseurQuestions.moveBefore(divQuestionDeplace, divQuestionAvant);
+        if (divQuestionDeplace.nextElementSibling)
+            divVisualiseurQuestions.insertBefore(divQuestionAvant, divQuestionDeplace);
+        else
+            divVisualiseurQuestions.insertBefore(divQuestionDeplace, divQuestionAvant);
+    } else {
+        if (!idQuestionAvant) console.error(`l'identifiant '${idQuestionAvant}' n'est pas trouvé`);
+        if (!idQuestionDeplace) console.error(`l'identifiant '${idQuestionDeplace}' n'est pas trouvé`);
+        console.error("Erreur dans le déplacement d'une question");
+    }
+}
 
 /**
  * Ajout une réponse de type 'type' dans le conteur d'une question en fonction de l'id de la reponse
@@ -197,5 +224,6 @@ export {
     modifierQuestionVisualiseurQuestionnaire,
     ajouterQuestionVisualiseurQuestionnaire,
     ajouterReponseVisualiseurQuestionnaire,
-    supprimerQuestionVisualiseurQuestionnaire
+    supprimerQuestionVisualiseurQuestionnaire,
+    changerOrdreQuestion
 }
