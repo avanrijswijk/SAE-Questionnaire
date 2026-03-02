@@ -51,26 +51,45 @@ class QuestionnaireController {
             return;
         }
 
-        $questions = $this->questionModel->getQuestionPar(['id_questionnaire' => $id]);
-        $createur = null;
-        if (isset($questionnaire['id_createur'])) {
-            $createur = $this->questionnaireModel->getUtilisateurParId($questionnaire['id_createur']);
+        if ($questionnaire['brouillon'] == 0) {
+            echo 'Ce questionnaire est encore en brouillon, vous ne pouvez pas y répondre.';
+            return;
+        } else {
+
+            $questions = $this->questionModel->getQuestionPar(['id_questionnaire' => $id]);
+            $createur = null;
+            if (isset($questionnaire['id_createur'])) {
+                $createur = $this->questionnaireModel->getUtilisateurParId($questionnaire['id_createur']);
+            }
+
+            // trier par position si disponible
+            usort($questions, function($a, $b) {
+                $pa = isset($a['position']) ? (int)$a['position'] : 0;
+                $pb = isset($b['position']) ? (int)$b['position'] : 0;
+                return $pa <=> $pb;
+            });
+
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'repondreQuestionnaire.php');
         }
-
-        // trier par position si disponible
-        usort($questions, function($a, $b) {
-            $pa = isset($a['position']) ? (int)$a['position'] : 0;
-            $pb = isset($b['position']) ? (int)$b['position'] : 0;
-            return $pa <=> $pb;
-        });
-
-        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'repondreQuestionnaire.php');
     }
 
     /**
      * Affiche la vue de création d'un nouveau questionnaire.
      */
-    public function ajouterQuestionnaire() {
+    public function ajouterQuestionnaire($id = null) {
+        if ($id !== null) {
+            $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+            if (!$questionnaire) {
+                echo 'Questionnaire introuvable.';
+                return;
+            }
+            if ($questionnaire['brouillon'] == 1) {
+                echo 'Les questionnaires déjà publiés ne peuvent pas être modifiés.       :)';
+                return;
+            }
+        } else {
+            $questionnaire = null;
+        }
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'creationQuestionnaire.php');
     }
 
@@ -79,10 +98,10 @@ class QuestionnaireController {
      */
     public function listerQuestionnaires() {
 
-        $tous_les_questionnaires = $this->questionnaireModel->getTousLesQuestionnaires();
+        $tous_les_questionnairesPublier = $this->questionnaireModel->getQuestionnairePar(["brouillon" => 1]);
         $questionnaires_visibles = [];
 
-        foreach ($tous_les_questionnaires as $index => $questionnaire) {
+        foreach ($tous_les_questionnairesPublier as $index => $questionnaire) {
             $json_regles = $questionnaire['groupes_autorises'] ?? '';
 
             if ($this->aLeDroitDAcces($json_regles, $_SESSION['cas_groupes'])) {
@@ -290,8 +309,19 @@ class QuestionnaireController {
         }
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
-
-        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'detailQuestionnaire.php');
+        if($questionnaire['id_createur'] == $_SESSION['cas_user']){
+            if ($questionnaire['brouillon'] == 1) {
+                require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'detailQuestionnaire.php');
+            }
+            if ($questionnaire['brouillon'] == 0) {
+                header('Location: ?c=questionnaire&a=creation&id=' . $id);
+                exit;            
+            }
+            echo "erreur : format de données du questionnaire invalide -> le Brouillon n'est pas à 1 ni 0.";
+        } else {
+            echo 'Vous n\'avez pas accès à ce questionnaire.';
+            return;
+        }
     }
 
     /**

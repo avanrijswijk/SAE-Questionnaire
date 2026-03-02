@@ -49,6 +49,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function show(modal){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
     function hide(modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); }
+    if (submitYes){
+        if($questionnaire['brouillon'] == 0){
+            submitYes.addEventListener('click', function(e){
+                e.preventDefault();
+                alert("Ce questionnaire est en brouillon et ne peut pas être soumis.");
+            });
+        }
+    }
 
     if(cancelBtn){
         cancelBtn.addEventListener('click', function(e){ e.preventDefault(); show(cancelModal); });

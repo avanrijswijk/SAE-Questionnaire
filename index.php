@@ -72,7 +72,8 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
 
             switch ($action) {
                 case 'creation':
-                    $questionnaireController->ajouterQuestionnaire();
+                    $id = isset($_GET['id']) ? $_GET['id'] : null;
+                    $questionnaireController->ajouterQuestionnaire($id);
                     break;
                 case 'lister':
                     $questionnaireController->listerQuestionnaires();
