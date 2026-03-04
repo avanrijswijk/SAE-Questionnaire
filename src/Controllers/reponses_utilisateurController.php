@@ -40,10 +40,10 @@ class Reponses_utilisateurController {
                 $id_choix = str_replace('choix-', '', $key);
                 $reponse  = $value;
 
-                $id_utilisateur = $_SESSION['id_utilisateur'] ?? null;
+                $id_utilisateur = $_SESSION['cas_user'] ?? null;
                 
                 if (!isset($id_utilisateur)) {
-                    $id_utilisateur = 1; // Utilisateur non connecté pour les testes
+                    $id_utilisateur = 'anonyme';
                 }
                 $ajoutOk = $this->reponses_utilisateurModel->creerReponse($id_utilisateur, $id_choix, $reponse);
                 if (!$ajoutOk) {
