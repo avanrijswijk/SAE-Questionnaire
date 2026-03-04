@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelBtn = document.getElementById('cancelBtn');
     const submitBtn = document.getElementById('submitBtn');
     const form = document.querySelector('form');
+    const brouillon = submitBtn.dataset.brouillon;
 
     const cancelModal = document.getElementById('cancelModal');
     const cancelNo = document.getElementById('cancelModalNo');
@@ -49,14 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function show(modal){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
     function hide(modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); }
-    if (submitYes){
-        if($questionnaire['brouillon'] == 0){
-            submitYes.addEventListener('click', function(e){
-                e.preventDefault();
-                alert("Ce questionnaire est en brouillon et ne peut pas être soumis.");
-            });
-        }
-    }
 
     if(cancelBtn){
         cancelBtn.addEventListener('click', function(e){ e.preventDefault(); show(cancelModal); });
@@ -130,4 +123,12 @@ document.addEventListener("DOMContentLoaded", () => {
     [cancelModal].forEach(modal=>{
         modal.addEventListener('click', function(e){ if(e.target===modal) hide(modal); });
     });
+
+    if ((submitYes && brouillon === '0')){
+        submitYes.addEventListener('click', function(e){
+            e.preventDefault();
+            alert("Ce questionnaire est en brouillon et ne peut pas être soumis.");
+        });
+    }
+    
 });

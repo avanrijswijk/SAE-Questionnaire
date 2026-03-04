@@ -111,7 +111,7 @@ $auteurAffichage = $auteurNomPrenom !== ''
                 <div class="buttons" style="display: flex; justify-content: center; margin-bottom: 50px;">
 
                     <button type="button" id="cancelBtn" class="button is-danger">Annuler</button>
-                    <button type="button" id="submitBtn" class="button is-primary">Soumettre</button>
+                    <button type="button" id="submitBtn" class="button is-primary" data-brouillon="<?= (int)$questionnaire['brouillon']; ?>">Soumettre</button>
 
                 </div>
                 
