@@ -33,6 +33,9 @@
                 <a href="####" class="button is-warning">
                     <span>Modifier</span>
                 </a>
+                <a href="./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>" class="button is-success">
+                    <span>Consulter</span>
+                </a>
             </div>
         </div>
     </div>
@@ -69,13 +72,15 @@
     </div>
 
     <div class="box">
-        <div class="level">
+        <div class="level mb-6">
             <div class="level-left">
                 <h2 class="title is-4">Historique des participations</h2>
             </div>
             <div class="level-right">
                 <div>
-                    <input class="input is-small is-rounded" type="text" placeholder="Chercher un nom...">
+                    <a href="####" class="button is-link is-outlined">
+                        Analyser les données
+                    </a>
                 </div>
             </div>
         </div>
@@ -106,7 +111,7 @@
                                 <td><?php echo htmlspecialchars(ucfirst($repondant['prenom'] ?? '')); ?></td>
                                 <td><?php echo date('d/m/Y H:i', strtotime($repondant['date_reponse'])); ?></td>
                                 <td class="has-text-right">
-                                    <a href="####" class="button is-small is-link is-outlined">
+                                    <a href="####" class="is-link">
                                         Voir ses réponses
                                     </a>
                                 </td>
