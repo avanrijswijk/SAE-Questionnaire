@@ -47,8 +47,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const submitNo = document.getElementById('submitModalNo');
     const submitYes = document.getElementById('submitModalYes');
 
-    function show(modal){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
-    function hide(modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); }
+    function show(modal){ modal.style.display='flex'; modal.inert = false;/*modal.setAttribute('aria-hidden','false');*/ }
+    function hide(modal){ modal.style.display='none'; modal.inert = true;/*modal.setAttribute('aria-hidden','true');*/ }
+
+    function isOneChecked(name) {
+        const elements = document.querySelectorAll(`input[type='checkbox'][name='${name}']`);
+        let s = false;
+        elements.forEach(e => {
+            if (e.checked) {
+                elements.forEach(el=>{el.setCustomValidity("");})
+                s = true;
+                return true;
+            }
+        })
+        if (!elements) return true;
+        if (!s){ 
+        const firstElement = elements[0];
+        firstElement.setCustomValidity("Veuillez remplir ce champs");
+        firstElement.reportValidity();
+        return false;
+        } else {
+            return true;
+        }
+        
+    }
 
     if(cancelBtn){
         cancelBtn.addEventListener('click', function(e){ e.preventDefault(); show(cancelModal); });
@@ -59,6 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(submitBtn){
         submitBtn.addEventListener('click', (e) => {
+            const elements = document.querySelectorAll(`input[type='checkbox']`);
+            elements.forEach(el=>{el.setCustomValidity("");})
             if (form.reportValidity()) {
                 show(submitModal);
             }
@@ -67,30 +91,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(form){
         form.addEventListener('submit', (e) => {
-            //e.preventDefault();
+            e.preventDefault();
 
             hide(submitModal);
 
-            // const formData = new FormData(form);
+            const formData = new FormData(form);
 
+            const f = () => {
+                const elements = document.querySelectorAll(`input[type='checkbox']`);
+
+                elements.forEach(e => {
+                    if (e.dataset.required) {
+                        // console.log(e.name);
+                        if (!isOneChecked(e.name)) {
+                            return false;
+                        }
+                    }
+                    
+                });
+            }
+
+            if (!f()) return;
             // const data = [];
-
-            // formData.forEach((valeur, cle) => {
-            //     // if (cle === "id_questionnaire") {
-            //     //     data.push({
-            //     //         "type" : cle,
-            //     //         "id_choix" : valeur,
-            //     //         "reponse" : valeur
-            //     //     });
-            //     // } else {
-            //     //     data.push({
-            //     //         "type" : cle.split("-")[0],
-            //     //         "id_choix" : cle.split("-")[1] ?? cle.split("-")[0],
-            //     //         "reponse" : valeur
-            //     //     });
-            //     // }
-            //     entree.name = String(entree.name).split("-")[1];
-            // });
+            
 
             // const hiddenInput = form.querySelector('input[type=hidden][name=json_reponses]') ?? document.createElement('input');
             // if (!hiddenInput.type) {
@@ -101,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // hiddenInput.value = JSON.stringify(data);
 
-            // console.log("Données brutes :", Object.fromEntries(formData));
+            console.log("Données brutes :", Object.fromEntries(formData));
             // console.log("Données ordonnées :", data);
 
             form.querySelectorAll('input, select, textarea').forEach(entree => {
@@ -111,6 +134,9 @@ document.addEventListener("DOMContentLoaded", () => {
              * sous la forme :
              * id-choix -> réponse
              */
+            document.body.focus();
+            hide(submitModal);
+            form.submit();
 
         });
     }

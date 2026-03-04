@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ---------- ----------
     const listeRadiosType = document.getElementsByName("type-question");
     const radioTypeChampsLibre = document.getElementById("radio-champs-libre");
+    const radioTypeCheckBox = document.getElementById("radio-check-box");
     const radioTypeContext= document.getElementById("radio-context");
     //const radioTypeRadioBox = document.getElementById("radio-radio-box");
     //const radioTypeCheckBox = document.getElementById("radio-check-box");
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 divRadioSousType.style.display = "none";
             }
 
-            if (radio == radioTypeContext) {
+            if (radio == radioTypeContext || radio == radioTypeCheckBox) {
                 divObligatoire.style.display = "none";
             } else {
                 divObligatoire.style.display = "";

@@ -112,7 +112,7 @@ $nbContext = 0
                                             foreach($choix as $reponse) {
                                         ?>
                                             <label class="radio">
-                                                <input type="radio" name="<?php echo $name ?>" <?php if ($required) echo "required"; ?>>
+                                                <input type="radio" name="<?php echo $name ?>" value="<?php echo $reponse["texte"]; ?>" <?php if ($required) echo "required"; ?>>
                                                 <?php echo $reponse["texte"]; ?>
                                             </label>
                                         <?php
@@ -128,7 +128,7 @@ $nbContext = 0
                                             foreach($choix as $reponse) {
                                         ?>
                                             <label class="checkbox">
-                                                <input type="checkbox" name="<?php echo $name ?>" <?php if ($required) echo "required"; ?>>
+                                                <input type="checkbox" name="<?php echo $name ?>" value="<?php echo $reponse["texte"]; ?>"  data-required="<?php if ($required) echo 'required'; ?>">
                                                 <?php echo $reponse["texte"]; ?>
                                             </label>
                                         <?php
@@ -156,7 +156,7 @@ $nbContext = 0
 
                 </div>
                 
-                <div id="submitModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+                <div id="submitModal" class="modal-overlay" role="dialog" style="display: none;">
                     <div class="modal-card">
                         <div class="modal-content">
                             <div class="modal-title">Confirmer l'envoi</div>
