@@ -368,6 +368,50 @@ class QuestionnaireController {
 
         return true;
     }
+
+
+
+    /**
+     * Affiche la vue d'analyse graphique des résultats d'un questionnaire.
+     *
+     * @param int|null $id ID du questionnaire à analyser (optionnel, sinon depuis GET).
+     */
+    public function analyseGraphique($id = null) {
+        if ($id === null) {
+            $id = isset($_GET['id']) ? $_GET['id'] : null;
+        }
+
+        if (empty($id)) {
+            echo 'Identifiant de questionnaire manquant.';
+            return;
+        }
+
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+
+        if (!$questionnaire) {
+            echo 'Questionnaire introuvable.';
+            return;
+        }
+
+        if (!$this->aLeDroitDAcces($questionnaire['groupes_autorises'], $_SESSION['cas_groupes'])) {
+            die("Vous n'avez pas l'autorisation d'accéder à ce questionnaire.");
+        }
+
+        //$statistiques = $this->questionnaireModel->getStatistiquesPourAnalyseGraphique($id);
+        $statistiques = [[
+        'id_question' => 1,
+        'titre_question' => 'Avez-vous aimé ce module ?',
+        'type_graphique' => 'pie',
+        'labels' => ['Beaucoup', 'Un peu', 'Pas du tout'],
+        'donnees' => [45, 12, 3],
+        'couleurs' => ['#48c774', '#ffdd57', '#f14668']
+        ]];
+        $json_statistiques = json_encode($statistiques);
+
+        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'analyseGraphique.php');
+    }
+
+
 }
 
     

@@ -78,7 +78,7 @@
             </div>
             <div class="level-right">
                 <div>
-                    <a href="####" class="button is-link is-outlined">
+                    <a href="./?c=questionnaire&a=analyse&id=<?php echo $questionnaire['id']; ?>" class="button is-link is-outlined">
                         Analyser les données
                     </a>
                 </div>
