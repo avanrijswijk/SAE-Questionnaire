@@ -1,7 +1,7 @@
 import {TypeQuestion} from '../typeQuestion.js';
 import { attribuerContexteMenu } from "../contextMenu/contextMenu.js";
 import { notification, TypeNotification } from "../../utils/notification/notification.js";
-import { changerOrdreQuestion } from "./questionnaire.js"
+import { synchroniserOrdreQuestion } from "./questionnaire.js"
 
 const style = new CSSStyleSheet();
 style.replaceSync(`
@@ -30,6 +30,9 @@ div.box.div-box {
 div.box.div-question:not(:hover) {
     border-left: 0px #90D5FF solid;
     transition: border-left 0.2s ease-out;
+    user-select: none;
+    -webkit-user-select: none; /* Pour Safari */
+    -webkit-touch-callout: none; /* Pour mobile */
 }*/
 
 div.div-reponses {
@@ -121,6 +124,7 @@ document.addEventListener("dragleave", (e) => {
  // quand on clic dans la zone où le deplacement de la question est
 document.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains("element-for-drag")) {
+        window.getSelection().removeAllRanges(); // enlève la section pour ne garder que la zone à grab
         const divParent = e.target.closest("div.box.div-question.div-box");
         divParent.setAttribute('draggable', 'true');
         listenerDragEnd(divParent);
@@ -136,44 +140,38 @@ document.addEventListener("drop", (e) => {
             notification(TypeNotification.ERREUR, "Une erreur est survenue lors du déplacement de la question.");
         }
 
-        const zoneDnd = e.target; // la zone où la question doit etre deplace
+        const zoneDnd = e.target; 
         zoneDnd.classList.remove("drag");
 
         const indexZoneDnd = Array.prototype.indexOf.call(parentVQ.children, zoneDnd);
-        const question = parentVQ.querySelector(`div[data-_id="${e.dataTransfer.getData("text")}`).parentElement // la question qui doit etre deplacee
+        const question = parentVQ.querySelector(`div[data-_id="${e.dataTransfer.getData("text")}"]`).parentElement; 
         const indexQuestion = Array.prototype.indexOf.call(parentVQ.children, question);
 
-        if (!(indexQuestion+1 < parentVQ.children.length)){notifErreur(); return;} // cela veut dire que le div.dnd qui lui est lié n'existe pas ou ne se trouve pas a la place
-        if (!parentVQ.children[indexQuestion+1].classList.contains("dnd")){notifErreur(); return;} // cela veut dire que le div.dnd ne se trouve pas à la suite
-        if (zoneDnd.nextElementSibling === question) { return ;} // cela veut dire que le div veut etre deplacé au meme endroit
+        if (!(indexQuestion+1 < parentVQ.children.length)){notifErreur(); return;} 
+        if (!parentVQ.children[indexQuestion+1].classList.contains("dnd")){notifErreur(); return;} 
+        if (zoneDnd.nextElementSibling === question) { return ;} 
         
         const zoneDndQuestion = parentVQ.children[indexQuestion+1];
 
-        // console.log(`${indexQuestion} -> ${indexZoneDnd}`);
+        if (Array.prototype.indexOf.call(parentVQ.children, zoneDndQuestion) == indexZoneDnd){return;} 
 
-        // console.log(`_id de la question : ${e.dataTransfer.getData("text")}`);
-        // console.log(`position : ${indexZoneDnd / 2 + 1}`);
+        // 1. On déplace les éléments dans le DOM de GAUCHE de manière standard
+        parentVQ.insertBefore(question, zoneDnd);
+        parentVQ.insertBefore(zoneDndQuestion, question);
 
-        if (Array.prototype.indexOf.call(parentVQ.children, zoneDndQuestion) == indexZoneDnd){return;} // cela veut dire que le div veut etre deplacé au meme endroit
-
-        const divQuestionAvant = indexZoneDnd == 0 ? parentVQ.children[indexZoneDnd+1] : parentVQ.children[indexZoneDnd-1];
-        const idQuestionAvant = divQuestionAvant.classList.contains("div-question") ? divQuestionAvant.firstChild.dataset._id : null;
-       
-        // console.log("---------------DEBUG----------------");
-        // console.log(parentVQ.children[indexZoneDnd+1]);
-        // console.log(parentVQ.children[indexZoneDnd-1]);
-        // console.log(idQuestionAvant);
-        // console.log("-------------------------------------");
+        // 2. On lit le NOUVEL ORDRE généré à gauche
+        const nouvelOrdreIds = [];
+        // On récupère toutes les questions de la partie gauche
+        const questionsAGauche = parentVQ.querySelectorAll("div.div-question"); 
         
-        if (!idQuestionAvant) {
-            notifErreur();
-            return;
-        }
-        // e.dataTransfer.getData("text") est l'id de la qestion qui est deplacé
-        changerOrdreQuestion(e.dataTransfer.getData("text"), idQuestionAvant); // ça ne fonctionne pas
+        questionsAGauche.forEach(divConteneur => {
+            // Dans votre structure, le data-_id est sur le premier enfant (divQuestion)
+            const id = divConteneur.firstElementChild.dataset._id; 
+            if(id) nouvelOrdreIds.push(id);
+        });
 
-        parentVQ.moveBefore(question, zoneDnd);
-        parentVQ.moveBefore(zoneDndQuestion, question);
+        // 3. On synchronise la partie DROITE avec cet ordre parfait
+        synchroniserOrdreQuestion(nouvelOrdreIds);
     }
 });
 
