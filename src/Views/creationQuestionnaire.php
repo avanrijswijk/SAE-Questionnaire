@@ -3,11 +3,18 @@ require_once 'config.php';
 $mon_profil = analyserProfilUtilisateur($_SESSION['cas_groupes']);
 $mes_choix = genererCiblesAutorisees($mon_profil);
 ?>
+<script>
+    window.questionnaire = <?php echo json_encode($questionnaire); ?>;
+</script>
 
 <main class="is-flex is-flex-direction-row" style="max-height: 100vh;">
+    <script type="module" src="./src/Views/js/creation_questionnaire/initQuestionnaire.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/fermerQuestionnaire/modalFermer.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/ajoutQuestion/modalAjouter.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/modificationQuestion/modalModifier.js"></script>
+    <script>
+        console.log("QUESTIONNAIRE FINAL :", questionnaire);
+    </script>
     <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
         <div id="context-menu">
             <ul class="menu">
@@ -175,6 +182,7 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
     </div>
     <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;">
     </div>
+
     <script type="module" src="./src/Views/js/creation_questionnaire/notification/notification.js"></script>
 </main>
 

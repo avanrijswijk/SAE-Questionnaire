@@ -79,12 +79,13 @@ function creerQuestion(info) {
  * @param {JSON} info - Les informations sur la question (intitule:str, type:str, obligatoire:bool, _id:int, nombreReponse:int) 
  * @returns {HTMLDivElement || null} - un div.div-reponses ou null si aucun type ne correspond
  */
-function creerReponse(info) {
+function creerReponse(info, texte = null) {
     //const libelle = info["intitule"];
     const _id = info["_id"];
     //const obligatoire = info["obligatoire"];
     const type = info["type"];
     const nombreReponse = info["nombreReponse"];
+    const libelle = texte ?? `Réponse ${nombreReponse+1}`;
 
     // const divReponses = document.createElement("div");
     // divReponses.classList.add("div-reponses");
@@ -96,10 +97,11 @@ function creerReponse(info) {
         case TypeQuestion.CHECK_BOUTON:
         case TypeQuestion.RADIO_BOUTON:
             divReponse.dataset._id = `${_id}-${nombreReponse}`;
-            divReponse.dataset.intitule = `Réponse ${nombreReponse+1}`;
+            divReponse.dataset.intitule = libelle;
+            
 
             const pReponse = document.createElement("p");
-            pReponse.innerText = `Réponse ${nombreReponse+1}`;
+            pReponse.innerText = libelle;
             pReponse.classList.add("is-unselectable", "question");
             
             divReponse.appendChild(pReponse);
@@ -121,8 +123,9 @@ function creerReponse(info) {
  * Ajoute une question dans le visualiseur de questions (partie gauche)
  * @param {HTMLElement} parent - Le conteneur parent où sera placé la question
  * @param {JSON} info - Les informations sur la question (intitule:str, type:str, obligatoire:bool, _id:int)
+ * @param {boolean} chargement - true si on est en train de charger un questionnaire existant
  */
-function ajouterQuestionVisualiseurQuestions(parent, info) {
+function ajouterQuestionVisualiseurQuestions(parent, info, chargement = false) {
     const type = info["type"];
     const _id = info["_id"];
 
@@ -135,80 +138,79 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
         divReponses = document.createElement("div");
         divReponses.classList.add("div-reponses");
         info["nombreReponse"] = 0;
-        const divReponse = creerReponse(info);
-        divReponses.appendChild(divReponse);
+
+        // ❗ NE PAS créer de réponse par défaut si on est en mode chargement
+        if (!chargement) {
+            const divReponse = creerReponse(info);
+            divReponses.appendChild(divReponse);
+        }
+
         divConteneur.appendChild(divReponses);
         affichageReponses(divReponses);
     }
 
     parent.appendChild(divConteneur);
-    if (divReponses) { // si divReponses est initialisé
-        const divReponse = divReponses.firstChild; // on prend son premier enfant qui est initialisé comme div.div-reponse
+
+    if (divReponses) {
+        const divReponse = divReponses.firstChild;
         //attribuerModalModifierQuestionAvecId(divReponse.dataset._id, TypeModifier.REPONSE);
     }
+
     //attribuerModalModifierQuestionAvecId(_id, TypeModifier.QUESTION);
 }
 
 /**
- * Ajout une réponse à une question dans le visualisateur de questions
- * @param {int || string} id - l'identifiant de la question (X)
- * @param {number} [idReponse=-1] - l'identifiant de la réponse (X) s'il en faut une spécifique. id auto sinon
- * @returns {int} - l'identifiant de la réponse. -1 si un probleme est survenu
+ * Ajoute une réponse à une question dans le visualisateur de questions
+ * @param {int || string} id - l'identifiant interne de la question (X)
+ * @param {string|null} texte - le texte réel de la réponse (ou null si nouvelle réponse)
+ * @param {number} [idReponse=-1] - index de la réponse (X) si imposé (chargement)
+ * @returns {string} - l'identifiant complet de la réponse "X-Y"
  */
-function ajouterReponseVisualisateurQuestions(id, idReponse=-1) {
+function ajouterReponseVisualisateurQuestions(id, texte = null, idReponse = -1) {
     const divQuestion = document.querySelector(`div[data-_id="${id}"]`)
                                 .closest("div.box.div-question.div-box")
                                 .firstChild;
+
     const divReponses = document.querySelector(`div[data-_id="${id}"]`)
                                 .closest("div.box.div-question.div-box")
                                 .querySelector("div.div-reponses");
 
-    let identifiantReponse = idReponse;
-    
-    if (!divReponses) return identifiantReponse;
+    if (!divReponses) return `${id}-0`;
 
     const type = divQuestion.dataset.type;
 
     const info = {
-        "intitule" : "",
-        "type" : type,
-        "obligatoire" : true,
-        "_id" : divQuestion.dataset._id
-    }
-
-    const nombreReponse = function() {
-        let idMax = 0;
-        Array.from(divReponses.children).forEach((divReponse) => {
-            const id = parseInt(String(divReponse.dataset._id).split("-")[1]);
-            if (idMax < id) { 
-                idMax = id;
-            }
-        });
-        return idMax+1;
+        intitule: "",
+        type: type,
+        obligatoire: true,
+        _id: divQuestion.dataset._id
     };
-    console.log(`nb réponse +1 : ${nombreReponse()}`);
+
+    // Si idReponse est fourni (chargement), on l'utilise.
+    // Sinon, on prend le nombre actuel de réponses comme index.
+    let indexReponse = (idReponse >= 0)
+        ? idReponse
+        : divReponses.childElementCount;
+
+    info["nombreReponse"] = indexReponse;
 
     switch (type) {
         case TypeQuestion.CHECK_BOUTON:
-        case TypeQuestion.RADIO_BOUTON:
-            info["nombreReponse"] = nombreReponse(); //divReponses.childElementCount;
-            const divReponse = creerReponse(info);
-            if (divReponse){
+        case TypeQuestion.RADIO_BOUTON: {
+            const divReponse = creerReponse(info, texte);
+
+            if (divReponse) {
+                divReponse.dataset._id = `${id}-${indexReponse}`;
                 divReponses.appendChild(divReponse);
-                if (identifiantReponse > 0) {
-                    divReponse.dataset._id = `${id}-${identifiantReponse}`;
-                } else {
-                    identifiantReponse = divReponse.dataset._id;
-                }
-                
-                //attribuerModalModifierQuestionAvecId(identifiantReponse, TypeModifier.REPONSE);
             }
             break;
+        }
 
         case TypeQuestion.LISTE_DEROULANTE:
             break;
     }
-    return identifiantReponse;
+
+    return `${id}-${indexReponse}`;
 }
 
 /**

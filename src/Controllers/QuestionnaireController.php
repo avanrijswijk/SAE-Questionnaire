@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Questionnaire;
 use App\Models\Question;
 use App\Models\Reponses_utilisateur;
+use App\Models\Choix_possible;
 
 require_once 'config.php';
 
@@ -14,6 +15,7 @@ class QuestionnaireController {
     private $questionnaireModel;
     private $questionModel;
     private $reponses_utilisateurModel;
+    private $choix_possibleModel;
 
     /**
      * Constructeur de la classe QuestionnaireController.
@@ -26,6 +28,8 @@ class QuestionnaireController {
         $this->questionModel = $questionModel;
         $reponses_utilisateurModel = new Reponses_utilisateur();
         $this->reponses_utilisateurModel = $reponses_utilisateurModel;
+        $choix_possibleModel = new Choix_possible();
+        $this->choix_possibleModel = $choix_possibleModel;
     }
 
     /**
@@ -87,6 +91,7 @@ class QuestionnaireController {
                 echo 'Les questionnaires déjà publiés ne peuvent pas être modifiés.       :)';
                 return;
             }
+            $questionnaire= $this->getQuestionnaireComplet($id);
         } else {
             $questionnaire = null;
         }
@@ -392,6 +397,21 @@ class QuestionnaireController {
         }
 
         return true;
+    }
+
+    public function getQuestionnaireComplet($id) {
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+        if (!$questionnaire) return null;
+
+        $questions = $this->questionModel->getQuestionPar(["id_questionnaire" => $id]);
+
+        foreach ($questions as &$q) {
+            $q['choix'] = $this->choix_possibleModel->getChoixDeQuestion($q['id']);
+        }
+
+        $questionnaire['questions'] = $questions;
+
+        return $questionnaire;
     }
 }
 

@@ -52,7 +52,7 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="image is-32x32" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $questionnaire['titre'] ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $questionnaire['id']; ?>';}">
+                                    <div class="image is-32x32" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $questionnairefini['titre'] ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $questionnairefini['id']; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
                                 </td> 
@@ -94,7 +94,7 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                                     <span class="titre-texte"><?php echo $questionnaireBrouillon["titre"] ?></span>
                                 </td>
                                 <td>
-                                    <div class="image is-32x32" onclick="event.stopPropagation();alert('suppression effectée'); window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $questionnaireBrouillon['id']; ?>';">
+                                    <div class="image is-32x32" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $questionnaireBrouillon['titre'] ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $questionnaireBrouillon['id']; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
                                 </td> 
