@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Questionnaire;
 use App\Models\Question;
 use App\Models\Reponses_utilisateur;
+use App\Models\Statistique;
 
 require_once 'config.php';
 
@@ -14,6 +15,7 @@ class QuestionnaireController {
     private $questionnaireModel;
     private $questionModel;
     private $reponses_utilisateurModel;
+    private $statistiqueModel;
 
     /**
      * Constructeur de la classe QuestionnaireController.
@@ -26,6 +28,8 @@ class QuestionnaireController {
         $this->questionModel = $questionModel;
         $reponses_utilisateurModel = new Reponses_utilisateur();
         $this->reponses_utilisateurModel = $reponses_utilisateurModel;
+        $statistiqueModel = new Statistique();
+        $this->statistiqueModel = $statistiqueModel;
     }
 
     /**
@@ -397,16 +401,33 @@ class QuestionnaireController {
             die("Vous n'avez pas l'autorisation d'accéder à ce questionnaire.");
         }
 
-        //$statistiques = $this->questionnaireModel->getStatistiquesPourAnalyseGraphique($id);
-        $statistiques = [[
-        'id_question' => 1,
-        'titre_question' => 'Avez-vous aimé ce module ?',
-        'type_graphique' => 'pie',
-        'labels' => ['Beaucoup', 'Un peu', 'Pas du tout'],
-        'donnees' => [45, 12, 3],
-        'couleurs' => ['#48c774', '#ffdd57', '#f14668']
-        ]];
-        $json_statistiques = json_encode($statistiques);
+        $resultats_fermes = $this->statistiqueModel->getStatsQuestionsFermees($id);
+        $statistiques_formatees = [];
+        $palette_couleurs = ['#3273dc', '#48c774', '#ffdd57', '#f14668', '#b86bff', '#00d1b2'];
+
+        foreach ($resultats_fermes as $ligne) {
+            $id_q = $ligne['id_question'];
+            if (!isset($statistiques_formatees[$id_q])) {
+                $statistiques_formatees[$id_q] = [
+                    'id_question' => $id_q,
+                    'titre_question' => $ligne['titre_question'],
+                    // Radio = Pie, Checkbox = Bar
+                    'type_graphique' => ($ligne['type_question'] == 'radio') ? 'pie' : 'bar',
+                    'labels' => [],
+                    'donnees' => [],
+                    'couleurs' => []
+                ];
+            }
+            $statistiques_formatees[$id_q]['labels'][] = $ligne['label'];
+            $statistiques_formatees[$id_q]['donnees'][] = (int) $ligne['nb_votes'];
+            
+            $index_couleur = count($statistiques_formatees[$id_q]['couleurs']) % count($palette_couleurs);
+            $statistiques_formatees[$id_q]['couleurs'][] = $palette_couleurs[$index_couleur];
+        }
+        
+        $json_statistiques = json_encode(array_values($statistiques_formatees));
+
+        $questions_ouvertes = $this->statistiqueModel->getStatsQuestionsOuvertes($id);
 
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'analyseGraphique.php');
     }
