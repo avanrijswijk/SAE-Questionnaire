@@ -410,7 +410,15 @@ function supprierQuestionVisualiseurQuestions(id) {
                 modifierQuestionVisualiseurQuestions(id, "Réponse 1");
             }
         } else {
-            divQuestion.closest("div.box.div-question.div-box").remove();
+            const visualiseurQuestions = document.getElementById("visualiseur-questions");
+            const divParent = divQuestion.closest("div.box.div-question.div-box");
+            const enfants = visualiseurQuestions.children;
+            const index = Array.from(enfants).indexOf(divParent);    
+            divParent.remove();
+            if (index < enfants.length) {
+                enfants[index].remove();
+            }
+
         }
     } catch (e) {
         console.error(e);
