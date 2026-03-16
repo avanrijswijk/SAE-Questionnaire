@@ -114,9 +114,9 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
         elementReponse.style.rowGap = ".5em";
         elementReponse.classList.add(type == TypeQuestion.RADIO_BOUTON ? "radios" : "checkboxs", "is-flex", "is-flex-direction-column");
         elementReponse.appendChild(creerReponse(`${_id}-${donnerNombreReponse(_id)-1}`, type));
-    } else {
+    } else if (type != TypeQuestion.CONTEXT) { // type CHAMP DE TEXT
         elementReponse = creerReponse(`${_id}-${donnerNombreReponse(_id)-1}`, type);
-    }
+    } // type CONTEXT
     
 
     if (!estObligatoire) {

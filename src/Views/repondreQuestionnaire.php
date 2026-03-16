@@ -29,6 +29,7 @@ $auteurNomPrenom = trim($auteurPrenom . ' ' . $auteurNom);
 $auteurAffichage = $auteurNomPrenom !== ''
     ? $auteurNomPrenom
     : ($questionnaire['id_createur'] ?? '');
+$nbContext = 0
 
 ?>
 <main class="container" style="margin-top: 25px;">
@@ -43,19 +44,37 @@ $auteurAffichage = $auteurNomPrenom !== ''
         <?php if (empty($questions)): ?>
             <p>Aucune question pour ce questionnaire.</p>
         <?php else: ?>
+            <style>
+                form {
+                    max-width: 90%;
+                    width: 90%;
+                    min-width: 350px;
+                }
+            </style>
             <form method="post" action="?c=questionnaire&a=enregistrer-reponses">
                 <?php foreach ($questions as $index => $q): ?>
-                    <?php
+
+                        <?php
+                        // Préparation des données de la question
                         $intitule = isset($q['intitule']) ? htmlspecialchars($q['intitule']) : 'Question sans texte';
                         $type = isset($q['type']) ? $q['type'] : "textfield";
                         $required = isset($q['est_obligatoire']) ? $q['est_obligatoire'] : 0;
+
+                        // Liste des choix possibles
                         $choix = $Choix_possibleController->getChoixDeQuestion($q['id']);
-                        $name = 'choix-'.(isset($q['id']) ? $q['id'] : $index);
-                    ?>
+
+                        // Nom logique du groupe pour radios/checkboxes
+                        $groupName = 'question-' . (isset($q['id']) ? $q['id'] : $index);
+                        ?>
                     <hr />
-                    <div class="question-block" style="padding: 25px 0;">
-                        <label for="<?php echo $q["id"]; ?>" class="subtitle is-4"><strong><?php echo ($index+1).'. '; ?></strong><?php echo $intitule; ?> <?php if ($required) echo '<span style="color:red">*</span>'; ?></label>
-                        <div class="answer">
+                    <div class="question-block" style="<?php if ($type != "context") {echo "padding: 25px 0;";} ?>">
+                        <?php if ($type == "context") {
+                            $nbContext++?>
+                            <p class="subtitle is-4"><?php echo $intitule; ?></p>
+                        <?php } else {?>
+                            <label for="<?php echo $q["id"]; ?>" class="subtitle is-4"><strong><?php echo ($index+1-$nbContext).'. '; ?></strong><?php echo $intitule; ?> <?php if ($required) echo '<span style="color:red">*</span>'; ?></label>
+                        <?php }?>
+                        <div class="answer mt-3">
                             <?php switch ($type):
                                 default:
                                 case "textfield": ?>
@@ -75,9 +94,10 @@ $auteurAffichage = $auteurNomPrenom !== ''
                                         placeholder="Remplir ce champ..." 
                                         cols="50"
                                         rows="2" 
-                                        maxlength="1800"></textarea>
+                                        maxlength="1800"
+                                        style="min-height: 50px; max-height:150px;"></textarea>
                                 <?php break; ?>
-                                
+
                                 <?php case "long_textfield": ?>
                                     <?php 
                                         if (!empty($choix) && isset($choix[0]['id'])) {
@@ -88,20 +108,59 @@ $auteurAffichage = $auteurNomPrenom !== ''
                                             break;
                                         }
                                     ?>
-                                    <textarea name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="5" maxlength="6000"></textarea>
-                                <?php break ?>
+                                    <textarea 
+                                        name="<?php echo $name; ?>" 
+                                        <?php if ($required) echo "required"; ?> 
+                                        class="textarea" 
+                                        placeholder="Remplir ce champ..." 
+                                        cols="50" 
+                                        rows="5" 
+                                        maxlength="6000" 
+                                        style="min-height: 50px; max-height:300px;"></textarea>
+                                <?php break; ?>
 
                                 <?php case "radio": ?>
-                                    <p><em>Choix unique - options non disponibles dans la vue.</em></p>
-                                <?php break ?>
+                                    <div class="radios is-flex is-flex-direction-column" style="row-gap: 0.5em;">
+                                        <?php foreach($choix as $reponse): ?>
+                                            <label class="radio">
+                                                <input
+                                                    type="radio"
+                                                    class="radio-choice"
+                                                    name="<?php echo $groupName; ?>"  
+                                                    data-idchoix="<?php echo $reponse['id']; ?>"
+                                                    data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
+                                                    <?php if ($required) echo "required"; ?>
+                                                >
+                                                <?php echo htmlspecialchars($reponse["texte"]); ?>
+                                            </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php break; ?>
 
                                 <?php case "check": ?>
-                                    <p><em>Choix multiple - options non disponibles dans la vue.</em></p>
-                                <?php break ?>
+                                    <div class="checkboxs is-flex is-flex-direction-column" style="row-gap: 0.5em;">
+                                        <?php foreach($choix as $reponse): ?>
+                                            <label class="checkbox">
+                                                <input
+                                                    type="checkbox"
+                                                    class="check-choice"  
+                                                    name="<?php echo $groupName; ?>" 
+                                                    data-idchoix="<?php echo $reponse['id']; ?>"
+                                                    data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
+                                                    data-required="<?php echo $required ? 'required' : ''; ?>"
+                                                >
+                                                <?php echo htmlspecialchars($reponse["texte"]); ?>
+                                            </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php break; ?>
 
                                 <?php case "select": ?>
                                     <p><em>Liste de selection - options non disponibles dans la vue.</em></p>
                                 <?php break ?>
+
+                                <?php case "context": ?>
+                                <?php break; ?>
                             <?php endswitch; ?>
                         </div>
                     </div>
@@ -115,7 +174,7 @@ $auteurAffichage = $auteurNomPrenom !== ''
 
                 </div>
                 
-                <div id="submitModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+                <div id="submitModal" class="modal-overlay" role="dialog" style="display: none;">
                     <div class="modal-card">
                         <div class="modal-content">
                             <div class="modal-title">Confirmer l'envoi</div>

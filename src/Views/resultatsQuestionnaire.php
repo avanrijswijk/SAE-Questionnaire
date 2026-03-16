@@ -52,7 +52,7 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="image is-32x32" onclick="event.stopPropagation();alert('suppression effectée'); window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $questionnairefini['id']; ?>';">
+                                    <div class="image is-32x32" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $questionnaire['titre'] ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $questionnaire['id']; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
                                 </td> 

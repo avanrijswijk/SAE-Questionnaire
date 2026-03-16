@@ -53,11 +53,11 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                             <label class="radio is-unselectable">
                                 <input type="radio" name="type-question" value="check-box" id="radio-check-box">
                                 Check box
-                            </label><!--
+                            </label>
                             <label class="radio is-unselectable">
-                                <input type="radio" name="type-question" value="select-bar" id="radio-select-bar">
-                                Liste déroulante
-                            </label>-->
+                                <input type="radio" name="type-question" value="context" id="radio-context">
+                                Mise en context
+                            </label>
                         </div>
                     </div>
                     <div id="radio-sous-type" class="field">
@@ -73,7 +73,7 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                             </label>
                         </div>
                     </div>
-                    <div class="field">
+                    <div id="obligatoire" class="field">
                         <label class="label">Option :</label>
                         <div class="checkboxes">
                             <label class="checkbox is-unselectable">

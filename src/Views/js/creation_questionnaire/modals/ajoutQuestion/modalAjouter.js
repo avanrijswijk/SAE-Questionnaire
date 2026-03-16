@@ -28,12 +28,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ---------- ----------
     const listeRadiosType = document.getElementsByName("type-question");
     const radioTypeChampsLibre = document.getElementById("radio-champs-libre");
+    const radioTypeCheckBox = document.getElementById("radio-check-box");
+    const radioTypeContext= document.getElementById("radio-context");
     //const radioTypeRadioBox = document.getElementById("radio-radio-box");
     //const radioTypeCheckBox = document.getElementById("radio-check-box");
     //const radioTypeSelectBar = document.getElementById("radio-select-bar");
     // ---------- ----------
     const divRadioSousType = document.getElementById("radio-sous-type");
-
+    const divObligatoire = document.getElementById("obligatoire");
     
     // ---------- ----------
     const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
@@ -57,6 +59,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             } else {
                 divRadioSousType.style.display = "none";
             }
+
+            // if (radio == radioTypeContext || radio == radioTypeCheckBox) {
+            //     divObligatoire.style.display = "none";
+            // } else {
+            //     divObligatoire.style.display = "";
+            // }
         });
     });
 
@@ -78,7 +86,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const sousTypeQuestionChoisi = formData.getAll("sous-type-question")[0];
         // si la question est mise sur obligatoire, alors estObligatoire vaut 'obligatoire'
         // sinon, elle vaut null  
-        const estObligatoire = formData.get("question-obligatoire") == "obligatoire" ? true : false;     
+        let estObligatoire = formData.get("question-obligatoire") == "obligatoire" ? true : false;     
         
         switch (typeQuestionChoisi) {
             case "check-box":
@@ -89,6 +97,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 break;
             case "select-bar":
                 typeQuestion = TypeQuestion.LISTE_DEROULANTE;
+                break;
+            case "context":
+                typeQuestion = TypeQuestion.CONTEXT
+                estObligatoire = false;
                 break;
             default: // "champs-libre"
                 if (sousTypeQuestionChoisi == "champs-libre-long") {
