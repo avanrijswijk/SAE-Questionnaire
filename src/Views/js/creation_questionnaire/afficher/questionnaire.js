@@ -137,7 +137,6 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
         elementReponse = creerReponse(`${_id}-${donnerNombreReponse(_id)-1}`, type);
     }
     
-
     if (!estObligatoire) {
         spanObligatoire.style.display = "none";
     }
@@ -176,10 +175,6 @@ function supprimerQuestionVisualiseurQuestionnaire(id) {
         divQuestion.remove();
     }
 }
-
-document.addEventListener("DOMContentLoaded", async () => {
-    
-});
 
 /**
  * Modifi une question dans le visualisateur de questionnaire (partie de droite)
