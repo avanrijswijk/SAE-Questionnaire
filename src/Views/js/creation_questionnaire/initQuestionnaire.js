@@ -110,7 +110,42 @@ document.addEventListener("ajouter-reponse-questionnaire", (e) => {
 document.addEventListener("DOMContentLoaded", () => {
     try {
         chargerQuestionnaire(window.questionnaire);
+
+        // Remplir le formulaire d’enregistrement
+        remplirFormulaireEnregistrement(window.questionnaire);
+
     } catch (e) {
         console.error("Erreur lors du chargement du questionnaire :", e);
     }
 });
+
+function remplirFormulaireEnregistrement(questionnaire) {
+    if (!questionnaire) return;
+
+    // Nom du questionnaire
+    const inputNom = document.getElementById("nom-questionnaire");
+    if (inputNom) inputNom.value = questionnaire.titre ?? "";
+
+    // Date d'expiration
+    const inputDate = document.getElementById("date-expriration");
+    if (inputDate && questionnaire.date_expiration) {
+        inputDate.value = questionnaire.date_expiration.split(" ")[0];
+    }
+
+    // Groupes autorisés (JSON string → objet)
+    let groupes = null;
+    try {
+        groupes = JSON.parse(questionnaire.groupes_autorises);
+    } catch (e) {
+        console.warn("Impossible de parser groupes_autorises :", questionnaire.groupes_autorises);
+    }
+
+    if (groupes && groupes.groupes_requis) {
+        const selectCibles = document.getElementById("mes-cibles");
+        const valeurs = groupes.groupes_requis.map(String);
+
+        Array.from(selectCibles.options).forEach(opt => {
+            opt.selected = valeurs.includes(opt.value);
+        });
+    }
+}

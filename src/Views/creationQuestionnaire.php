@@ -160,8 +160,11 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                     </div>
                 </section>
                 <footer class="modal-card-foot" style="justify-content: center;">
-                    <button type="submit" class="button" id="bouton-validerMVQ">
-                        <p>Valider</p>
+                    <button type="submit-brouillon" class="button" id="bouton-brouillonMVQ">
+                        <p>Brouillon</p>
+                    </button>
+                    <button type="submit-publier" class="button" id="bouton-PublierMVQ">
+                        <p>Publier</p>
                     </button>
                 </footer>
             </form>
