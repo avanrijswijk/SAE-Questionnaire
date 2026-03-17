@@ -23,6 +23,40 @@ function synchroniserOrdreQuestion(nouvelOrdreIds) {
 }
 
 /**
+ * Synchronise l'ordre des réponses du visualiseur (droite) pour qu'il corresponde 
+ * exactement à un tableau d'identifiants fourni.
+ * @param {string} idQuestion - L'identifiant de la question
+ * @param {Array<String>} nouvelOrdreIds - Tableau contenant les _id des réponses dans le nouvel ordre
+ */
+function synchroniserOrdreReponse(idQuestion, nouvelOrdreIds) {
+    const divVisualiseurQuestions = document.getElementById("visualiseur-qestionnaire");
+    const divQuestion = divVisualiseurQuestions.querySelector(`div.block[data-_id="${idQuestion}"]`);
+    
+    if (!divQuestion) return;
+
+    // Trouver le conteneur des réponses (soit radios, soit checkboxs)
+    const conteneurReponses = divQuestion.querySelector('div.radios') || divQuestion.querySelector('div.checkboxs');
+    if (!conteneurReponses) return;
+
+    const labels = Array.from(conteneurReponses.querySelectorAll('label')); // on prend les labels
+
+    labels.sort((a, b) => {
+        const spanA = a.querySelector('span[data-_id]');
+        const spanB = b.querySelector('span[data-_id]');
+        
+        if (!spanA || !spanB) return 0;
+
+        const indexA = nouvelOrdreIds.indexOf(spanA.dataset._id);
+        const indexB = nouvelOrdreIds.indexOf(spanB.dataset._id);
+
+        if (indexA === -1 || indexB === -1) return 1;
+
+        return indexA - indexB;
+    });
+    labels.forEach(label => conteneurReponses.appendChild(label));
+}
+
+/**
  * Ajout une réponse de type 'type' dans le conteur d'une question en fonction de l'id de la reponse
  * @param {int || string} idReponse - l'identifiant de la reponse (X-X)
  * @param {TypeQuestion} type - le type de la réponse 
@@ -212,5 +246,6 @@ export {
     ajouterQuestionVisualiseurQuestionnaire,
     ajouterReponseVisualiseurQuestionnaire,
     supprimerQuestionVisualiseurQuestionnaire,
-    synchroniserOrdreQuestion
+    synchroniserOrdreQuestion,
+    synchroniserOrdreReponse
 }

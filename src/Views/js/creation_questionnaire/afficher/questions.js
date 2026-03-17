@@ -1,10 +1,11 @@
 import {TypeQuestion} from '../typeQuestion.js';
 import { attribuerContexteMenu } from "../contextMenu/contextMenu.js";
 import { notification, TypeNotification } from "../../utils/notification/notification.js";
-import { synchroniserOrdreQuestion } from "./questionnaire.js"
+import { synchroniserOrdreQuestion, synchroniserOrdreReponse } from "./questionnaire.js"
 
 const style = new CSSStyleSheet();
 style.replaceSync(`
+
 p.question {
     display: -webkit-box; 
     -webkit-line-clamp: 1; 
@@ -20,20 +21,6 @@ div.box.div-box {
     padding: 5px 10px;
     overflow: hidden;
 }
-
-
-/*div.box.div-question:hover {
-    border-left: 4px #90D5FF solid;
-    transition: border-left 0.2s ease-out;
-}
-
-div.box.div-question:not(:hover) {
-    border-left: 0px #90D5FF solid;
-    transition: border-left 0.2s ease-out;
-    user-select: none;
-    -webkit-user-select: none; /* Pour Safari */
-    -webkit-touch-callout: none; /* Pour mobile */
-}*/
 
 div.div-reponses {
 }
@@ -52,7 +39,8 @@ div.div-box-deplacement {
     cursor: grab;
 }
 
-div.box.div-question:hover div.div-box-deplacement {
+div.box.div-question:hover > div.div-box-deplacement,
+div.box.div-reponse:hover > div.div-box-deplacement {
     transform: translateX(0px);
 }
 
@@ -84,12 +72,28 @@ function dropHandler(ev) {
 }
 
 // est appelée quand la question est aggriper pour le dnd
+// function dragstartHandler(ev) {
+//     if (ev.target.closest) {
+//         const element = ev.target.closest("div.box.div-question.div-box").firstElementChild;
+//         ev.dataTransfer.setData("text", element.dataset._id);
+//     }
+    
+// }
+
 function dragstartHandler(ev) {
     if (ev.target.closest) {
-        const element = ev.target.closest("div.box.div-question.div-box").firstElementChild;
-        ev.dataTransfer.setData("text", element.dataset._id);
+        const divBox = ev.target.closest("div.box.div-box[draggable='true']");
+        if (divBox) {
+            // Si c'est une question
+            if (divBox.classList.contains("div-question")) {
+                ev.dataTransfer.setData("text", divBox.firstElementChild.dataset._id);
+            }
+            // Si c'est une réponse
+            else if (divBox.classList.contains("div-reponse")) {
+                ev.dataTransfer.setData("text", divBox.dataset._id);
+            }
+        }
     }
-    
 }
 
 //
@@ -121,11 +125,12 @@ document.addEventListener("dragleave", (e) => {
     }
 });
 
- // quand on clic dans la zone où le deplacement de la question est
+// quand on clic dans la zone où le deplacement de la question est
 document.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains("element-for-drag")) {
-        window.getSelection().removeAllRanges(); // enlève la section pour ne garder que la zone à grab
-        const divParent = e.target.closest("div.box.div-question.div-box");
+        window.getSelection().removeAllRanges();
+        // On remplace "div.box.div-question.div-box" par "div.box.div-box" pour cibler aussi les réponses
+        const divParent = e.target.closest("div.box.div-box"); 
         divParent.setAttribute('draggable', 'true');
         listenerDragEnd(divParent);
     }
@@ -134,44 +139,69 @@ document.addEventListener('mousedown', (e) => {
 // quand on pose un element dans un zone où le dnd est possible
 document.addEventListener("drop", (e) => {
     e.preventDefault();
-    const parentVQ = document.getElementById("visualiseur-questions");
-    if (e.target.classList.contains("dnd")) {
-        const notifErreur = () => {
-            notification(TypeNotification.ERREUR, "Une erreur est survenue lors du déplacement de la question.");
-        }
+    const idDeplace = e.dataTransfer.getData("text");
+    const estUneReponse = String(idDeplace).includes("-");
 
+    if (e.target.classList.contains("dnd")) {
         const zoneDnd = e.target; 
         zoneDnd.classList.remove("drag");
-
-        const indexZoneDnd = Array.prototype.indexOf.call(parentVQ.children, zoneDnd);
-        const question = parentVQ.querySelector(`div[data-_id="${e.dataTransfer.getData("text")}"]`).parentElement; 
-        const indexQuestion = Array.prototype.indexOf.call(parentVQ.children, question);
-
-        if (!(indexQuestion+1 < parentVQ.children.length)){notifErreur(); return;} 
-        if (!parentVQ.children[indexQuestion+1].classList.contains("dnd")){notifErreur(); return;} 
-        if (zoneDnd.nextElementSibling === question) { return ;} 
         
-        const zoneDndQuestion = parentVQ.children[indexQuestion+1];
+        const notifErreur = () => {
+            notification(TypeNotification.ERREUR, "Une erreur est survenue lors du déplacement.");
+        }
 
-        if (Array.prototype.indexOf.call(parentVQ.children, zoneDndQuestion) == indexZoneDnd){return;} 
+        // si c'est une reponse
+        if (estUneReponse && zoneDnd.classList.contains("dnd-reponse")) {
+            const conteneurReponses = zoneDnd.closest("div.div-reponses");
+            const reponse = conteneurReponses.querySelector(`div[data-_id="${idDeplace}"]`);
+            
+            const indexZoneDnd = Array.prototype.indexOf.call(conteneurReponses.children, zoneDnd);
+            const indexReponse = Array.prototype.indexOf.call(conteneurReponses.children, reponse);
 
-        // 1. On déplace les éléments dans le DOM de GAUCHE de manière standard
-        parentVQ.insertBefore(question, zoneDnd);
-        parentVQ.insertBefore(zoneDndQuestion, question);
+            if (!(indexReponse+1 < conteneurReponses.children.length)){notifErreur(); return;} 
+            if (zoneDnd.nextElementSibling === reponse) { return ;} 
 
-        // 2. On lit le NOUVEL ORDRE généré à gauche
-        const nouvelOrdreIds = [];
-        // On récupère toutes les questions de la partie gauche
-        const questionsAGauche = parentVQ.querySelectorAll("div.div-question"); 
-        
-        questionsAGauche.forEach(divConteneur => {
-            // Dans votre structure, le data-_id est sur le premier enfant (divQuestion)
-            const id = divConteneur.firstElementChild.dataset._id; 
-            if(id) nouvelOrdreIds.push(id);
-        });
+            const zoneDndReponseAdjacente = conteneurReponses.children[indexReponse+1];
 
-        // 3. On synchronise la partie DROITE avec cet ordre parfait
-        synchroniserOrdreQuestion(nouvelOrdreIds);
+            conteneurReponses.insertBefore(reponse, zoneDnd);
+            conteneurReponses.insertBefore(zoneDndReponseAdjacente, reponse);
+
+            const nouvelOrdreIds = [];
+            const reponsesApresDeplacement = conteneurReponses.querySelectorAll("div.div-reponse"); 
+            reponsesApresDeplacement.forEach(div => {
+                nouvelOrdreIds.push(div.dataset._id);
+            });
+
+            const idQuestion = String(idDeplace).split("-")[0];
+            synchroniserOrdreReponse(idQuestion, nouvelOrdreIds);
+            
+        // si c'est une question
+        } else if (!estUneReponse && !zoneDnd.classList.contains("dnd-reponse")) {
+            const parentVQ = document.getElementById("visualiseur-questions");
+            const question = parentVQ.querySelector(`div[data-_id="${idDeplace}"]`).parentElement; 
+            const indexZoneDnd = Array.prototype.indexOf.call(parentVQ.children, zoneDnd);
+            const indexQuestion = Array.prototype.indexOf.call(parentVQ.children, question);
+
+            if (!(indexQuestion+1 < parentVQ.children.length)){notifErreur(); return;} 
+            if (!parentVQ.children[indexQuestion+1].classList.contains("dnd")){notifErreur(); return;} 
+            if (zoneDnd.nextElementSibling === reponse || zoneDnd.previousElementSibling === reponse) { return ;}
+            
+            const zoneDndQuestion = parentVQ.children[indexQuestion+1];
+
+            if (Array.prototype.indexOf.call(parentVQ.children, zoneDndQuestion) == indexZoneDnd){return;} 
+
+            parentVQ.insertBefore(question, zoneDnd);
+            parentVQ.insertBefore(zoneDndQuestion, question);
+
+            const nouvelOrdreIds = [];
+            const questionsAGauche = parentVQ.querySelectorAll("div.div-question"); 
+            questionsAGauche.forEach(divConteneur => {
+                const id = divConteneur.firstElementChild.dataset._id; 
+                if(id) nouvelOrdreIds.push(id);
+            });
+
+            synchroniserOrdreQuestion(nouvelOrdreIds);
+        }
     }
 });
 
@@ -192,6 +222,17 @@ function creerZoneDnd() {
     divDnd.ondrop = dropHandler;
     divDnd.ondragover = dragoverHandler;
     divDnd.classList.add("dnd");
+    return divDnd;
+}
+
+/** * @returns {HTMLDivElement} - un div.dnd.dnd-reponse qui est une zone pour le dnd des réponses
+*/
+function creerZoneDndReponse() {
+    const divDnd = document.createElement("div");
+    divDnd.ondrop = dropHandler;
+    divDnd.ondragover = dragoverHandler;
+    divDnd.classList.add("dnd", "dnd-reponse"); // Note l'ajout de dnd-reponse
+    // Optionnel : tu peux réduire le padding pour les réponses via CSS si c'est trop espacé
     return divDnd;
 }
 
@@ -243,7 +284,6 @@ function creerQuestion(info) {
 
     divConteneur.append(divQuestion, divDnd);
 
-    //attribuerModalModifierQuestionAvaecConteneur(_id, TypeModifier.QUESTION); // PB ICI
     attribuerContexteMenu(divConteneur, type);
     return divConteneur;
 }
@@ -254,12 +294,14 @@ function creerQuestion(info) {
  * @returns {HTMLDivElement || null} - un div.div-reponses ou null si aucun type ne correspond
  */
 function creerReponse(info) {
+    const divDnd = document.createElement("div");
+    const strongDnd = document.createElement("strong");
     const _id = info["_id"];
     const type = info["type"];
     const nombreReponse = info["nombreReponse"];
 
     const divReponse = document.createElement("div");
-    divReponse.classList.add("box", "div-box", "div-reponse");
+    divReponse.classList.add("box", "div-box", "div-reponse", "is-relative"); 
 
     switch (type) {
         case TypeQuestion.CHECK_BOUTON:
@@ -271,13 +313,18 @@ function creerReponse(info) {
             pReponse.innerText = `Réponse ${nombreReponse+1}`;
             pReponse.classList.add("is-unselectable", "question");
             
-            divReponse.appendChild(pReponse);
-            break;
+            // dnd
+            const divDnd = document.createElement("div");
+            divDnd.classList.add("div-box-deplacement");
+            const strongDnd = document.createElement("strong");
+            strongDnd.classList.add("is-unselectable", "element-for-drag");
+            strongDnd.innerText = "⁝⁝";
+            divDnd.appendChild(strongDnd);
 
-        case TypeQuestion.LISTE_DEROULANTE:
-            break;
-
-        default:
+            divReponse.append(pReponse, divDnd);
+            
+            divReponse.ondragstart = dragstartHandler;
+            divReponse.draggable = false;
             break;
     }
 
@@ -303,14 +350,17 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
         divReponses = document.createElement("div");
         divReponses.classList.add("div-reponses");
         info["nombreReponse"] = 0;
+        
+        divReponses.appendChild(creerZoneDndReponse());
         const divReponse = creerReponse(info);
         divReponses.appendChild(divReponse);
+        divReponses.appendChild(creerZoneDndReponse());
+        
         divConteneur.appendChild(divReponses);
         affichageReponses(divReponses);
     }
 
-    parent.appendChild(divConteneur);
-    parent.appendChild(creerZoneDnd());
+    parent.append(divConteneur, creerZoneDnd());
 }
 
 /**
@@ -355,10 +405,11 @@ function ajouterReponseVisualisateurQuestions(id, idReponse=-1) {
     switch (type) {
         case TypeQuestion.CHECK_BOUTON:
         case TypeQuestion.RADIO_BOUTON:
-            info["nombreReponse"] = nombreReponse(); //divReponses.childElementCount;
+            info["nombreReponse"] = nombreReponse(); 
             const divReponse = creerReponse(info);
             if (divReponse){
                 divReponses.appendChild(divReponse);
+                divReponses.appendChild(creerZoneDndReponse());
                 if (identifiantReponse > 0) {
                     divReponse.dataset._id = `${id}-${identifiantReponse}`;
                 } else {
@@ -473,7 +524,7 @@ function donnerNombreReponse(id) {
     if (!divReponses) {
         return 0;
     } else {
-        return divReponses.childElementCount;
+        return divReponses.querySelectorAll("div.div-reponse").length;
     }
 }
 
