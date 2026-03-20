@@ -5,10 +5,9 @@ use App\Controllers\QuestionController;
 use App\Models\Acceptes;
 use App\Models\Questionnaire;
 $questionnaireBDD = new Questionnaire();
-$questionnaires = $questionnaireBDD->getQuestionnaireBy(["id_createur" => 1]);
+$questionnaires = $questionnaireBDD->getQuestionnairePar(["id_createur" => $_SESSION['cas_user']]);
 ?>
-<main style="background-color: #EFEFEF; min-height: 100vh; overflow-y: auto;">
-    <script type="module" src="./src/Views/js/resultats_questionnaire/afficher/resultat.js"></script>
+<main style="background-color: #EFEFEF; height: 100%; overflow-y: auto;">
     <div class="pt-5">
         <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5">liste des questionnaires</h3>
         <div id="questionnaires" class="is-flex is-justify-content-center pt-5 pb-2">
@@ -43,17 +42,18 @@ $questionnaires = $questionnaireBDD->getQuestionnaireBy(["id_createur" => 1]);
                     </thead>
                     <tbody>
                         <?php foreach ($questionnaires as $questionnaire): ?> 
-                            <tr>
-                                <td onclick="event.stopPropagation();alert('affichage ficitif');"><?php echo $questionnaire["titre"] ?></td>
-                                <td><span title="Code : <?php echo $questionnaire["code"] ?>"><code class="code"><?php echo $questionnaire["code"] ?></code></span></td>
+                            <tr class="ligne-questionnaire" data-id="<?php echo $questionnaire['id']; ?>">
+                                <td class="titre-questionnaire">
+                                    <span class="titre-texte"><?php echo $questionnaire["titre"] ?></span>
+                                </td>
                                 <td><?php //echo ($acceptesController->nombreReponduText($questionnaire["id"]))?></td> <!-- renvoi rien -->
                                 <td>
-                                    <div class="image is-32x32 ml-1 mr-2" onclick="event.stopPropagation();alert('telechargement ficitif');">
-                                        <img src="./src/Views/img/telecharger-64.png" alt="icon de téléchargement" title="Telecharger">
+                                    <div class="image is-32x32 ml-1 mr-2" onclick="event.stopPropagation();alert('téléchargement en cours'); window.location.href = './?c=questionnaire&a=exporter&id=<?php echo $questionnaire['id']; ?>';">
+                                        <img src="./src/Views/img/telecharger-64.png" alt="icon de téléchargement" title="Télécharger">
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="image is-32x32" onclick="event.stopPropagation();alert('suppression ficitif');">
+                                    <div class="image is-32x32" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $questionnaire['titre'] ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $questionnaire['id']; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
                                 </td> 
@@ -65,3 +65,5 @@ $questionnaires = $questionnaireBDD->getQuestionnaireBy(["id_createur" => 1]);
         </div>
     </div>
 </main>
+
+<script src="./src/Views/js/resultats_questionnaire/afficher/resultat.js"></script>

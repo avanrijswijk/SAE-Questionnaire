@@ -8,7 +8,16 @@ use PDOException;
 Class Database 
 { 
     private $conn;
-
+    
+    /**
+     * Établit et retourne une connexion PDO à la base de données MySQL.
+     * Lit les variables d'environnement, charge .env si nécessaire,
+     * applique des valeurs par défaut pour le développement local.
+     * Utilise un singleton pour éviter les connexions multiples.
+     *
+     * @return PDO Instance de connexion PDO.
+     * @throws \RuntimeException En cas d'erreur de connexion.
+     */
     public function getConnection()
     {
         if ($this->conn === null) {
@@ -29,38 +38,51 @@ Class Database
                 return $default;
             };
 
-            $host = $get('DB_HOST', 'localhost');
-            $port = $get('DB_PORT', '3307');
-            $dbName = $get('DB_NAME', 'questionnaire_app');
-            $username = $get('DB_USER', 'root');
-            $password = $get('DB_PASS', '');
+            // Try to read values from environment (may be empty for web workers until dotenv loaded)
+            $host = $get('DB_HOST', null);
+            $port = $get('DB_PORT', null);
+            $dbName = $get('DB_NAME', null);
+            $username = $get('DB_USER', null);
+            $password = $get('DB_PASS', null);
 
-            // Si les variables essentielles ne sont toujours pas définies, essayer
-            // de charger .env depuis la racine du projet (utile pour certains SAPI).
-            if (($host === 'localhost' && $get('DB_HOST', '') === '') || ($username === 'root' && $get('DB_USER', '') === '')) {
+            // If essential DB vars are missing, attempt to load .env from project root (helpful for web workers)
+            if (empty($host) || empty($username) || empty($dbName)) {
                 $possibleRoot = realpath(__DIR__ . '/../../');
                 if ($possibleRoot && file_exists($possibleRoot . DIRECTORY_SEPARATOR . '.env') && class_exists('Dotenv\\Dotenv')) {
                     try {
                         \Dotenv\Dotenv::createImmutable($possibleRoot)->safeLoad();
-                        // repopulate variables from $_ENV/$_SERVER if available
+                        // repopulate variables from environment
                         $host = $get('DB_HOST', $host);
                         $port = $get('DB_PORT', $port);
                         $dbName = $get('DB_NAME', $dbName);
                         $username = $get('DB_USER', $username);
                         $password = $get('DB_PASS', $password);
                     } catch (\Throwable $e) {
-                        // ignore and continue with defaults
+                        // ignore and continue
                     }
                 }
             }
 
-            $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $dbName);
+            // Apply sensible defaults for local/dev when still missing
+            $serverName = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : null;
+            $localServers = array('127.0.0.1', '::1', 'localhost');
+            if (empty($host) && in_array($serverName, $localServers, true)) {
+                $host = '127.0.0.1';
+            }
+            $port = $port ?: '3307';
+            $dbName = $dbName ?: 'questionnaire_app';
+            $username = $username ?: 'root';
+            $password = $password ?: '';
 
+            $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $dbName);
+            
             try {
+                //echo ("last call : new DPO => \$dsn = $dsn ; \$username = $username ; \$password = $password\n");
                 $this->conn = new PDO($dsn, $username, $password);
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $exception) {
-                echo 'Erreur de connexion : ' . $exception->getMessage();
+                error_log('Erreur de connexion DB: ' . $exception->getMessage());
+                throw new \RuntimeException('Erreur de connexion à la base de données. Voir logs pour détails.');
             }
         }
 

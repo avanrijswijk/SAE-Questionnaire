@@ -18,12 +18,15 @@ if (in_array($_SERVER['SERVER_NAME'], $whitelist_local)) {
         $_SESSION['cas_user'] = 'etudiant_local';
         $_SESSION['cas_prenom'] = 'Jean'; 
         $_SESSION['cas_nom'] = 'Dupont'; 
-        $_SESSION['cas_groupes'] = ['etudiant', 'info'];
+        $_SESSION['cas_email'] = 'jean.dupont@sae.com';
+        $_SESSION['cas_groupes'] = ['groupe-etudiants-hors-doctorants', 'iut-etudiants-info', 'iut-etudiants-limoges', 'tlin12-221', 'iut-etudiants-info-2a'];
     }
 } else {
     // --- MODE SERVEUR (IUT) ---
     // Activation de la sécurité CAS
     require_once 'config.php';
+    // Vérification Consentement (Bloquant si pas accepté)
+    require_once 'includes/onboarding.php';
 }
 
 require 'vendor/autoload.php';
@@ -33,15 +36,19 @@ use App\Controllers\QuestionnaireController;
 use App\Controllers\AcceptesController;
 use App\Controllers\QuestionController;
 use App\Controllers\Reponses_utilisateurController;
+use App\Controllers\Choix_possibleController;
 
 
-// ajout de l'en tête
-require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'header.php');
 
 // routage simple (normaliser en minuscules)
 $controller = isset($_GET['c'])? strtolower($_GET['c']) : 'home';
 $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
+$isExport = ($controller === 'questionnaire' && $action === 'exporter');
 
+// ajout de l'en tête
+if (!$isExport) {
+require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'header.php');
+}
 
     switch ($controller) {
 
@@ -51,6 +58,10 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
 
         case 'profil':
             require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'profil.php');
+            break;
+
+        case 'mentionslegales':
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'mentionsLegales.php');
             break;
 
         case 'questionnaire':
@@ -69,11 +80,22 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
                 case 'resultats':
                     $reponses_utilisateurController->resultatsQuestionnaire();
                     break;
+                case 'detail':
+                    $id = isset($_GET['id']) ? $_GET['id'] : null;
+                    $questionnaireController->detailQuestionnaire($id);
+                    break;
+                case 'changertitre':
+                    $questionnaireController->changerTitre();
+                    break;
+                case 'exporter':
+                    $questionnaireController->exporterEnCSV();
+                    break;
+                case 'supprimer':
+                    $questionnaireController->supprimer();
+                    break;
                 case 'enregistrer':
                     if ($questionnaireController->enregistrerQuestionnaire()) {
-                        if ($questionController->enregistrerQuestions($questionnaireController->lastInsertId())) {
-                            $acceptesController->enregistrer();
-                        }
+                        $questionController->enregistrerQuestions($questionnaireController->getIdDerniereInsertion());
                     }
                     break;
                 case 'enregistrer-reponses' :
@@ -96,5 +118,6 @@ $action = isset($_GET['a']) ? strtolower($_GET['a']) : 'lister';
             break;
     }
 
-    
+    if (!$isExport) {
     require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'footer.php');
+    }

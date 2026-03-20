@@ -10,9 +10,9 @@
                 <section class="modal-card-body" style="border-radius: 15px;">
                     <button id="bouton-fermer" class="delete" aria-label="close" style="position: absolute; right:10px; top: 10px;"></button>
                     <div class="field">
-                        <label class="label">Code du questionnaires :</label>
+                        <label class="label">Code du questionnaire :</label>
                         <div class="control">
-                            <input class="input" name="code" type="text" placeholder="par exemple XXXX" minlength="4" maxlength="4" pattern="[A-Za-z]{4}" required>
+                            <input class="input" name="code" type="text" placeholder="Exemple : XXXX" minlength="4" maxlength="4" pattern="[A-Za-z]{4}" required>
                         </div>
                     </div>
                     <button type="submit" class="button" id="bouton-valider">
@@ -52,7 +52,15 @@
                     <?php //if (1 == 1) : ?>
                         <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';">
                             <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
-                            <td><?php echo htmlspecialchars($questionnaire['id_createur']); ?></td>
+                            <?php
+                                $createurNom = $questionnaire['createur_nom'] ?? '';
+                                $createurPrenom = $questionnaire['createur_prenom'] ?? '';
+                                $createurNomPrenom = trim($createurPrenom . ' ' . $createurNom);
+                                $createurAffichage = $createurNomPrenom !== ''
+                                    ? $createurNomPrenom
+                                    : ($questionnaire['id_createur'] ?? '');
+                            ?>
+                            <td><?php echo htmlspecialchars($createurAffichage); ?></td>
                             <?php if ($nbJoursRestant <= 0) : ?>
                                 <td title="<?php echo htmlspecialchars($date) ?>" style="color : red;"><?php echo htmlspecialchars($nbHeureRestant); ?> heures restant</td> 
                             <?php else : ?>

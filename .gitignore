@@ -30,3 +30,6 @@ Thumbs.db
 # accès à l'https
 .htaccess
 
+# protection des données utilisateurs
+
+api_save_consent.php
