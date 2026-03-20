@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Questionnaire;
 use App\Models\Question;
 use App\Models\Reponses_utilisateur;
+use App\Models\Statistique;
 
 require_once 'config.php';
 
@@ -14,6 +15,7 @@ class QuestionnaireController {
     private $questionnaireModel;
     private $questionModel;
     private $reponses_utilisateurModel;
+    private $statistiqueModel;
 
     /**
      * Constructeur de la classe QuestionnaireController.
@@ -26,6 +28,8 @@ class QuestionnaireController {
         $this->questionModel = $questionModel;
         $reponses_utilisateurModel = new Reponses_utilisateur();
         $this->reponses_utilisateurModel = $reponses_utilisateurModel;
+        $statistiqueModel = new Statistique();
+        $this->statistiqueModel = $statistiqueModel;
     }
 
     /**
@@ -274,7 +278,7 @@ class QuestionnaireController {
     }
 
     /**
-     * affiichage temporaire en attendant son implementation
+     * affichage temporaire en attendant son implementation
      *
      * @param int|null $id ID du questionnaire à afficher (optionnel, sinon depuis GET).
      */
@@ -289,7 +293,11 @@ class QuestionnaireController {
             return;
         }
 
+        $total_reponses = $this->questionnaireModel->getNombreRepondants($id);
+        $total_questions = $this->questionnaireModel->getNombreQuestions($id);
+
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+        $repondants = $this->reponses_utilisateurModel->getRepondantsParQuestionnaire($id);
 
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'detailQuestionnaire.php');
     }
@@ -304,12 +312,29 @@ class QuestionnaireController {
         echo("id = " . $id . "titre = " . $titre);
 
         $date_expiration = $this->questionnaireModel->getQuestionnaire($id)['date_expiration'];
+        $groupes_autorises = $this->questionnaireModel->getQuestionnaire($id)['groupes_autorises'];
 
         $questionnaire = new Questionnaire();
-        $questionnaire-> modifier($id, $titre, $date_expiration, '');
+        $questionnaire-> modifier($id, $titre, $date_expiration, $groupes_autorises);
 
         echo "OK";
     }
+
+    /**
+     * Affiche le formulaire de modification d'un questionnaire.
+     */
+    public function modifier() {
+    $id = $_GET['id'] ?? null;
+    if (!$id) { die("Identifiant manquant."); }
+
+    $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+    if (!$questionnaire) { die("Questionnaire introuvable."); }
+
+    $regles = json_decode($questionnaire['groupes_autorises'], true);
+    $groupes_actuels = $regles['groupes_requis'] ?? [];
+
+    require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'modifierQuestionnaire.php');
+}
 
     /**
      * Vérifie si un utilisateur a le droit de voir/répondre à un questionnaire
@@ -363,6 +388,67 @@ class QuestionnaireController {
 
         return true;
     }
+
+
+
+    /**
+     * Affiche la vue d'analyse graphique des résultats d'un questionnaire.
+     *
+     * @param int|null $id ID du questionnaire à analyser (optionnel, sinon depuis GET).
+     */
+    public function analyseGraphique($id = null) {
+        if ($id === null) {
+            $id = isset($_GET['id']) ? $_GET['id'] : null;
+        }
+
+        if (empty($id)) {
+            echo 'Identifiant de questionnaire manquant.';
+            return;
+        }
+
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+
+        if (!$questionnaire) {
+            echo 'Questionnaire introuvable.';
+            return;
+        }
+
+        if (!$this->aLeDroitDAcces($questionnaire['groupes_autorises'], $_SESSION['cas_groupes'])) {
+            die("Vous n'avez pas l'autorisation d'accéder à ce questionnaire.");
+        }
+
+        $resultats_fermes = $this->statistiqueModel->getStatsQuestionsFermees($id);
+        $statistiques_formatees = [];
+        $palette_couleurs = ['#3273dc', '#48c774', '#ffdd57', '#f14668', '#b86bff', '#00d1b2'];
+
+        foreach ($resultats_fermes as $ligne) {
+            $id_q = $ligne['id_question'];
+            if (!isset($statistiques_formatees[$id_q])) {
+                $statistiques_formatees[$id_q] = [
+                    'id_question' => $id_q,
+                    'titre_question' => $ligne['titre_question'],
+                    // Radio = Pie, Checkbox = Bar
+                    'type_graphique' => ($ligne['type_question'] == 'radio') ? 'pie' : 'bar',
+                    'labels' => [],
+                    'donnees' => [],
+                    'couleurs' => []
+                ];
+            }
+            $statistiques_formatees[$id_q]['labels'][] = $ligne['label'];
+            $statistiques_formatees[$id_q]['donnees'][] = (int) $ligne['nb_votes'];
+            
+            $index_couleur = count($statistiques_formatees[$id_q]['couleurs']) % count($palette_couleurs);
+            $statistiques_formatees[$id_q]['couleurs'][] = $palette_couleurs[$index_couleur];
+        }
+        
+        $json_statistiques = json_encode(array_values($statistiques_formatees));
+
+        $questions_ouvertes = $this->statistiqueModel->getStatsQuestionsOuvertes($id);
+
+        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'analyseGraphique.php');
+    }
+
+
 }
 
     
