@@ -214,7 +214,7 @@ document.addEventListener("drop", (e) => {
 
             if (!(indexQuestion+1 < parentVQ.children.length)){notifErreur(); return;} 
             if (!parentVQ.children[indexQuestion+1].classList.contains("dnd")){notifErreur(); return;} 
-            if (zoneDnd.nextElementSibling === reponse || zoneDnd.previousElementSibling === reponse) { return ;}
+            if (zoneDnd.nextElementSibling === question || zoneDnd.previousElementSibling === question) { return ;}
             
             const zoneDndQuestion = parentVQ.children[indexQuestion+1];
 
@@ -422,16 +422,19 @@ function ajouterReponseVisualisateurQuestions(id, idReponse=-1) {
     }
 
     const nombreReponse = function() {
-        let idMax = 0;
+        let idMax = -1; // CORRECTION 1 : On commence à -1 pour que le +1 donne 0 s'il n'y a rien
         Array.from(divReponses.children).forEach((divReponse) => {
-            const id = parseInt(String(divReponse.dataset._id).split("-")[1]);
-            if (idMax < id) { 
-                idMax = id;
+            // CORRECTION 2 : On filtre pour ignorer les zones DnD qui n'ont pas d'ID
+            if (divReponse.classList.contains("div-reponse") && divReponse.dataset._id) {
+                const idExtrait = parseInt(String(divReponse.dataset._id).split("-")[1]);
+                if (idMax < idExtrait) { 
+                    idMax = idExtrait;
+                }
             }
         });
-        return idMax+1;
+        return idMax + 1;
     };
-    console.log(`nb réponse +1 : ${nombreReponse()}`);
+    //console.log(`nb réponse +1 : ${nombreReponse()}`); // debug
 
     switch (type) {
         case TypeQuestion.CHECK_BOUTON:
@@ -441,7 +444,7 @@ function ajouterReponseVisualisateurQuestions(id, idReponse=-1) {
             if (divReponse){
                 divReponses.appendChild(divReponse);
                 divReponses.appendChild(creerZoneDndReponse());
-                if (identifiantReponse > 0) {
+                if (identifiantReponse >= 0) {
                     divReponse.dataset._id = `${id}-${identifiantReponse}`;
                 } else {
                     identifiantReponse = divReponse.dataset._id;
@@ -504,23 +507,46 @@ function replierReponses(divReponses) {
 function supprierQuestionVisualiseurQuestions(id) {
     try {
         const divQuestion = document.querySelector(`div[data-_id="${id}"]`);
+        if (!divQuestion) return; // Sécurité au cas où l'élément n'existe plus
+
         if (String(id).includes("-")) {
-            const parent = divQuestion.parentElement;
-            divQuestion.remove();
-            if (parent.childElementCount <= 0) {
-                ajouterReponseVisualisateurQuestions(String(id).split("-")[0], String(id).split("-")[1]);
-                modifierQuestionVisualiseurQuestions(id, "Réponse 1");
+            // --- CAS 1 : C'EST UNE RÉPONSE ---
+            const parent = divQuestion.parentElement; // Le conteneur div.div-reponses
+            
+            // 1. Supprimer la zone DnD située juste en dessous de la réponse
+            const dndZone = divQuestion.nextElementSibling;
+            if (dndZone && dndZone.classList.contains("dnd-reponse")) {
+                dndZone.remove();
             }
-        } else {
-            const visualiseurQuestions = document.getElementById("visualiseur-questions");
-            const divParent = divQuestion.closest("div.box.div-question.div-box");
-            const enfants = visualiseurQuestions.children;
-            const index = Array.from(enfants).indexOf(divParent);    
-            divParent.remove();
-            if (index < enfants.length) {
-                enfants[index].remove();
+            
+            // 2. Supprimer la réponse elle-même
+            divQuestion.remove();
+
+            // 3. Vérifier s'il reste d'autres réponses (on compte les vraies réponses, pas les DnD)
+            const nbReponsesRestantes = parent.querySelectorAll("div.div-reponse").length;
+            
+            if (nbReponsesRestantes === 0) {
+                // S'il n'y a plus aucune réponse, on réinitialise proprement
+                parent.innerHTML = ""; // On nettoie les éventuelles zones DnD fantômes restantes
+                parent.appendChild(creerZoneDndReponse()); // On remet la zone DnD du haut
+                
+                // On recrée la "Réponse 1" avec l'identifiant 0
+                const idQuestion = String(id).split("-")[0];
+                ajouterReponseVisualisateurQuestions(idQuestion); 
             }
 
+        } else {
+            // --- CAS 2 : C'EST UNE QUESTION ---
+            const divParent = divQuestion.closest("div.box.div-question.div-box");
+            
+            // 1. Supprimer la zone de DnD située juste en dessous de la question
+            const dndZone = divParent.nextElementSibling;
+            if (dndZone && dndZone.classList.contains("dnd")) {
+                dndZone.remove();
+            }
+
+            // 2. Supprimer la question elle-même
+            divParent.remove();
         }
     } catch (e) {
         console.error(e);

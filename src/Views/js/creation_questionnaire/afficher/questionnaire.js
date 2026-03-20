@@ -201,8 +201,9 @@ function supprimerQuestionVisualiseurQuestionnaire(id) {
 
         if (parent.childElementCount <= 0) {
             console.log(parent.childElementCount);
-            ajouterReponseVisualiseurQuestionnaire(id, type);
-            modifierQuestionVisualiseurQuestionnaire(id, "Réponse 1");
+            const idQuestion = String(id).split("-")[0];
+            const nouvelId = `${idQuestion}-0`
+            ajouterReponseVisualiseurQuestionnaire(nouvelId, type);
         }
     } else{
         const divQuestion = document.querySelector(`div.block[data-_id="${id}"]`);
