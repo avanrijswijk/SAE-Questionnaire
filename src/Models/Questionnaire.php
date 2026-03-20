@@ -133,7 +133,7 @@ class Questionnaire {
         $stmt->bindParam(':groupes_autorises', $groupes_autorises);
         $stmt->bindParam(':id', $id);
 
-        $stmt->execute();
+        return $stmt->execute();
     }
 
     /**
