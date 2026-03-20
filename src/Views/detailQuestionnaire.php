@@ -7,7 +7,7 @@
     <div class="level mb-5">
         <div class="level-left">
             <div>
-                <a href="./?c=home" class="button is-small is-ghost mb-5">
+                <a href="./?c=questionnaire&a=resultats" class="button is-small is-ghost mb-5">
                     <span>< Mes questionnaires</span>
                 </a>
                 <h1 class="title is-2 mb-5">
@@ -30,7 +30,7 @@
                 <a href="./?c=questionnaire&a=exporter&id=<?php echo $questionnaire['id']; ?>" class="button is-info">
                     <span>Exporter CSV</span>
                 </a>
-                <a href="####" class="button is-warning">
+                <a href="./?c=questionnaire&a=modifier&id=<?php echo $questionnaire['id']; ?>" class="button is-warning">
                     <span>Modifier</span>
                 </a>
                 <a href="./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>" class="button is-success">

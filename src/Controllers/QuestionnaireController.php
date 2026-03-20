@@ -321,6 +321,22 @@ class QuestionnaireController {
     }
 
     /**
+     * Affiche le formulaire de modification d'un questionnaire.
+     */
+    public function modifier() {
+    $id = $_GET['id'] ?? null;
+    if (!$id) { die("Identifiant manquant."); }
+
+    $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+    if (!$questionnaire) { die("Questionnaire introuvable."); }
+
+    $regles = json_decode($questionnaire['groupes_autorises'], true);
+    $groupes_actuels = $regles['groupes_requis'] ?? [];
+
+    require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'modifierQuestionnaire.php');
+}
+
+    /**
      * Vérifie si un utilisateur a le droit de voir/répondre à un questionnaire
      * @param string $json_regles Le contenu de la colonne 'groupes_autorises'
      * @param array $mes_groupes Le tableau des groupes propres de l'utilisateur
