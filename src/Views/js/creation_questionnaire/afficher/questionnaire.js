@@ -200,7 +200,7 @@ function supprimerQuestionVisualiseurQuestionnaire(id) {
         labelReponse.remove();
 
         if (parent.childElementCount <= 0) {
-            console.log(parent.childElementCount);
+            // console.log(parent.childElementCount); //debug
             const idQuestion = String(id).split("-")[0];
             const nouvelId = `${idQuestion}-0`
             ajouterReponseVisualiseurQuestionnaire(nouvelId, type);

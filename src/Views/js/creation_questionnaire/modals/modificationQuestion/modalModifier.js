@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (divQuestion) {
                 const type = divQuestion.dataset.type;
                 const id = (divReponse) ? divReponse.dataset._id : divQuestion.dataset._id;
-                console.log(id);
+                // console.log(id); //debug
 
                 ouvrireModalModifierQuestion(id, type);
             }
