@@ -42,6 +42,11 @@ div.div-box-deplacement {
 div.box.div-question:hover > div.div-box-deplacement,
 div.box.div-reponse:hover > div.div-box-deplacement {
     transform: translateX(0px);
+} 
+
+div.box.div-question.hover > div.div-box-deplacement,
+div.box.div-reponse.hover > div.div-box-deplacement {
+    transform: translateX(0px);
 }
 
 div.dnd {
@@ -60,6 +65,38 @@ div.dnd.drag {
 
 document.adoptedStyleSheets = [...document.adoptedStyleSheets, style];
 
+/////////////////////* PARTIE HOVER */////////////////////
+
+// quand la souris entre
+// document.addEventListener("mouseover", (e) => {
+//     const target = e.target
+//     if (target.classList.contains("div-reponse") || target.classList.contains("div-reponse > p")) {
+//         target.classList.add("hover");
+//     } else
+//     if (target.classList.contains("div-question") || target.classList.contains("div-question > div > p")) {
+//         target.classList.add("hover");
+//     }
+// });
+
+
+// // quand la souris sort
+// document.addEventListener("mouseout", (e) => {
+//     const target = e.target;
+    
+//     if (target.classList.contains("div-box-deplacement > strong.element-for-drag") || target.classList.contains("div-box-deplacement")) {
+//         console.log("amama");
+//         return;
+//     }    
+//        if (target.classList.contains("div-reponse") || target.classList.contains("div-reponse > p")) {
+//             target.classList.remove("hover");
+//         } 
+//         if (target.classList.contains("div-question") || target.classList.contains("div-question > div > p")) {
+//             target.classList.remove("hover");
+//         } 
+    
+    
+// });
+
 /////////////////* PARTIE DRAG AND DROP */////////////////
 
 // est appelée quand la question est déposé apres le dnd
@@ -71,15 +108,7 @@ function dropHandler(ev) {
     //ev.target.appendChild(document.querySelector(`div[data-_id="$(data)"]`));
 }
 
-// est appelée quand la question est aggriper pour le dnd
-// function dragstartHandler(ev) {
-//     if (ev.target.closest) {
-//         const element = ev.target.closest("div.box.div-question.div-box").firstElementChild;
-//         ev.dataTransfer.setData("text", element.dataset._id);
-//     }
-    
-// }
-
+// est appelée quand la question / reponse est selectionnée (debut du dnd)
 function dragstartHandler(ev) {
     if (ev.target.closest) {
         const divBox = ev.target.closest("div.box.div-box[draggable='true']");
@@ -129,9 +158,10 @@ document.addEventListener("dragleave", (e) => {
 document.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains("element-for-drag")) {
         window.getSelection().removeAllRanges();
-        // On remplace "div.box.div-question.div-box" par "div.box.div-box" pour cibler aussi les réponses
+
         const divParent = e.target.closest("div.box.div-box"); 
         divParent.setAttribute('draggable', 'true');
+
         listenerDragEnd(divParent);
     }
 });
@@ -357,6 +387,7 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
         divReponses.appendChild(creerZoneDndReponse());
         
         divConteneur.appendChild(divReponses);
+        divConteneur.dataset.replier = "0";
         affichageReponses(divReponses);
     }
 
@@ -433,17 +464,37 @@ function ajouterReponseVisualisateurQuestions(id, idReponse=-1) {
 function affichageReponses(divReponses) {
     if (divReponses == null) {return;}
     
-    const divQuestion = divReponses.parentElement;
+    const divQuestion = divReponses.parentElement; // le parent et divQuestion
     
     divQuestion.addEventListener("click", (event) => {
         if (event.ctrlKey || event.metaKey) {
-            if (divReponses.style.display == "none") {
-                divReponses.style.display = "";
-            } else {
-                divReponses.style.display = "none";
-            }
+            // if (divReponses.style.display == "none") {
+            //     divReponses.style.display = "";
+            //     divQuestion.dataset.replier = "0";
+            // } else {
+            //     divReponses.style.display = "none";
+            //     divQuestion.dataset.replier = "1";
+            // }
+            divQuestion.dataset.replier = replierReponses(divReponses);
         }
     });
+}
+
+/**
+ * Repli le div des réponses d'un div question
+ * @param {HTMLDivElement} divReponses - le div qui contient les réponses
+ * @returns Int - 0 quand ce n'est pas replier ; 1 quand c'est replier
+ */
+function replierReponses(divReponses) {
+    if (divReponses == null) {return;}
+
+    if (divReponses.style.display == "none") {
+        divReponses.style.display = "";
+        return 0;
+    } else {
+        divReponses.style.display = "none";
+        return 1;
+    }
 }
 
 /**
