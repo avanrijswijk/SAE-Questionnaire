@@ -613,6 +613,22 @@ function donnerTypeQuestionAvecIdVisualiseurQuestions(id) {
 }
 
 /**
+ * Donne les infos sur une question / réponse
+ * @param {int} id - identifiant de la question / reponse
+ * @returns {JSON} - champs : libelle ; obligatoire ; id ; type
+ */
+function donnerInfosQuestionAvecIdVisualiseurQuestions(id) {
+    const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(id);
+    const info = {
+        libelle : donnerLibelleQuestionAvecIdVisualiseurQuestions(id),
+        obligatoire : divQuestion.dataset.obligatoire,
+        id : id,
+        type : donnerTypeQuestionAvecIdVisualiseurQuestions(id)
+    }
+    return info;
+}
+
+/**
  * Donne le nombre de réponse à une question (ne fonctionne pas pour une zone d'entrée)
  * @param {int || string} id - l'identifiant de la question
  * @returns {int} - le nombre de réponse de la question
@@ -634,5 +650,6 @@ export {
     donnerQuestionAvecIdVisualiseurQuestions, 
     donnerLibelleQuestionAvecIdVisualiseurQuestions,
     donnerTypeQuestionAvecIdVisualiseurQuestions,
+    donnerInfosQuestionAvecIdVisualiseurQuestions,
     donnerNombreReponse
 }

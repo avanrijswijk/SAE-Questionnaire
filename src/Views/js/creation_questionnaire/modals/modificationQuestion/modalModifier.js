@@ -4,7 +4,8 @@ import {
     modifierQuestionVisualiseurQuestions, 
     donnerQuestionAvecIdVisualiseurQuestions, 
     donnerLibelleQuestionAvecIdVisualiseurQuestions,
-    donnerTypeQuestionAvecIdVisualiseurQuestions
+    donnerTypeQuestionAvecIdVisualiseurQuestions,
+    donnerInfosQuestionAvecIdVisualiseurQuestions
 } from '../../afficher/questions.js';
 import {modifierQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
 import { notification, TypeNotification } from '../../../utils/notification/notification.js';
@@ -41,7 +42,8 @@ function init_modal(modal, id, type) {
     const textarea = modal.querySelector(`[name="${NAME_TEXTAREA}"]`);
     textarea.value = donnerLibelleQuestionAvecIdVisualiseurQuestions(id);
 
-    const typeQuestion = donnerTypeQuestionAvecIdVisualiseurQuestions(id);
+    const infosQuestions = donnerInfosQuestionAvecIdVisualiseurQuestions(id);
+    const typeQuestion = infosQuestions.type;
 
     const pTitreModal = modal.querySelector(`p.modal-card-title`);
     switch (type) {
@@ -59,6 +61,12 @@ function init_modal(modal, id, type) {
         case TypeQuestion.CHAMPS_LONG:
             divOptionsChampTexte.style.display = ""
             divObligatoire.style.display = ""
+
+            const radiosSousType = modal.querySelectorAll('input[name="sous-type-question-modifier"]');
+            if (radiosSousType && radiosSousType.length >= 2) {
+                radiosSousType[0].checked = typeQuestion == TypeQuestion.CHAMPS_COURT ? true : false; // le premier est champ court
+                radiosSousType[1].checked = typeQuestion == TypeQuestion.CHAMPS_COURT ? false : true; // le deuxième est champ long
+            }
             break;
         case TypeQuestion.RADIO_BOUTON:
         case TypeQuestion.CHECK_BOUTON:
@@ -73,6 +81,12 @@ function init_modal(modal, id, type) {
             divOptionsChampTexte.style.display = "none"
             divObligatoire.style.display = "none"
             break;
+    }
+
+    const estObligatoire = infosQuestions.obligatoire;
+    const checkObligatoire = modal.querySelector(`input[name="${NAME_CHECK_OBLIGATOIRE}"]`);
+    if (estObligatoire && checkObligatoire) {
+        checkObligatoire.checked = String(estObligatoire) == "true" ? true : false;
     }
 }
 
