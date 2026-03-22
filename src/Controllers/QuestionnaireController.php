@@ -6,6 +6,7 @@ use App\Models\Questionnaire;
 use App\Models\Question;
 use App\Models\Reponses_utilisateur;
 use App\Models\Choix_possible;
+use App\Controllers\QuestionController;
 
 require_once 'config.php';
 
@@ -16,6 +17,7 @@ class QuestionnaireController {
     private $questionModel;
     private $reponses_utilisateurModel;
     private $choix_possibleModel;
+    private $questionController;
 
     /**
      * Constructeur de la classe QuestionnaireController.
@@ -30,6 +32,8 @@ class QuestionnaireController {
         $this->reponses_utilisateurModel = $reponses_utilisateurModel;
         $choix_possibleModel = new Choix_possible();
         $this->choix_possibleModel = $choix_possibleModel;
+        $questionController = new QuestionController();
+        $this->questionController = $questionController;
     }
 
     /**
@@ -91,6 +95,10 @@ class QuestionnaireController {
                 echo 'Les questionnaires déjà publiés ne peuvent pas être modifiés.       :)';
                 return;
             }
+            if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+                echo 'Vous n\'avez pas accès à ce questionnaire.';
+                return;
+            }
             $questionnaire= $this->getQuestionnaireComplet($id);
         } else {
             $questionnaire = null;
@@ -135,11 +143,11 @@ class QuestionnaireController {
         $id_questionnaire = isset($_GET['id_questionnaire']) ? $_GET['id_questionnaire'] : null;
         
         if (!is_null($id_questionnaire)) {
-            if ($_SESSION['id'] != $this->questionnaireModel->getQuestionnaire($id_questionnaire)['id_createur']) {
+            if ($_SESSION['cas_user'] != $this->questionnaireModel->getQuestionnaire($id_questionnaire)['id_createur']) {
                 echo "erreur : vous n'êtes pas le créateur de ce questionnaire.";
                 return;
             } else {
-                $resultats = $this->reponses_utilisateurModel->getReponse($id_questionnaire, $_SESSION['id_utilisateur']);
+                $resultats = $this->reponses_utilisateurModel->getReponse($id_questionnaire, $_SESSION['cas_user']);
                 // require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'traitementResultats.php');
             }
             
@@ -150,47 +158,123 @@ class QuestionnaireController {
     }
 
     /**
-     * Enregistre ou met à jour un questionnaire avec les données POST.
-     *
-     * @return bool True si l'enregistrement réussit, false sinon.
+     * WIP -> à découper mtn que c'est corriger
      */
     public function enregistrerQuestionnaire() {
-        $id = isset($_POST['id']) ? $_POST['id'] : null;
-        $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
-        $date_expiration = isset($_POST['date-expriration']) ? $_POST['date-expriration'] : null;
-        $id_createur = $_SESSION['cas_user']
-            ?? session_id();
-        $code = isset($_POST['code']) ? $_POST['code'] : null;
 
-        // Gestion des règles d'accès
-        $mon_profil = analyserProfilUtilisateur($_SESSION['cas_groupes']);
-        $cibles_selectionnees = $_POST['groupes_cibles'] ?? [];
-        // On détermine le site du créateur du questionnaire
-        $site_du_questionnaire = $mon_profil['sites'][0] ?? 'limoges'; 
-        // On crée nos règles d'accès en fonction du site et des groupes cibles sélectionnés
-        $regles_acces = [
-            "site_requis" => $site_du_questionnaire,
-            "groupes_requis" => $cibles_selectionnees
-        ];
+        // -----------------------------
+        // Récupération des données POST
+        // -----------------------------
+        $mode = $_POST['mode_enregistrement'] ?? null;   // 'publier' ou 'brouillon'
+        $id_questionnaire = $_POST['id_questionnaire'] ?? null; // vide si nouveau
 
-        // On encode ces règles en JSON pour la base de données
-        // exemple : {"site_requis":"limoges", "groupes_requis":["iut-etudiants-info-1a"]}
-        $json_pour_bdd = json_encode($regles_acces);
+        $liste_questions_json = $_POST['liste-questions'] ?? '[]';
+        $liste_questions = json_decode($liste_questions_json, true);
 
-        if (isset($id)) {
-            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration, $json_pour_bdd);
-        } else {
-            //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
-            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $json_pour_bdd);
+        $titre = $_POST['nom-questionnaire'] ?? null;
+        $date_expiration = $_POST['date-expiration'] ?? null;
+
+        // Construction du JSON groupes_autorises
+        $groupes_autorises = json_encode([
+            "site_requis" => "limoges", // temporaire
+            "groupes_requis" => $_POST["groupes_autorises"] ?? []
+        ], JSON_UNESCAPED_UNICODE);
+
+        // Détermination du statut brouillon / publié
+        $est_brouillon = ($mode === 'publier') ? 1 : 0;
+
+        // -----------------------------
+        // CAS 1 : Création d’un nouveau questionnaire
+        // -----------------------------
+        if ($id_questionnaire === null || $id_questionnaire === '') {
+
+            // Création du questionnaire (brouillon ou publié directement)
+            $nouvel_id = $this->questionnaireModel->creerQuestionnaire(
+                $titre,
+                $_SESSION['cas_user'],
+                $date_expiration,
+                null, // code (géré dans le modèle)
+                $groupes_autorises,
+                $est_brouillon
+            );
+
+            // Enregistrement des questions
+            $_POST['liste-questions'] = json_encode($liste_questions);
+            $this->questionController->enregistrerQuestions($nouvel_id);
+
+            header("Location: ?c=home");
+            exit;
         }
 
-        if ($ajoutOk) {
-            require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'home.php');
-        } else {
-            echo 'Erreur lors de l\'enregistrement.';
+        // -----------------------------
+        // CAS 2 : Modification d’un questionnaire existant
+        // -----------------------------
+
+        // Récupération du questionnaire existant
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id_questionnaire);
+
+        // Sécurité : un questionnaire publié n’est jamais modifiable
+        if ($questionnaire['brouillon'] == 1) {
+            header("Location: ?c=home");
+            exit;
         }
 
-        return $ajoutOk;
+        // -----------------------------
+        // CAS 2A : Modification d’un brouillon (sans publication)
+        // -----------------------------
+        if ($mode === 'brouillon') {
+
+            // Mise à jour du brouillon
+            $this->questionnaireModel->modifier(
+                $id_questionnaire,
+                $titre,
+                $date_expiration,
+                $groupes_autorises
+            );
+
+            // Mise à jour des questions du brouillon
+            $this->questionController->mettreAJourQuestions($id_questionnaire, $liste_questions);
+
+            header("Location: ?c=home");
+            exit;
+        }
+
+        // -----------------------------
+        // CAS 2B : Publication d’un brouillon
+        // -----------------------------
+        if ($mode === 'publier') {
+
+            // 1) Mettre à jour le brouillon AVANT de figer l’état
+            $this->questionnaireModel->modifier(
+                $id_questionnaire,
+                $titre,
+                $date_expiration,
+                $groupes_autorises
+            );
+
+            $this->questionController->mettreAJourQuestions($id_questionnaire, $liste_questions);
+
+            // 2) Créer un questionnaire publié (snapshot figé)
+            $id_publie = $this->questionnaireModel->creerQuestionnaire(
+                $titre,
+                $_SESSION['cas_user'],
+                $date_expiration,
+                null, // code généré automatiquement
+                $groupes_autorises,
+                1 // publié
+            );
+
+            // 3) Recréer toutes les questions dans le questionnaire publié
+            $_POST['liste-questions'] = json_encode($liste_questions);
+            $this->questionController->enregistrerQuestions($id_publie);
+
+            header("Location: ?c=home");
+            exit;
+        }
+
+        // Sécurité fallback
+        header("Location: ?c=home");
+        exit;
     }
 
     /**

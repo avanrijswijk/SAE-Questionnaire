@@ -1,6 +1,5 @@
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
 import { notification, TypeNotification } from '../../notification/notification.js';
-
 /**
  * liste les questions :
  * [{
@@ -12,7 +11,7 @@ import { notification, TypeNotification } from '../../notification/notification.
  * }]
  * @returns {Array} un fichier JSON contenant les informations
  */
-function listerQuestions() {
+export function listerQuestions() {
     const divQuestions = document.getElementById("visualiseur-questions");
     const questions = [];
 
@@ -22,19 +21,19 @@ function listerQuestions() {
 
     for (let index = 0; index < divQuestions.childElementCount; index++) {
         const divConteneur = divQuestions.children[index];
-        const divQuestion = divConteneur.firstChild;
+        const divQuestion = divConteneur.firstElementChild;
         const divReponses = divConteneur.querySelector("div.div-reponses");
 
         const data = {
             "intitule" : divQuestion.dataset.intitule,
             "type" : divQuestion.dataset.type,
-            "position" : index+1,
+            "position" : index,
             "est_obligatoire" : divQuestion.dataset.obligatoire,
             "choix" : []
         };
 
         if (divReponses) {
-            divReponses.childNodes.forEach((divReponse) => {
+            Array.from(divReponses.children).forEach((divReponse) => {
                 data["choix"].push(divReponse.dataset.intitule);
             });
         } else {
@@ -53,6 +52,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     const formMVQ = document.getElementById("form-enregistrer");
     const boutonFermerMVQ = document.getElementById("bouton-fermer");
+
+    // --- Récupération des boutons ---
+    const boutonPublier = document.getElementById("bouton-PublierMVQ");
+    const boutonBrouillon = document.getElementById("bouton-brouillonMVQ");
+
+    // --- Champs cachés ---
+    const inputMode = document.getElementById("mode-enregistrement");
+    const inputId = document.getElementById("id-questionnaire");
+
+    // --- Bouton Publier ---
+    boutonPublier.addEventListener("click", () => {
+        inputMode.value = "publier";
+        formMVQ.requestSubmit();
+    });
+
+    // --- Bouton Brouillon ---
+    boutonBrouillon.addEventListener("click", () => {
+        inputMode.value = "brouillon";
+        formMVQ.requestSubmit();
+    });
     
     // ---------- MVQ ----------
     boutonFinirMVQ.addEventListener("click", () => {
@@ -76,9 +95,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         est_obligatoire : bool
         choix : [str]
         */
-        console.log(listerQuestions());
         const listeQuestions = document.createElement('input');
         const jsonQuestions = listerQuestions();
+        console.log(jsonQuestions);
         if (jsonQuestions.length === 0) {
             notification(TypeNotification.ERREUR, "Aucune question n'a été créé.");
             e.preventDefault();
@@ -87,9 +106,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.name = "liste-questions";
         listeQuestions.value = JSON.stringify(jsonQuestions);
 
-        console.log(jsonQuestions);
         // e.preventDefault();
         // return;
+        const old = formMVQ.querySelector('input[name="liste-questions"]');
+        if (old) old.remove();
         formMVQ.appendChild(listeQuestions);
     });
 

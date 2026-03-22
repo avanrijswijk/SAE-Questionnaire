@@ -8,13 +8,11 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
 </script>
 
 <main class="is-flex is-flex-direction-row" style="max-height: 100vh;">
-    <script type="module" src="./src/Views/js/creation_questionnaire/initQuestionnaire.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/fermerQuestionnaire/modalFermer.js"></script>
+    <script type="module" src="./src/Views/js/creation_questionnaire/initQuestionnaire.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/ajoutQuestion/modalAjouter.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/modificationQuestion/modalModifier.js"></script>
-    <script>
-        console.log("QUESTIONNAIRE FINAL :", questionnaire);
-    </script>
+    
     <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
         <div id="context-menu">
             <ul class="menu">
@@ -140,12 +138,12 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                         </div>     
                     </div>
                     <div class="field" style="width: 60%;">
-                        <label class="label" for="date-expriration">Date d'expiration :</label>
-                        <input type="date" class="input" name="date-expriration" id="date-expriration" min="<?php date_default_timezone_set('Europe/Paris'); echo date('Y-m-d'); ?>"/>
+                        <label class="label" for="date-expiration">Date d'expiration :</label>
+                        <input type="date" class="input" name="date-expiration" id="date-expiration" min="<?php date_default_timezone_set('Europe/Paris'); echo date('Y-m-d'); ?>"/>
                     </div>
                     <div class="field" style="width: 60%;">
                         <label class="label" for="mes-cibles">Qui peut répondre :</label>
-                        <select name="groupes_cibles[]" id="mes-cibles" multiple="multiple" required>
+                        <select name="groupes_autorises[]" id="mes-cibles" multiple="multiple" required>
                         
                             <?php
                             foreach ($mes_choix as $code_cas => $nom_propre) {
@@ -160,10 +158,13 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                     </div>
                 </section>
                 <footer class="modal-card-foot" style="justify-content: center;">
-                    <button type="submit-brouillon" class="button" id="bouton-brouillonMVQ">
+                    <input type="hidden" name="mode_enregistrement" id="mode-enregistrement" value="">
+                    <input type="hidden" name="id_questionnaire" id="id-questionnaire" value="<?php echo isset($questionnaire['id']) ? htmlspecialchars($questionnaire['id']) : ''; ?>">
+
+                    <button type="button" class="button" id="bouton-brouillonMVQ">
                         <p>Brouillon</p>
                     </button>
-                    <button type="submit-publier" class="button" id="bouton-PublierMVQ">
+                    <button type="button" class="button" id="bouton-PublierMVQ">
                         <p>Publier</p>
                     </button>
                 </footer>
@@ -174,7 +175,7 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
         </button>
     </div>
     <div style="background-color: #B5C6E6; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center"> <!-- enlever  is-align-items-center ; mettre un  -->
-        <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-qestionnaire">
+        <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-questionnaire">
             <!--<div class="block">
                 <h4 class="title is-4 has-text-weight-semibold">Titre de la question</h4>
                 <div class="ml-2 field">

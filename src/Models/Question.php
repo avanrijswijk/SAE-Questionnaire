@@ -43,6 +43,23 @@ class Question {
     }
 
     /**
+     * vérifie si une question existe dans la base de données en fonction de son ID.
+     * 
+     * @param int $id ID de la question à vérifier.
+     * @return bool|string True si la question existe, une chaîne d'erreur si plusieurs
+     */
+    public function existant($id){
+        $liste = $this->getQuestion($id);
+        $valideur = false;
+        if (count($liste) > 1) {
+            $valideur = "erreur : plusieurs questions ont le même ID, ce qui ne devrait pas arriver.";
+        } else { if (count($liste) == 1) {
+            $valideur = true;
+        }}
+        return $valideur;
+    }
+
+    /**
      * Récupère des questions selon des paramètres donnés.
      *
      * @param array $params Tableau associatif des paramètres de recherche.
@@ -66,30 +83,28 @@ class Question {
     /**
      * Crée une nouvelle question dans la base de données.
      *
-     * @param int $id_questionnaire ID du questionnaire associé.
      * @param string $intitule Intitulé de la question.
      * @param string $type Type de la question.
      * @param int $position Position de la question.
      * @param bool $est_obligatoire Si la question est obligatoire.
      * @return bool True si la création réussit, false sinon.
      */
-    public function creerQuestion($id_questionnaire, $intitule, $type, $position, $est_obligatoire) {
-        $query = "INSERT INTO questions (id_questionnaire, intitule, type, position, est_obligatoire) 
-        VALUES (:id_questionnaire, :intitule, :type, :position, :est_obligatoire)";
-        $lastInsertId = $this->conn->lastInsertId();
+    public function creerQuestion( $id_questionnaire, $intitule, $type, $position, $est_obligatoire) {
+        $position = $position + 1; // Décalage de position pour éviter les conflits d'affichage
+        $query = "INSERT INTO questions (intitule, type, position, est_obligatoire, id_questionnaire)
+                VALUES (:intitule, :type, :position, :est_obligatoire, :id_questionnaire)";
+
         $stmt = $this->conn->prepare($query);
 
-        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
         $stmt->bindParam(':intitule', $intitule);
         $stmt->bindParam(':type', $type);
         $stmt->bindParam(':position', $position);
         $stmt->bindParam(':est_obligatoire', $est_obligatoire);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
 
         $stmt->execute();
-        if ($lastInsertId != $this->conn->lastInsertId()) {
-            return true;
-        }
-        return false;
+
+        return $this->conn->lastInsertId();
     }
 
     /**
@@ -101,16 +116,17 @@ class Question {
      * @param int $position Nouvelle position.
      * @param bool $est_obligatoire Si obligatoire.
      */
-    public function modifer($id, $intitule, $id_type, $position, $est_obligatoire) {
+    public function modifier($id, $intitule, $id_type, $position, $est_obligatoire) {
+        $position = $position + 1; // Décalage de position pour éviter les conflits d'affichage
         $query = "UPDATE questions 
-                  SET intitule = :intitule, id_type = :id_type, position = :position, est_obligatoire = :est_obligatoire 
+                  SET intitule = :intitule, type = :id_type, position = :position, est_obligatoire = :est_obligatoire 
                   WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':intitule', $intitule);
         $stmt->bindParam(':id_type', $id_type);
-        $stmt->bindParam(':position', $position);
+        $stmt->bindParam(':position', $position );
         $stmt->bindParam(':est_obligatoire', $est_obligatoire);
         $stmt->bindParam(':id', $id);
 
@@ -139,6 +155,20 @@ class Question {
      */
     public function getIdDerniereInsertion() {
         return $this->conn->lastInsertId();
+    }
+
+    /**
+     * Supprime toutes les questions d’un questionnaire.
+     * La suppression en cascade gère automatiquement les choix et réponses.
+     *
+     * @param int $id_questionnaire
+     */
+    public function supprimerQuestionsSansquestionnaire($id_questionnaire) {
+        $query = "DELETE FROM questions WHERE id_questionnaire = :id_questionnaire";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire, PDO::PARAM_INT);
+        $stmt->execute();
     }
 
 }

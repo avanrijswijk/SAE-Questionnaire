@@ -41,21 +41,29 @@ class Choix_possibleController {
      * @param int $id_question ID de la question.
      * @return bool True si l'enregistrement réussit, false sinon.
      */
-    public function enregistrerListe($ChoixListe, $id_question) {
-        if (is_array($ChoixListe)) {
-            foreach ($ChoixListe as $choix) {
-                if (isset($id_question) && (isset($choix) || is_null($choix))) {
-                    $ajoutOk = $this->choixPossibleModel->creerChoix($id_question, $choix);
-                    if (!$ajoutOk) {
-                        echo 'Erreur lors de l\'enregistrement des choix de la question :' . $id_question;
-                    }
-                }
-            }
-            return $ajoutOk;
-        } else {
+    public function enregistrerListe($choixListe, $id_question) {
+
+        if (!is_array($choixListe)) {
             echo 'Données de choix invalides.';
             return false;
         }
+
+        // 1) Supprimer tous les anciens choix
+        $this->choixPossibleModel->supprimerChoixParQuestion($id_question);
+
+        // 2) Recréer tous les choix (même null)
+        foreach ($choixListe as $choix) {
+
+            // null = choix fantôme pour les questions sans choix
+            $ajoutOk = $this->choixPossibleModel->creerChoix($id_question, $choix);
+
+            if (!$ajoutOk) {
+                echo 'Erreur lors de l\'enregistrement des choix de la question : ' . $id_question;
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

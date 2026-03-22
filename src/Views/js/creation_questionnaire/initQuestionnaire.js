@@ -3,6 +3,7 @@ import { ajouterReponseVisualisateurQuestions } from "./afficher/questions.js";
 import { ajouterQuestionVisualiseurQuestionnaire } from "./afficher/questionnaire.js";
 import { ajouterReponseVisualiseurQuestionnaire } from "./afficher/questionnaire.js"; // ← AJOUT
 import { TypeQuestion } from "./typeQuestion.js";
+import { listerQuestions } from "./modals/fermerQuestionnaire/modalFermer.js";
 
 /**
  * Convertit les types venant du back vers les types internes
@@ -33,7 +34,7 @@ function chargerQuestionnaire(questionnaire) {
     }
 
     const divQuestions = document.getElementById("visualiseur-questions");
-    const divQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+    const divQuestionnaire = document.getElementById("visualiseur-questionnaire");
 
     let idCourant = 0;
 
@@ -127,22 +128,15 @@ function remplirFormulaireEnregistrement(questionnaire) {
     if (inputNom) inputNom.value = questionnaire.titre ?? "";
 
     // Date d'expiration
-    const inputDate = document.getElementById("date-expriration");
+    const inputDate = document.getElementById("date-expiration");
     if (inputDate && questionnaire.date_expiration) {
         inputDate.value = questionnaire.date_expiration.split(" ")[0];
     }
 
     // Groupes autorisés (JSON string → objet)
-    let groupes = null;
-    try {
-        groupes = JSON.parse(questionnaire.groupes_autorises);
-    } catch (e) {
-        console.warn("Impossible de parser groupes_autorises :", questionnaire.groupes_autorises);
-    }
-
-    if (groupes && groupes.groupes_requis) {
+    if (questionnaire.groupes_autorises) {
         const selectCibles = document.getElementById("mes-cibles");
-        const valeurs = groupes.groupes_requis.map(String);
+        const valeurs = JSON.parse(questionnaire.groupes_autorises).map(String);
 
         Array.from(selectCibles.options).forEach(opt => {
             opt.selected = valeurs.includes(opt.value);

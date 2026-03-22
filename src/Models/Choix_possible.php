@@ -144,4 +144,11 @@ class Choix_possible {
     public function getIdDerniereInsertion() {
         return $this->conn->lastInsertId();
     }
+
+    public function supprimerChoixParQuestion($id_question) {
+        $query = "DELETE FROM choix_possible WHERE id_question = :id_question";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_question', $id_question);
+        $stmt->execute();
+    }
 }

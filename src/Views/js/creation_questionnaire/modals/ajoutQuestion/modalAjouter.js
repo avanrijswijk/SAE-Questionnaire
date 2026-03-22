@@ -2,6 +2,7 @@ import { TypeQuestion } from '../../typeQuestion.js';
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
 import {ajouterQuestionVisualiseurQuestions} from '../../afficher/questions.js';
 import {ajouterQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
+import { listerQuestions } from "../fermerQuestionnaire/modalFermer.js";
 
 /**
  * Met la premère lettre d'une chaine de caractères en majuscule
@@ -39,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // ---------- ----------
     const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
-    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-questionnaire");
 
     // ---------- MAQ ----------
     boutonAjouterQuestion.addEventListener("click", () => {

@@ -3,6 +3,7 @@ import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
 import {modifierQuestionVisualiseurQuestions, donnerQuestionAvecIdVisualiseurQuestions, donnerLibelleQuestionAvecIdVisualiseurQuestions} from '../../afficher/questions.js';
 import {modifierQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
 import { notification, TypeNotification } from '../../notification/notification.js';
+import { listerQuestions } from "../fermerQuestionnaire/modalFermer.js";
 
 const NAME_TEXTAREA = "libelle-question";
 let id;

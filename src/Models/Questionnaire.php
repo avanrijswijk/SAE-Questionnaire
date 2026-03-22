@@ -86,9 +86,9 @@ class Questionnaire {
      * @param string $groupes_autorises Règles d'accès en JSON.
      * @return string Dernier ID inséré.
      */
-    public function creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $groupes_autorises) {
-        $query = "INSERT INTO questionnaires (titre, id_createur, date_expiration, date_creation, code, groupes_autorises) 
-        VALUES (:titre, :id_createur, :date_expiration, NOW(), :code, :groupes_autorises)";
+    public function creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $groupes_autorises, $brouillon) {
+        $query = "INSERT INTO questionnaires (titre, id_createur, date_expiration, date_creation, code, groupes_autorises, brouillon) 
+        VALUES (:titre, :id_createur, :date_expiration, NOW(), :code, :groupes_autorises, :brouillon)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -98,12 +98,18 @@ class Questionnaire {
         }
         $stmt->bindParam(':id_createur', $id_createur);
         $stmt->bindParam(':date_expiration', $date_expiration);
+        $stmt->bindParam(':brouillon', $brouillon);
+        
+        if($brouillon === true || $brouillon === 'true' || $brouillon === 0 || $brouillon === '0') {
+            $code = null;
+        } else {
         if (is_null($code)) {
             $code = 'ACDC';
         }
         while ($this->codeExistant($code)) {
             // génère un code aléatoire de 4 lettres meme si la colonne 'code' n'est pas limité à 4 en vu de potentielles extentions
             $code = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4); 
+        }
         }
         $stmt->bindParam(':code', $code);
         $stmt->bindParam(':groupes_autorises', $groupes_autorises);
@@ -278,4 +284,20 @@ class Questionnaire {
         return $id_questionnaire;
     }
 
+    /**
+     * Met à jour la colonne brouillon d’un questionnaire.
+     *
+     * @param int $id
+     * @param int $brouillon 0 = publié, 1 = brouillon
+     */
+    public function setBrouillon($id, $brouillon) {
+        $query = "UPDATE questionnaires SET brouillon = :brouillon WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':brouillon', $brouillon, PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $stmt->execute();
+    }
 }
+

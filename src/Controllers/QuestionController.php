@@ -4,11 +4,13 @@ namespace App\Controllers;
 
 use App\Models\Question;
 use App\Controllers\Choix_possibleController;
+use App\Models\Choix_possible;
 
 class QuestionController {
 
     private $questionModel;
     private $choix_possibleController;
+    private $choix_possibleModel;
 
     /**
      * Constructeur de la classe QuestionController.
@@ -18,6 +20,7 @@ class QuestionController {
         $questionModel = new Question();
         $this->questionModel = $questionModel;
         $this->choix_possibleController = new Choix_possibleController();
+        $this->choix_possibleModel = new Choix_possible();
     }
 
     /**
@@ -84,6 +87,76 @@ class QuestionController {
         }
 
         return false;
+    }
+
+    /**
+     * TODO descripption
+     */
+    public function mettreAJourQuestions($id_questionnaire, $liste_questions) {
+
+        $ids_enregistrees = [];
+
+        foreach ($liste_questions as $q) {
+
+            $id = $q['id'] ?? null;
+            $existe = $id ? $this->questionModel->existant($id) : false;
+
+            $obligatoire = ($q['est_obligatoire'] === true || 
+                            $q['est_obligatoire'] === "true" || 
+                            $q['est_obligatoire'] == 1) ? 1 : 0;
+
+            // --- CAS 1 : la question existe déjà ---
+            if ($existe === true) {
+
+                // Mise à jour de la question
+                $this->questionModel->modifier(
+                    $id,
+                    $q['intitule'],
+                    $q['type'],
+                    $q['position'],
+                    $obligatoire
+                );
+
+                // --- Mise à jour des choix ---
+                // 1) supprimer tous les anciens choix
+                $this->choix_possibleModel->supprimerChoixParQuestion($id);
+
+                // 2) recréer tous les choix (même null)
+                foreach ($q['choix'] as $choix) {
+                    $this->choix_possibleModel->creerChoix($id, $choix);
+                }
+
+                $ids_enregistrees[] = $id;
+            }
+
+            // --- CAS 2 : nouvelle question ---
+            else {
+
+                $id_q = $this->questionModel->creerQuestion(
+                    $id_questionnaire,
+                    $q['intitule'],
+                    $q['type'],
+                    $q['position'],
+                    $obligatoire
+                );
+
+                // créer les choix
+                foreach ($q['choix'] as $choix) {
+                    $this->choix_possibleModel->creerChoix($id_q, $choix);
+                }
+
+                $ids_enregistrees[] = $id_q;
+            }
+        }
+
+        // --- Suppression des questions retirées ---
+        $questions_bdd = $this->questionModel->getQuestionPar(["id_questionnaire" => $id_questionnaire]);
+
+        foreach ($questions_bdd as $qBdd) {
+            if (!in_array($qBdd['id'], $ids_enregistrees)) {
+                $this->questionModel->supprimer($qBdd['id']);
+            }
+        }
     }
 }
 

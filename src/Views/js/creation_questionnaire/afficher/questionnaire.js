@@ -163,7 +163,7 @@ function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
  * @returns {HTMLDivElement} le div de la question
  */
 function donnerQuestionAvecIdVisualiseurQuestionnaire(id) {
-    const divVisualiseurQuestions = document.getElementById("visualiseur-qestionnaire");
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questionnaire");
     return divVisualiseurQuestions.querySelector(`[data-_id="${id}"]`);
 }
 
