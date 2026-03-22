@@ -43,9 +43,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // ---------- MAQ ----------
     boutonAjouterQuestion.addEventListener("click", () => {
+        const textarea = formMAQ.querySelector("textarea[name='libelle-question']");
+        
         formMAQ.reset();
         divRadioSousType.style.display = "";
         ouvrire_modal(modalAjouterQuestion);
+
+        if (textarea) {
+            textarea.focus();
+        }
     });
 
     boutonFermerMAQ.addEventListener("click", () => {
