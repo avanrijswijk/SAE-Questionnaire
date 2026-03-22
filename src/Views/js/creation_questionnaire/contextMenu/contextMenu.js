@@ -49,22 +49,21 @@ let identifiant;
 /**
  * Identifie la question est retroune l'identifiant du parent (X ou X-X)
  * @param {HTMLElement} element - un element HTML 
- * @return {int} - l'identifiant du parent
+ * @return {string | null} - l'identifiant du parent
  */
 function identifierElement(element) {
-    const classes = element.classList.value;
-    const dataset = element.dataset;
-    let parent;
+    // if (element.tagName == 'P' && classes == "is-unselectable question") {
+    //     parent = element.parentElement;
+    // } else if (element.tagName == 'DIV' && dataset._id) {
+    //     parent = element;
+    // } else if (element.tagName == 'DIV' && classes == "box div-question div-box") {
+    //     parent = element.firstChild;
+    // }
 
-    if (element.tagName == 'P' && classes == "is-unselectable question") {
-        parent = element.parentElement;
-    } else if (element.tagName == 'DIV' && dataset["_id"]) {
-        parent = element;
-    } else if (element.tagName == 'DIV' && classes == "box div-question div-box") {
-        parent = element.firstChild;
-    }
+    const parent = element.closest("div.div-box.div-reponse") ?? element.closest("div.div-box.div-question")?.firstElementChild;
 
-    return parent.dataset["_id"];
+    console.log(parent);
+    return parent.dataset._id;
 }
 
 // de https://github.com/NouvelleTechno/Right-Click-Menu
@@ -89,25 +88,20 @@ function attribuerContexteMenu(divQuestion, type) {
         // console.log("----------------------------");
 
         const menuItemAjouterReponse = document.getElementById("menu-item-ajouter-reponse");
-        switch (type) {
-            case TypeQuestion.CHAMPS_COURT:
-            case TypeQuestion.CHAMPS_LONG:
-            default:
-                menuItemAjouterReponse.style.display = "none !important";
-                break;
+        menuItemAjouterReponse.style.display = "none";
 
-            case TypeQuestion.CHECK_BOUTON:
-            case TypeQuestion.RADIO_BOUTON:
-            case TypeQuestion.LISTE_DEROULANTE:
-                menuItemAjouterReponse.style.display = "";
-                break;
+        if (type == TypeQuestion.CHECK_BOUTON || type == TypeQuestion.RADIO_BOUTON || type == TypeQuestion.LISTE_DEROULANTE) {
+            menuItemAjouterReponse.style.display = "";
         }
 
         // On récupère le menu
         let menu = document.querySelector("#context-menu");
 
         // On met ou retire la classe active
-        menu.classList.toggle("afficher");
+        if (identifiant) {
+            menu.classList.add("afficher");
+        }
+        
 
         // On ouvre le menu là où se trouve la souris
         // On récupère les coordonnées de la souris
