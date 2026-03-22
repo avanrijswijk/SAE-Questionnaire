@@ -4,18 +4,20 @@ import {
     modifierQuestionVisualiseurQuestions, 
     donnerQuestionAvecIdVisualiseurQuestions, 
     donnerLibelleQuestionAvecIdVisualiseurQuestions,
-    donnerTypeQuestionAvecIdVisualiseurQuestions,
     donnerInfosQuestionAvecIdVisualiseurQuestions
 } from '../../afficher/questions.js';
 import {modifierQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
 import { notification, TypeNotification } from '../../../utils/notification/notification.js';
 
 const NAME_TEXTAREA = "libelle-question-modifier";
-const NAME_RADIO_SOUS_TYPE = "sous-type-question-modifier";
+const NAME_RADIO_SOUS_TYPE_CHAMP = "sous-type-question-c-modifier";
+const NAME_RADIO_SOUS_TYPE_CHOIX_MULTIPLES = "sous-type-question-cm-modifier";
 const NAME_CHECK_OBLIGATOIRE = "question-obligatoire-modifier";
 
 const ID_DIV_OBLIGATOIRE = "obligatoire-modifier";
-const ID_DIV_OPTIONS_CHAMP_TEXTE = "sous-type-champ-modifier";
+const ID_DIV_OPTIONS_SOUS_TYPE = "sous-type-modifier";
+const ID_DIV_OPTIONS_SOUS_TYPE_CHAMP_TEXTE = "sous-type-champ-modifier";
+const ID_DIV_OPTIONS_SOUS_TYPE_CHOIX_MULTIPLES = "sous-type-choix-multiples-modifier";
 
 let _id;
 let _type;
@@ -36,7 +38,9 @@ const TypeModifier = {
  * @param {TypeModifier} type 
  */
 function init_modal(modal, id, type) {
-    const divOptionsChampTexte = modal.querySelector(`div#${ID_DIV_OPTIONS_CHAMP_TEXTE}`);
+    const divSousType = modal.querySelector(`div#${ID_DIV_OPTIONS_SOUS_TYPE}`);
+    const divOptionsChampTexte = modal.querySelector(`div#${ID_DIV_OPTIONS_SOUS_TYPE_CHAMP_TEXTE}`);
+    const divOptionsChoixMultiples = modal.querySelector(`div#${ID_DIV_OPTIONS_SOUS_TYPE_CHOIX_MULTIPLES}`);
     const divObligatoire = modal.querySelector(`div#${ID_DIV_OBLIGATOIRE}`);
 
     const textarea = modal.querySelector(`[name="${NAME_TEXTAREA}"]`);
@@ -56,30 +60,40 @@ function init_modal(modal, id, type) {
             break;
     }
 
+    // par defaut on cache tout
+    divSousType.style.display = "none";
+    divOptionsChampTexte.style.display = "none";
+    divOptionsChoixMultiples.style.display = "none";
+    divObligatoire.style.display = "none";
+
     switch (typeQuestion) {
         case TypeQuestion.CHAMPS_COURT:
         case TypeQuestion.CHAMPS_LONG:
-            divOptionsChampTexte.style.display = ""
-            divObligatoire.style.display = ""
+            divSousType.style.display = "";
+            divOptionsChampTexte.style.display = "";
+            divObligatoire.style.display = "";
 
-            const radiosSousType = modal.querySelectorAll('input[name="sous-type-question-modifier"]');
-            if (radiosSousType && radiosSousType.length >= 2) {
-                radiosSousType[0].checked = typeQuestion == TypeQuestion.CHAMPS_COURT ? true : false; // le premier est champ court
-                radiosSousType[1].checked = typeQuestion == TypeQuestion.CHAMPS_COURT ? false : true; // le deuxième est champ long
+            const radiosSousTypeChamp = modal.querySelectorAll(`input[name="${NAME_RADIO_SOUS_TYPE_CHAMP}"]`);
+            if (radiosSousTypeChamp && radiosSousTypeChamp.length >= 2) {
+                radiosSousTypeChamp[0].checked = typeQuestion == TypeQuestion.CHAMPS_COURT ? true : false; // le premier est champ court
+                radiosSousTypeChamp[1].checked = typeQuestion == TypeQuestion.CHAMPS_COURT ? false : true; // le deuxième est champ long
             }
             break;
         case TypeQuestion.RADIO_BOUTON:
         case TypeQuestion.CHECK_BOUTON:
-            divOptionsChampTexte.style.display = "none"
-            divObligatoire.style.display = ""
+            divSousType.style.display = "";
+            divOptionsChoixMultiples.style.display = "";
+            divObligatoire.style.display = "";
+
+            const radiosSousTypeChoixMutiples = modal.querySelectorAll(`input[name="${NAME_RADIO_SOUS_TYPE_CHOIX_MULTIPLES}"]`);
+            if (radiosSousTypeChoixMutiples && radiosSousTypeChoixMutiples.length >= 2) {
+                radiosSousTypeChoixMutiples[0].checked = typeQuestion == TypeQuestion.RADIO_BOUTON ? true : false; // le premier est radio box
+                radiosSousTypeChoixMutiples[1].checked = typeQuestion == TypeQuestion.RADIO_BOUTON ? false : true; // le deuxième est check box
+            }
             break;
         case TypeQuestion.CONTEXT:
-            divOptionsChampTexte.style.display = "none"
-            divObligatoire.style.display = "none"
             break;
         default:
-            divOptionsChampTexte.style.display = "none"
-            divObligatoire.style.display = "none"
             break;
     }
 
@@ -144,16 +158,21 @@ function modalModifierQuestion() {
             return
         }
 
+        const typeQuestion = donnerInfosQuestionAvecIdVisualiseurQuestions(_id).type;
+
         const estObligatoire = formData.get(NAME_CHECK_OBLIGATOIRE) == "obligatoire" ? true : false;  // verif si c'est une reponse / une question
         
-        const sousTypeChamptext = formData.getAll(NAME_RADIO_SOUS_TYPE)[0];
-        let nouveauTypeQuestion;
-        if (sousTypeChamptext == "champs-libre-long") {
-            nouveauTypeQuestion = TypeQuestion.CHAMPS_LONG;
-        } else {
-            nouveauTypeQuestion = TypeQuestion.CHAMPS_COURT;
-        }
+        const sousTypeChamptext = formData.getAll(NAME_RADIO_SOUS_TYPE_CHAMP)[0];
+        const sousTypeChoixMultiples = formData.getAll(NAME_RADIO_SOUS_TYPE_CHOIX_MULTIPLES)[0];
 
+        let nouveauTypeQuestion = null;
+        if (typeQuestion && (typeQuestion == TypeQuestion.CHAMPS_COURT || typeQuestion == TypeQuestion.CHAMPS_LONG)) {
+            nouveauTypeQuestion = sousTypeChamptext == "champs-libre-long" ? TypeQuestion.CHAMPS_LONG : TypeQuestion.CHAMPS_COURT;
+        } else
+        if (typeQuestion && (typeQuestion == TypeQuestion.RADIO_BOUTON || typeQuestion == TypeQuestion.CHECK_BOUTON)) {
+            nouveauTypeQuestion = sousTypeChoixMultiples == "radio-box" ? TypeQuestion.RADIO_BOUTON : TypeQuestion.CHECK_BOUTON;
+        }
+        
         if (_id != null) {
             try {
                 modifierQuestionVisualiseurQuestions(_id, libelleQuestion, nouveauTypeQuestion, estObligatoire);

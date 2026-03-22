@@ -237,11 +237,31 @@ function modifierQuestionVisualiseurQuestionnaire(id, libelle, type=null, estObl
         if (textarea) {
             textarea.rows = typeQuestion == TypeQuestion.CHAMPS_COURT ? TAILLE_CHAMP_COURT : TAILLE_CHAMP_LONG;
         }
-    } 
+    } else
+    if (type && (typeQuestion == TypeQuestion.RADIO_BOUTON || typeQuestion == TypeQuestion.CHECK_BOUTON)) {
+
+        const divReponse = question.querySelector("div.radios") || question.querySelector("div.checkboxs");
+        
+        if (divReponse) {
+            divReponse.classList.remove("radios");
+            divReponse.classList.remove("checkboxs");
+            divReponse.classList.add(typeQuestion == TypeQuestion.RADIO_BOUTON ? "radios" : "checkboxs");
+
+            const nomType = typeQuestion == TypeQuestion.RADIO_BOUTON ? "radio" : "checkbox";
+        
+            divReponse.querySelectorAll("label").forEach((label) => {
+                label.className = nomType;
+                const input = label.querySelector("input");
+                if (input) {
+                    input.type = nomType;
+                }
+            });
+        }
+    }
 
     const spanObligatoire = question.querySelector("span[title='obligatoire']");
-    if (estObligatoire && spanObligatoire) {
-        spanObligatoire.style.display = estObligatoire == true ? "" : "none";
+    if (spanObligatoire) {
+        spanObligatoire.style.display = estObligatoire === true ? "" : "none";
     }
 }
 

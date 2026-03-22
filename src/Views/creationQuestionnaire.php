@@ -104,16 +104,26 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                             <textarea class="textarea" rows=2 name="libelle-question-modifier" autocapitalize="sentences" autofocus required></textarea>
                         </div>
                     </div>
-                    <div id="sous-type-champ-modifier" class="field">
+                    <div id="sous-type-modifier" class="field">
                         <label class="label">Sous type :</label>
-                        <div class="radios" id="sous-type-champs">
+                        <div class="radios" id="sous-type-champ-modifier">
                             <label class="radio is-unselectable">
-                                <input type="radio" name="sous-type-question-modifier" value="champs-libre-court" checked required>
+                                <input type="radio" name="sous-type-question-c-modifier" value="champs-libre-court" checked required>
                                 Petit champs
                             </label>
                             <label class="radio is-unselectable">
-                                <input type="radio" name="sous-type-question-modifier" value="champs-libre-long">
+                                <input type="radio" name="sous-type-question-c-modifier" value="champs-libre-long">
                                 Grand champs
+                            </label>
+                        </div>
+                        <div class="radios" id="sous-type-choix-multiples-modifier">
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="sous-type-question-cm-modifier" value="radio-box" checked required>
+                                Raido box
+                            </label>
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="sous-type-question-cm-modifier" value="check-box">
+                                Check box
                             </label>
                         </div>
                     </div>

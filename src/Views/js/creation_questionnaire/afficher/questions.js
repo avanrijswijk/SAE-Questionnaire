@@ -574,7 +574,13 @@ function modifierQuestionVisualiseurQuestions(id, libele, type=null, estObligato
         question.dataset.obligatoire = estObligatoire;
     }
 
-    if (type && (typeQuestion == TypeQuestion.CHAMPS_COURT || typeQuestion == TypeQuestion.CHAMPS_LONG)) {
+    if ( // si le type de la question est un champ de texte ou une reponse multiple
+        type && 
+        (
+            (typeQuestion == TypeQuestion.CHAMPS_COURT || typeQuestion == TypeQuestion.CHAMPS_LONG) ||
+            (typeQuestion == TypeQuestion.RADIO_BOUTON || typeQuestion == TypeQuestion.CHECK_BOUTON)
+        )
+    ) {
         question.dataset.type = type;
     }
 }
