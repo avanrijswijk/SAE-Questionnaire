@@ -558,13 +558,25 @@ function supprierQuestionVisualiseurQuestions(id) {
  * Modifi une question dans le visualisateurs de questions (partie de gauche)
  * @param {int} id - identifiant de la question
  * @param {string} libele - le nouveau libelé
+ * @param {TypeQuestion || null} type - le type de la question (fonctionne pour le moment qu'avec les champs de texte)
+ * @param {boolean || null} estObligatoire - le fait que la question soit obligatoire 
  */
-function modifierQuestionVisualiseurQuestions(id, libele) {
+function modifierQuestionVisualiseurQuestions(id, libele, type=null, estObligatoire=null) {
     const question = donnerQuestionAvecIdVisualiseurQuestions(id);
+    const typeQuestion = donnerTypeQuestionAvecIdVisualiseurQuestions(id);
+
     const balisePQuestion = question.querySelector('p');
     balisePQuestion.innerText = libele;
     balisePQuestion.title = libele;
     question.dataset.intitule = libele;
+
+    if (question.dataset.obligatoire) {
+        question.dataset.obligatoire = estObligatoire;
+    }
+
+    if (type && (typeQuestion == TypeQuestion.CHAMPS_COURT || typeQuestion == TypeQuestion.CHAMPS_LONG)) {
+        question.dataset.type = type;
+    }
 }
 
 /**
@@ -581,7 +593,7 @@ function donnerQuestionAvecIdVisualiseurQuestions(id) {
 /**
  * donne le libele de la question en fonction de son id 
  * (pour une question présent dans le visualisateur de questions (partie de gauche))
- * @param {int} id - identifiant de la question 
+ * @param {int} id - identifiant de la question / reponse
  * @returns {string} le libele
  */
 function donnerLibelleQuestionAvecIdVisualiseurQuestions(id) {
@@ -590,6 +602,15 @@ function donnerLibelleQuestionAvecIdVisualiseurQuestions(id) {
     return pLibelle.innerText;
 }
 
+/**
+ * donne le type de la question en fonction de son id 
+ * @param {int} id - identifiant de la question / reponse
+ * @returns {string || null} type de la question ou null si aucun type 
+ */
+function donnerTypeQuestionAvecIdVisualiseurQuestions(id) {
+    const divQuestion = donnerQuestionAvecIdVisualiseurQuestions(id);
+    return divQuestion.dataset.type;
+}
 
 /**
  * Donne le nombre de réponse à une question (ne fonctionne pas pour une zone d'entrée)
@@ -612,5 +633,6 @@ export {
     supprierQuestionVisualiseurQuestions, 
     donnerQuestionAvecIdVisualiseurQuestions, 
     donnerLibelleQuestionAvecIdVisualiseurQuestions,
+    donnerTypeQuestionAvecIdVisualiseurQuestions,
     donnerNombreReponse
 }

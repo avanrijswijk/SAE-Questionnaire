@@ -59,7 +59,7 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                                 Mise en context
                             </label>
                         </div>
-                    </div>
+                    </div> 
                     <div id="radio-sous-type" class="field">
                         <label class="label">Sous type :</label>
                         <div class="radios" id="sous-type-champs">
@@ -99,11 +99,34 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
-                        <label for="titre-question" class="label">Libellé de la question</label>
+                        <label for="libelle-question" class="label">Libellé de la question :</label>
                         <div class="control">
-                            <textarea class="textarea" rows=2 name="libelle-question" autocapitalize="sentences" autofocus required></textarea>
+                            <textarea class="textarea" rows=2 name="libelle-question-modifier" autocapitalize="sentences" autofocus required></textarea>
                         </div>
                     </div>
+                    <div id="sous-type-champ-modifier" class="field">
+                        <label class="label">Sous type :</label>
+                        <div class="radios" id="sous-type-champs">
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="sous-type-question-modifier" value="champs-libre-court" checked required>
+                                Petit champs
+                            </label>
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="sous-type-question-modifier" value="champs-libre-long">
+                                Grand champs
+                            </label>
+                        </div>
+                    </div>
+                    <div id="obligatoire-modifier" class="field">
+                        <label for="titre-question" class="label">Option :</label>
+                        <div class="checkboxes">
+                            <label class="checkbox is-unselectable">
+                                <input type="checkbox" name="question-obligatoire-modifier" value="obligatoire">
+                                Question obligatoire
+                            </label>
+                        </div>
+                    </div>
+                    
                     
                 </section>
                 <footer class="modal-card-foot buttons" style="justify-content: center;">

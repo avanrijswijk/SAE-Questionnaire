@@ -1,18 +1,31 @@
 import { TypeQuestion } from '../../typeQuestion.js';
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
-import {modifierQuestionVisualiseurQuestions, donnerQuestionAvecIdVisualiseurQuestions, donnerLibelleQuestionAvecIdVisualiseurQuestions} from '../../afficher/questions.js';
+import {
+    modifierQuestionVisualiseurQuestions, 
+    donnerQuestionAvecIdVisualiseurQuestions, 
+    donnerLibelleQuestionAvecIdVisualiseurQuestions,
+    donnerTypeQuestionAvecIdVisualiseurQuestions
+} from '../../afficher/questions.js';
 import {modifierQuestionVisualiseurQuestionnaire} from '../../afficher/questionnaire.js';
 import { notification, TypeNotification } from '../../../utils/notification/notification.js';
 
-const NAME_TEXTAREA = "libelle-question";
-let id;
+const NAME_TEXTAREA = "libelle-question-modifier";
+const NAME_RADIO_SOUS_TYPE = "sous-type-question-modifier";
+const NAME_CHECK_OBLIGATOIRE = "question-obligatoire-modifier";
+
+const ID_DIV_OBLIGATOIRE = "obligatoire-modifier";
+const ID_DIV_OPTIONS_CHAMP_TEXTE = "sous-type-champ-modifier";
+
+let _id;
+let _type;
 
 /**
  * Type de contenue à modifier : Question ou Reponse
  */
 const TypeModifier = {
     QUESTION : "question",
-    REPONSE : "reponse"
+    REPONSE : "reponse",
+    CONTEXT : "context"
 };
 
 /**
@@ -22,8 +35,13 @@ const TypeModifier = {
  * @param {TypeModifier} type 
  */
 function init_modal(modal, id, type) {
+    const divOptionsChampTexte = modal.querySelector(`div#${ID_DIV_OPTIONS_CHAMP_TEXTE}`);
+    const divObligatoire = modal.querySelector(`div#${ID_DIV_OBLIGATOIRE}`);
+
     const textarea = modal.querySelector(`[name="${NAME_TEXTAREA}"]`);
     textarea.value = donnerLibelleQuestionAvecIdVisualiseurQuestions(id);
+
+    const typeQuestion = donnerTypeQuestionAvecIdVisualiseurQuestions(id);
 
     const pTitreModal = modal.querySelector(`p.modal-card-title`);
     switch (type) {
@@ -33,6 +51,27 @@ function init_modal(modal, id, type) {
         case TypeModifier.REPONSE:
         default :
             pTitreModal.innerHTML = "Modifier une réponse";
+            break;
+    }
+
+    switch (typeQuestion) {
+        case TypeQuestion.CHAMPS_COURT:
+        case TypeQuestion.CHAMPS_LONG:
+            divOptionsChampTexte.style.display = ""
+            divObligatoire.style.display = ""
+            break;
+        case TypeQuestion.RADIO_BOUTON:
+        case TypeQuestion.CHECK_BOUTON:
+            divOptionsChampTexte.style.display = "none"
+            divObligatoire.style.display = ""
+            break;
+        case TypeQuestion.CONTEXT:
+            divOptionsChampTexte.style.display = "none"
+            divObligatoire.style.display = "none"
+            break;
+        default:
+            divOptionsChampTexte.style.display = "none"
+            divObligatoire.style.display = "none"
             break;
     }
 }
@@ -82,31 +121,46 @@ function modalModifierQuestion() {
 
     form.addEventListener("submit", (e) => {
         e.preventDefault();
-
-        //const formData = new FormData(form);
-        const textarea = form.querySelector(`textarea[name="${NAME_TEXTAREA}"]`);
-        const libelleQuestion = mettreLaPremiereLettreEnMajuscule((textarea != null) ? textarea.value : "");   // libellé
+        
+        const formData = new FormData(form);
+        
+        const libelleQuestion = mettreLaPremiereLettreEnMajuscule(formData.get(NAME_TEXTAREA));
         if (libelleQuestion.trim() == "") {
             alert("Le libellé de la question ne doit pas être vide.");
             return
         }
-         
-        //const estObligatoire = formData.get("question-obligatoire") == "obligatoire" ? true : false;     
- 
-        // console.log("------ Modifier d'une question ------");
-        // console.log("Libellé de question :", libelleQuestion);
-        // console.log("----------------------------------");
 
-        if (id != null) {
+        const estObligatoire = formData.get(NAME_CHECK_OBLIGATOIRE) == "obligatoire" ? true : false;  // verif si c'est une reponse / une question
+        
+        const sousTypeChamptext = formData.getAll(NAME_RADIO_SOUS_TYPE)[0];
+        let nouveauTypeQuestion;
+        if (sousTypeChamptext == "champs-libre-long") {
+            nouveauTypeQuestion = TypeQuestion.CHAMPS_LONG;
+        } else {
+            nouveauTypeQuestion = TypeQuestion.CHAMPS_COURT;
+        }
+
+        if (_id != null) {
             try {
-                modifierQuestionVisualiseurQuestions(id, libelleQuestion);
-                modifierQuestionVisualiseurQuestionnaire(id, libelleQuestion);
+                modifierQuestionVisualiseurQuestions(_id, libelleQuestion, nouveauTypeQuestion, estObligatoire);
+                modifierQuestionVisualiseurQuestionnaire(_id, libelleQuestion, nouveauTypeQuestion, estObligatoire);
             } catch (e) {
                 notification(TypeNotification.ERREUR, "Une erreur c'est produite lors de la modification.");
                 console.error(e);
             }
             
         }
+
+        // if (_type == TypeModifier.QUESTION) {
+        //     // modifier l'obligation de la question
+
+        //     const typeQuestion = donnerTypeQuestionAvecIdVisualiseurQuestions(id);
+        //     if (typeQuestion && (typeQuestion == TypeQuestion.CHAMPS_COURT || typeQuestion == TypeQuestion.CHAMPS_LONG)) {
+        //         // modifier le type de textfield
+        //     }
+        // }
+
+        
         
 
         fermer_modal(modal);
@@ -126,7 +180,8 @@ function modalModifierQuestion() {
 function ouvrireModalModifierQuestion(identifiant, type) {
     const form = document.getElementById("form-modifier-question");
     const modal = document.getElementById("dialog-modifier-question");
-    id = identifiant;
+    _id = identifiant;
+    _type = type
     form.reset();
     init_modal(modal, identifiant, type);
     ouvrire_modal(modal);

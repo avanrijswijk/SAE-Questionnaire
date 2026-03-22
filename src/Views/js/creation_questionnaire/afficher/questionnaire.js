@@ -1,10 +1,12 @@
 import {TypeQuestion} from '../typeQuestion.js';
-import { donnerNombreReponse } from "./questions.js";
+import { donnerNombreReponse, donnerTypeQuestionAvecIdVisualiseurQuestions } from "./questions.js";
 
 /** 
  * Ce fichier est le fichier relié à l'ajout d'une question dans la partie pour la visualitation du questionnaire
  */
 
+const TAILLE_CHAMP_COURT = 1;
+const TAILLE_CHAMP_LONG = 4;
 
 /**
  * Synchronise l'ordre des questions du visualiseur (droite) pour qu'il corresponde 
@@ -94,7 +96,7 @@ function creerReponse(id, type, nombreReponse = 0) {
         case TypeQuestion.CHAMPS_LONG :
         case TypeQuestion.CHAMPS_COURT :
             elementReponse = document.createElement("textarea");
-            elementReponse.rows = type == TypeQuestion.CHAMPS_COURT ? 1 : 4;
+            elementReponse.rows = type == TypeQuestion.CHAMPS_COURT ? TAILLE_CHAMP_COURT : TAILLE_CHAMP_LONG;
             // elementReponse.name = `${libelleQestion}-reponse1`;
             elementReponse.classList.add("textarea");
             elementReponse.style.border = "1px solid";
@@ -215,8 +217,10 @@ function supprimerQuestionVisualiseurQuestionnaire(id) {
  * Modifi une question dans le visualisateur de questionnaire (partie de droite)
  * @param {int || string} id - identifiant de la question
  * @param {string} libelle - le nouveau libelé
+ * @param {TypeQuestion || null} type - le type de la question (fonctionne pour le moment qu'avec les champs de texte)
+ * @param {boolean || null} estObligatoire - le fait que la question soit obligatoire 
  */
-function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
+function modifierQuestionVisualiseurQuestionnaire(id, libelle, type=null, estObligatoire=null) {
     const identifiant = String(id);
     const question = donnerQuestionAvecIdVisualiseurQuestionnaire(identifiant.includes("-") ? identifiant.split("-")[0] : identifiant);
     if (identifiant.includes("-")) {
@@ -227,6 +231,18 @@ function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
         baliseH4Question.innerText = libelle; 
     }
     
+    const typeQuestion = donnerTypeQuestionAvecIdVisualiseurQuestions(id);
+    if (type && (typeQuestion == TypeQuestion.CHAMPS_COURT || typeQuestion == TypeQuestion.CHAMPS_LONG)) {
+        const textarea = question.querySelector("textarea.textarea");
+        if (textarea) {
+            textarea.rows = typeQuestion == TypeQuestion.CHAMPS_COURT ? TAILLE_CHAMP_COURT : TAILLE_CHAMP_LONG;
+        }
+    } 
+
+    const spanObligatoire = question.querySelector("span[title='obligatoire']");
+    if (estObligatoire && spanObligatoire) {
+        spanObligatoire.style.display = estObligatoire == true ? "" : "none";
+    }
 }
 
 
