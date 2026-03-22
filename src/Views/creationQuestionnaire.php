@@ -197,7 +197,7 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
         </button>
     </div>
     <div style="background-color: #B5C6E6; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center"> <!-- enlever  is-align-items-center ; mettre un  -->
-        <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-qestionnaire">
+        <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-questionnaire">
             <!--<div class="block">
                 <h4 class="title is-4 has-text-weight-semibold">Titre de la question</h4>
                 <div class="ml-2 field">

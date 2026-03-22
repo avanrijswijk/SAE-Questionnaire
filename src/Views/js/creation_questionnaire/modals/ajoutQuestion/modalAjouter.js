@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // ---------- ----------
     const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
-    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-questionnaire");
 
     // ---------- MAQ ----------
     boutonAjouterQuestion.addEventListener("click", () => {

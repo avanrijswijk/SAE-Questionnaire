@@ -134,7 +134,7 @@ function modalModifierQuestion() {
 
     // ---------- ----------
     // const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
-    // const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+    // const divVisualiseurQuestionnaire = document.getElementById("visualiseur-questionnaire");
 
     // ---------- MAQ ----------
     

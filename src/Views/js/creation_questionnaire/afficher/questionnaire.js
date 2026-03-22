@@ -14,7 +14,7 @@ const TAILLE_CHAMP_LONG = 4;
  * @param {Array<String>} nouvelOrdreIds - Tableau contenant les _id dans le nouvel ordre
  */
 function synchroniserOrdreQuestion(nouvelOrdreIds) {
-    const divVisualiseurQuestions = document.getElementById("visualiseur-qestionnaire");
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questionnaire");
     
     nouvelOrdreIds.forEach(id => {
         const divQuestion = divVisualiseurQuestions.querySelector(`div.block[data-_id="${id}"]`);
@@ -31,7 +31,7 @@ function synchroniserOrdreQuestion(nouvelOrdreIds) {
  * @param {Array<String>} nouvelOrdreIds - Tableau contenant les _id des réponses dans le nouvel ordre
  */
 function synchroniserOrdreReponse(idQuestion, nouvelOrdreIds) {
-    const divVisualiseurQuestions = document.getElementById("visualiseur-qestionnaire");
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questionnaire");
     const divQuestion = divVisualiseurQuestions.querySelector(`div.block[data-_id="${idQuestion}"]`);
     
     if (!divQuestion) return;
@@ -97,7 +97,6 @@ function creerReponse(id, type, nombreReponse = 0) {
         case TypeQuestion.CHAMPS_COURT :
             elementReponse = document.createElement("textarea");
             elementReponse.rows = type == TypeQuestion.CHAMPS_COURT ? TAILLE_CHAMP_COURT : TAILLE_CHAMP_LONG;
-            // elementReponse.name = `${libelleQestion}-reponse1`;
             elementReponse.classList.add("textarea");
             elementReponse.style.border = "1px solid";
             elementReponse.disabled = true;
@@ -135,7 +134,7 @@ function creerReponse(id, type, nombreReponse = 0) {
  * @param {JSON} info - Les informations sur la question (intitule:str, type:str, obligatoire:bool, _id:int)
  */
 function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
-    const libelleQestion = info['intitule'];
+    const libelleQuestion = info['intitule'];
     const type = info['type'];
     const _id = info['_id'];
     const estObligatoire = info["obligatoire"];
@@ -155,7 +154,7 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
     divConteneur.dataset._id = _id;
     divLibelle.classList.add("is-flex", "is-flex-direction-row");
     titreQuestion.classList.add("title", "is-4", "has-text-weight-semibold");
-    titreQuestion.innerText = libelleQestion;
+    titreQuestion.innerText = libelleQuestion;
     titreQuestion.style.marginBottom = "10px";
     divSousConteneur.classList.add("ml-3", "field", "control");
 
@@ -273,7 +272,7 @@ function modifierQuestionVisualiseurQuestionnaire(id, libelle, type=null, estObl
  * @returns {HTMLDivElement} le div de la question
  */
 function donnerQuestionAvecIdVisualiseurQuestionnaire(id) {
-    const divVisualiseurQuestions = document.getElementById("visualiseur-qestionnaire");
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questionnaire");
     return divVisualiseurQuestions.querySelector(`[data-_id="${id}"]`);
 }
 
