@@ -105,4 +105,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     modalValiderQuestionnaire.getElementsByClassName("modal-background")[0].addEventListener("click", () => {
         fermer_modal(modalValiderQuestionnaire);
     });
+
+
+    const lienAcceuil = document.getElementById("img-accueil").parentElement;
+    lienAcceuil.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const listeQuestions = listerQuestions();
+        if (listeQuestions.length > 0) {
+            if (confirm("Etes vous sur de vouloir revenir à l'acceuil ?\nSi vous revenez à l'acceuil, vous predrez votre progression.")) {
+                window.location.href = lienAcceuil.href;
+            }
+        } else {
+            window.location.href = lienAcceuil.href;
+        }
+    });
 });
