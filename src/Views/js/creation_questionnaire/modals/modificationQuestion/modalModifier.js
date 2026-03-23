@@ -207,7 +207,7 @@ function modalModifierQuestion() {
 
 /**
  * ouvre un modal de modification de questions/réponses en fonction de son id
- * @param {int || string} identifiant - son identifiant (id)
+ * @param {string} identifiant - son identifiant (id)
  * @param {TypeModifier} type - le type de comptenu qui sera modifié 
  */
 function ouvrireModalModifierQuestion(identifiant, type) {
@@ -225,8 +225,8 @@ function ouvrireModalModifierQuestion(identifiant, type) {
  * @param {HTMLDivElement} conteneur - le conteneur de la question
  * @param {TypeModifier} type - le type de comptenu qui sera modifié
  */
-function attribuerModalModifierQuestionAvaecConteneur(conteneur, type) {
-    const identifiant = conteneur.dataset["_id"];
+function attribuerModalModifierQuestionAvecConteneur(conteneur, type) {
+    const identifiant = conteneur.dataset._id;
     if (identifiant) {
         conteneur.addEventListener("dblclick", () => {
             ouvrireModalModifierQuestion(identifiant, type);
@@ -237,7 +237,7 @@ function attribuerModalModifierQuestionAvaecConteneur(conteneur, type) {
 
 /**
  * attribu un modal de modification de questions/réponses en fonction de son id
- * @param {*} identifiant - son identifiant (id)
+ * @param {string} identifiant - son identifiant (id)
  * @param {TypeModifier} type - le type de comptenu qui sera modifié
  */
 function attribuerModalModifierQuestionAvecId(identifiant, type) {
@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 export {
     attribuerModalModifierQuestionAvecId,
-    attribuerModalModifierQuestionAvaecConteneur,
+    attribuerModalModifierQuestionAvecConteneur,
     ouvrireModalModifierQuestion,
     TypeModifier
 }

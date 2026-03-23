@@ -1,3 +1,4 @@
+import { attribuerModalModifierQuestionAvecId, ouvrireModalModifierQuestion, attribuerModalModifierQuestionAvecConteneur,  TypeModifier } from '../modals/modificationQuestion/modalModifier.js';
 import {TypeQuestion} from '../typeQuestion.js';
 import { donnerNombreReponse, donnerTypeQuestionAvecIdVisualiseurQuestions } from "./questions.js";
 
@@ -78,7 +79,13 @@ function ajouterReponseVisualiseurQuestionnaire(idReponse, type) {
         
         const divReponse = creerReponse(idReponse, type, parseInt(String(idReponse).split("-")[1]));
         // console.log(divReponse);
-        if (divReponse) divReponses.appendChild(divReponse);
+        if (divReponse) {
+            divReponses.appendChild(divReponse);
+            //attribuerModalModifierQuestionAvecConteneur(divReponse, TypeModifier.REPONSE);
+            divReponse.addEventListener("dblclick", (e) => { // ICI -------------------------------------------------------------
+                ouvrireModalModifierQuestion(idReponse, TypeModifier.REPONSE);
+            });
+        }
     }
 }
 
@@ -152,10 +159,20 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
     divConteneur.style.borderRadius = "8px";
     divConteneur.style.transition = "background-color 0.9s ease-in-out";
     divConteneur.dataset._id = _id;
+    divConteneur.dataset.type = type;
+
+    divConteneur.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+    });
+
+    attribuerModalModifierQuestionAvecConteneur(divConteneur, TypeModifier.QUESTION);
+    
     divLibelle.classList.add("is-flex", "is-flex-direction-row");
+    
     titreQuestion.classList.add("title", "is-4", "has-text-weight-semibold");
     titreQuestion.innerText = libelleQuestion;
     titreQuestion.style.marginBottom = "10px";
+
     divSousConteneur.classList.add("ml-3", "field", "control");
 
     spanObligatoire.style.color = "red";
@@ -167,9 +184,19 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info) {
         elementReponse = document.createElement("div");
         elementReponse.style.rowGap = ".5em";
         elementReponse.classList.add(type == TypeQuestion.RADIO_BOUTON ? "radios" : "checkboxs", "is-flex", "is-flex-direction-column");
-        elementReponse.appendChild(creerReponse(`${_id}-${donnerNombreReponse(_id)-1}`, type));
+        const idReponse = `${_id}-${donnerNombreReponse(_id)-1}`;
+        const divReponse = divReponse;
+        elementReponse.appendChild();
+        divReponse.addEventListener("dblclick", (e) => { // ICI -------------------------------------------------------------
+            ouvrireModalModifierQuestion(idReponse, TypeModifier.REPONSE);
+        });
     } else if (type != TypeQuestion.CONTEXT) { // type CHAMP DE TEXT
-        elementReponse = creerReponse(`${_id}-${donnerNombreReponse(_id)-1}`, type);
+        const idReponse = `${_id}-${donnerNombreReponse(_id)-1}`;
+        const divReponse = creerReponse(`${_id}-${donnerNombreReponse(_id)-1}`, type);
+        elementReponse = divReponse;
+        divReponse.addEventListener("dblclick", (e) => { // ICI -------------------------------------------------------------
+            ouvrireModalModifierQuestion(idReponse, TypeModifier.REPONSE);
+        });
     } // type CONTEXT
     
     if (!estObligatoire) {
