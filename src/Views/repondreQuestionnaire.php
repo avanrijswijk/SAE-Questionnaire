@@ -171,7 +171,6 @@ $nbContext = 0
                                 <?php break ?>
 
                                 <?php case "context": ?>
-                                    <p><em>Context - options non disponibles dans la vue.</em></p>
                                 <?php break ?>
                             <?php endswitch; ?>
                         </div>

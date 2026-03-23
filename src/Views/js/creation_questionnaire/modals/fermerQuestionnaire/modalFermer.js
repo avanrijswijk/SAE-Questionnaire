@@ -56,7 +56,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // ---------- MVQ ----------
     boutonFinirMVQ.addEventListener("click", () => {
+        const inputTitre = formMVQ.querySelector("input#nom-questionnaire");
         ouvrire_modal(modalValiderQuestionnaire);
+        inputTitre.focus();
+        inputTitre.select();
     });
 
     boutonFermerMVQ.addEventListener("click", () => {
@@ -87,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.name = "liste-questions";
         listeQuestions.value = JSON.stringify(jsonQuestions);
 
-        console.log(jsonQuestions);
+        console.log(jsonQuestions); // debug
         // e.preventDefault();
         // return;
         formMVQ.appendChild(listeQuestions);

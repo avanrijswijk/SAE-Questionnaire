@@ -167,7 +167,12 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                     </div>
                     <div class="field" style="width: 60%;">
                         <label class="label" for="date-expriration">Date d'expiration :</label>
-                        <input type="date" class="input" name="date-expriration" id="date-expriration" min="<?php date_default_timezone_set('Europe/Paris'); echo date('Y-m-d'); ?>"/>
+                        <?php 
+                            date_default_timezone_set('Europe/Paris'); 
+                            $demain = date('Y-m-d', strtotime('+1 day'));
+                            $date_max = date('Y-m-d', strtotime('+3 year'));
+                        ?>
+                        <input type="date" class="input" name="date-expriration" id="date-expriration" min="<?php echo $demain; ?>" value="<?php echo $demain; ?>" max="<?php echo $date_max; ?>"/>
                     </div>
                     <div class="field" style="width: 60%;">
                         <label class="label" for="mes-cibles">Qui peut répondre :</label>
@@ -196,14 +201,8 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
             <h3 class="title is-4 mt-3 p-4">FINIR</h3>
         </button>
     </div>
-    <div style="background-color: #B5C6E6; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center"> <!-- enlever  is-align-items-center ; mettre un  -->
+    <div style="background-color: #B5C6E6; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center">
         <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-questionnaire">
-            <!--<div class="block">
-                <h4 class="title is-4 has-text-weight-semibold">Titre de la question</h4>
-                <div class="ml-2 field">
-                    reponses...
-                </div>
-            </div>-->
         </div>
     </div>
     <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;"></div>
