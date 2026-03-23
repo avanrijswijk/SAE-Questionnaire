@@ -13,23 +13,24 @@ import { notification, TypeNotification } from '../../../utils/notification/noti
  * @returns {Array} un fichier JSON contenant les informations
  */
 function listerQuestions() {
-    const divQuestions = document.getElementById("visualiseur-questions");
+    const divConteneurQuestions = document.getElementById("visualiseur-questions");
+    
+    const divQuestions = divConteneurQuestions.querySelectorAll("div.div-question");
     const questions = [];
 
-    if (!divQuestions) {
+    if (!divConteneurQuestions) {
         return questions;
     }
 
-    for (let index = 0; index < divQuestions.childElementCount; index++) {
-        const divConteneur = divQuestions.children[index];
-        const divQuestion = divConteneur.firstChild;
-        const divReponses = divConteneur.querySelector("div.div-reponses");
+    divQuestions.forEach((divQuestion, index) => {
+        divQuestion = divQuestion.firstChild;
+        const divReponses = divQuestion.querySelector("div.div-reponses");
 
         const data = {
             "intitule" : divQuestion.dataset.intitule,
             "type" : divQuestion.dataset.type,
             "position" : index+1,
-            "est_obligatoire" : divQuestion.dataset.obligatoire,
+            "est_obligatoire" : divQuestion.dataset.obligatoire,    
             "choix" : []
         };
 
@@ -42,7 +43,7 @@ function listerQuestions() {
         }
 
         questions.push(data);
-    }
+    });
     return questions
 }
 
@@ -79,7 +80,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         est_obligatoire : bool
         choix : [str]
         */
-        console.log(listerQuestions());
         const listeQuestions = document.createElement('input');
         const jsonQuestions = listerQuestions();
         if (jsonQuestions.length === 0) {
@@ -90,9 +90,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.name = "liste-questions";
         listeQuestions.value = JSON.stringify(jsonQuestions);
 
-        console.log(jsonQuestions); // debug
+        // Debug //
+        // console.log(jsonQuestions);
         // e.preventDefault();
         // return;
+
         formMVQ.appendChild(listeQuestions);
     });
 
