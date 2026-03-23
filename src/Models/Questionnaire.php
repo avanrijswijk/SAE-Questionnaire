@@ -133,7 +133,7 @@ class Questionnaire {
         $stmt->bindParam(':groupes_autorises', $groupes_autorises);
         $stmt->bindParam(':id', $id);
 
-        $stmt->execute();
+        return $stmt->execute();
     }
 
     /**
@@ -202,6 +202,48 @@ class Questionnaire {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+    /**
+     * Récupère le nombre de répondants pour un questionnaire.
+     *
+     * @param int $id_questionnaire ID du questionnaire.
+     * @return int Nombre total de répondants.
+     */
+    public function getNombreRepondants($id_questionnaire) {
+        $query = "SELECT COUNT(DISTINCT r.id_utilisateur) as total_repondants
+                  FROM questionnaires
+                  JOIN questions qt ON qt.id_questionnaire = questionnaires.id
+                  JOIN choix_possible c ON c.id_question = qt.id
+                  JOIN reponses_utilisateur r ON r.id_choix = c.id
+                  WHERE questionnaires.id = :id_questionnaire";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total_repondants'] ?? 0;
+    }
+
+
+    /**
+     * Récupère le nombre total de questions pour un questionnaire.
+     *
+     * @param int $id_questionnaire ID du questionnaire.
+     * @return int Nombre total de questions.
+     */
+    public function getNombreQuestions($id_questionnaire) {
+        $query = "SELECT COUNT(*) as total_questions
+                  FROM questions
+                  WHERE id_questionnaire = :id_questionnaire";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total_questions'] ?? 0;
+    }
+
 
     /**
      * Retourne le dernier ID inséré dans la base de données.

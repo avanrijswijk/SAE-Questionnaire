@@ -109,6 +109,12 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                     $id = isset($_GET['id']) ? $_GET['id'] : null;
                     $questionnaireController->supprimer($id);
                     break;
+                case 'analyse':
+                    $id = isset($_GET['id']) ? $_GET['id'] : null;
+                    $questionnaireController->analyseGraphique($id);
+                    break;
+                case 'modifier':
+                    $questionnaireController->modifier();
             }
             break;
 

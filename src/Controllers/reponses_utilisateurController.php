@@ -52,8 +52,10 @@ class Reponses_utilisateurController {
                 $id_choix = substr($key, strlen('choix-'));
                 $reponse  = $value;
 
-                if ($reponse === '' || $reponse === null) {
-                    continue;
+                $id_utilisateur = $_SESSION['cas_user'] ?? null;
+                
+                if (!isset($id_utilisateur)) {
+                    $id_utilisateur = 'anonyme';
                 }
 
                 $dernier_id_choix = $id_choix;
