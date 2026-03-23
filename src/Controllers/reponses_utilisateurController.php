@@ -36,8 +36,20 @@ class Reponses_utilisateurController {
         $ajoutOk = false;
 
         if (is_array($_POST) && !empty($_POST)) {
+            $id_utilisateur = $_SESSION['id_utilisateur'] ?? null;
+            if (!isset($id_utilisateur)) {
+                $id_utilisateur = 1; // Utilisateur non connecté pour les tests
+            }
+
+            $dernier_id_choix = null;
+
             foreach ($_POST as $key => $value) {
-                $id_choix = str_replace('choix-', '', $key);
+                // On ne traite que les clés qui commencent par "choix-"
+                if (strpos($key, 'choix-') !== 0) {
+                    continue;
+                }
+
+                $id_choix = substr($key, strlen('choix-'));
                 $reponse  = $value;
 
                 $id_utilisateur = $_SESSION['cas_user'] ?? null;
@@ -45,6 +57,9 @@ class Reponses_utilisateurController {
                 if (!isset($id_utilisateur)) {
                     $id_utilisateur = 'anonyme';
                 }
+
+                $dernier_id_choix = $id_choix;
+
                 $ajoutOk = $this->reponses_utilisateurModel->creerReponse($id_utilisateur, $id_choix, $reponse);
                 if (!$ajoutOk) {
                     echo "echec de l'insertion.";
@@ -55,8 +70,8 @@ class Reponses_utilisateurController {
             echo 'Données de réponses invalides.';
         }
 
-        if ($ajoutOk) {
-            $this->acceptesModel->repondre($id_utilisateur , $this->questionnaireModel->getQuestionnaireParIdReponse($id_choix));
+        if ($ajoutOk && $dernier_id_choix !== null) {
+            $this->acceptesModel->repondre($id_utilisateur , $this->questionnaireModel->getQuestionnaireParIdReponse($dernier_id_choix));
             require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'home.php');
         } else {
             echo 'Erreur lors de l\'enregistrement des réponses.';

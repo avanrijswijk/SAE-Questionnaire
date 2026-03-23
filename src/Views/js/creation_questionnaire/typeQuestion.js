@@ -1,6 +1,6 @@
 /**
  * Type de question possible :
- * CHAMPS_COURT, CHAMPS_LONG, RADIO_BOUTON, CHECK_BOUTON, LISTE_DEROULANTE
+ * CHAMPS_COURT, CHAMPS_LONG, RADIO_BOUTON, CHECK_BOUTON, LISTE_DEROULANTE, CONTEXT
  */
 export const TypeQuestion = {
     CHAMPS_COURT : "textfield",

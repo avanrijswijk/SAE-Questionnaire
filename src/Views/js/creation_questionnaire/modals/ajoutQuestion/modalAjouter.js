@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ---------- ----------
     const listeRadiosType = document.getElementsByName("type-question");
     const radioTypeChampsLibre = document.getElementById("radio-champs-libre");
+    const radioTypeCheckBox = document.getElementById("radio-check-box");
     const radioTypeContext= document.getElementById("radio-context");
     //const radioTypeRadioBox = document.getElementById("radio-radio-box");
     //const radioTypeCheckBox = document.getElementById("radio-check-box");
@@ -38,13 +39,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // ---------- ----------
     const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
-    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-questionnaire");
 
     // ---------- MAQ ----------
     boutonAjouterQuestion.addEventListener("click", () => {
+        const textarea = formMAQ.querySelector("textarea[name='libelle-question']");
+        
         formMAQ.reset();
         divRadioSousType.style.display = "";
         ouvrire_modal(modalAjouterQuestion);
+
+        if (textarea) {
+            textarea.focus();
+        }
     });
 
     boutonFermerMAQ.addEventListener("click", () => {
@@ -59,11 +66,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 divRadioSousType.style.display = "none";
             }
 
-            if (radio == radioTypeContext) {
-                divObligatoire.style.display = "none";
-            } else {
-                divObligatoire.style.display = "";
-            }
+            // if (radio == radioTypeContext || radio == radioTypeCheckBox) {
+            //     divObligatoire.style.display = "none";
+            // } else {
+            //     divObligatoire.style.display = "";
+            // }
         });
     });
 

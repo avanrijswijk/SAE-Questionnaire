@@ -1,4 +1,4 @@
-<main style="background-color: #EFEFEF; height: 100%; overflow-y: auto;">
+<main style="background-color: #EFEFEF; min-height: 100vh; overflow-y: auto;">
     <div>
         <script src="./src/Views/js/lister_questionnaire/modals/code/modalCode.js"></script>
         <button style="background-color: #F5A320;border-radius: 0 0 100px 0;" id="bouton-code">
@@ -84,4 +84,5 @@
             
         </script>
     </div>
+    <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;"></div>
 </main>

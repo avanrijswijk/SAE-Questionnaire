@@ -1,4 +1,8 @@
-const notifications = document.getElementById("notifications");
+let notificationConteneur;
+
+document.addEventListener("DOMContentLoaded", () => {
+    notificationConteneur = document.getElementById("notifications");
+});
 
 const TypeNotification = {
   ERREUR : "is-danger",
@@ -23,15 +27,17 @@ function notification(type, message) {
     boutonFermer.classList.add("delete");
     pMessage.classList.add("is-unselectable");
     pMessage.innerText = message;
-
-    notifConteneur.append(boutonFermer, pMessage);
+    
     // notifConteneur.id = id;
 
-    notifications.appendChild(notifConteneur);
+    if (notificationConteneur) {
+        notifConteneur.append(boutonFermer, pMessage);
+        notificationConteneur.appendChild(notifConteneur);
 
-    boutonFermer.addEventListener("click", () => {
-        notifications.removeChild(notifConteneur);
-    });
+        boutonFermer.addEventListener("click", () => {
+            notificationConteneur.removeChild(notifConteneur);
+        });
+    }
 }
 
 export {TypeNotification, notification}

@@ -25,7 +25,8 @@ $questionnaires = $questionnaireBDD->getQuestionnairePar(["id_createur" => $_SES
                 </style>
                 <table class="table is-hoverable" style="width: 95%;">
                     <colgroup>
-                            <col style="width:70%;">
+                            <col style="width:60%;">
+                            <col style="width:10%;">
                             <col style="width:10%;">
                             <col style="width:10%;">
                             <col style="width:10%;">

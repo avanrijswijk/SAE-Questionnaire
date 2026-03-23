@@ -1,5 +1,5 @@
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
-import { notification, TypeNotification } from '../../notification/notification.js';
+import { notification, TypeNotification } from '../../../utils/notification/notification.js';
 
 /**
  * liste les questions :

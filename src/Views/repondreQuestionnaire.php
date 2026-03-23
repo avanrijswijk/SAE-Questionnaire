@@ -34,7 +34,18 @@ $nbContext = 0
 ?>
 <main class="container" style="margin-top: 25px;">
     <script src="./src/Views/js/repondre_questionnaire/modals/modal.js"></script>
-	<?php if ($date_exp): ?><p><strong>Expiration :</strong> <?php echo $date_exp; ?></p><?php endif; ?>
+	<?php if ($date_exp): ?>
+        <?php 
+            $dateBrute = isset($date_exp) ? $date_exp : "";
+            $tempsUnix = strtotime($dateBrute);
+
+            $date = date("d/m/Y", $tempsUnix);
+            $difference = $tempsUnix - strtotime("now");
+            $nbJoursRestant = round($difference / 86400, 0);
+            $nbHeureRestant = round(($difference / 3600), 0);
+        ?>
+        <p title="<?php echo htmlspecialchars($date) ?>"><strong>Expiration :</strong> <?php echo $nbJoursRestant ? $nbJoursRestant . " jours restant" : $nbHeureRestant . " heures restant"; ?></p>
+    <?php endif; ?>
 	<?php if ($code): ?><p><strong>Code :</strong> <?php echo $code; ?></p><?php endif; ?>
     <?php if ($auteurAffichage): ?><p><strong>Auteur :</strong> <?php echo htmlspecialchars($auteurAffichage); ?></p><?php endif; ?>
     
@@ -53,13 +64,19 @@ $nbContext = 0
             </style>
             <form method="post" action="?c=questionnaire&a=enregistrer-reponses">
                 <?php foreach ($questions as $index => $q): ?>
-                    <?php
+
+                        <?php
+                        // Préparation des données de la question
                         $intitule = isset($q['intitule']) ? htmlspecialchars($q['intitule']) : 'Question sans texte';
                         $type = isset($q['type']) ? $q['type'] : "textfield";
                         $required = isset($q['est_obligatoire']) ? $q['est_obligatoire'] : 0;
+
+                        // Liste des choix possibles
                         $choix = $Choix_possibleController->getChoixDeQuestion($q['id']);
-                        $name = 'choix-'.(isset($q['id']) ? $q['id'] : $index);
-                    ?>
+
+                        // Nom logique du groupe pour radios/checkboxes
+                        $groupName = 'question-' . (isset($q['id']) ? $q['id'] : $index);
+                        ?>
                     <hr />
                     <div class="question-block" style="<?php if ($type != "context") {echo "padding: 25px 0;";} ?>">
                         <?php if ($type == "context") {
@@ -91,7 +108,7 @@ $nbContext = 0
                                         maxlength="1800"
                                         style="min-height: 50px; max-height:150px;"></textarea>
                                 <?php break; ?>
-                                
+
                                 <?php case "long_textfield": ?>
                                     <?php 
                                         if (!empty($choix) && isset($choix[0]['id'])) {
@@ -102,47 +119,60 @@ $nbContext = 0
                                             break;
                                         }
                                     ?>
-                                    <textarea name="<?php echo $name; ?>" <?php if ($required) echo "required"; ?> class="textarea" placeholder="Remplir ce champ..." cols="50" rows="5" maxlength="6000" style="min-height: 50px; max-height:300px;"></textarea>
-                                <?php break ?>
+                                    <textarea 
+                                        name="<?php echo $name; ?>" 
+                                        <?php if ($required) echo "required"; ?> 
+                                        class="textarea" 
+                                        placeholder="Remplir ce champ..." 
+                                        cols="50" 
+                                        rows="5" 
+                                        maxlength="6000" 
+                                        style="min-height: 50px; max-height:300px;"></textarea>
+                                <?php break; ?>
 
                                 <?php case "radio": ?>
-                                    <!--<p><em>Choix unique - options non disponibles dans la vue.</em></p>-->
                                     <div class="radios is-flex is-flex-direction-column" style="row-gap: 0.5em;">
-                                        <?php
-                                            foreach($choix as $reponse) {
-                                        ?>
+                                        <?php foreach($choix as $reponse): ?>
                                             <label class="radio">
-                                                <input type="radio" name="<?php echo $name ?>" <?php if ($required) echo "required"; ?>>
-                                                <?php echo $reponse["texte"]; ?>
+                                                <input
+                                                    type="radio"
+                                                    class="radio-choice"
+                                                    name="<?php echo $groupName; ?>"  
+                                                    data-idchoix="<?php echo $reponse['id']; ?>"
+                                                    data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
+                                                    <?php if ($required) echo "required"; ?>
+                                                >
+                                                <?php echo htmlspecialchars($reponse["texte"]); ?>
                                             </label>
-                                        <?php
-                                            } 
-                                        ?>
+                                        <?php endforeach; ?>
                                     </div>
-                                <?php break ?>
+                                <?php break; ?>
 
                                 <?php case "check": ?>
-                                    <!--<p><em>Choix unique - options non disponibles dans la vue.</em></p>-->
                                     <div class="checkboxs is-flex is-flex-direction-column" style="row-gap: 0.5em;">
-                                        <?php
-                                            foreach($choix as $reponse) {
-                                        ?>
+                                        <?php foreach($choix as $reponse): ?>
                                             <label class="checkbox">
-                                                <input type="checkbox" name="<?php echo $name ?>" <?php if ($required) echo "required"; ?>>
-                                                <?php echo $reponse["texte"]; ?>
+                                                <input
+                                                    type="checkbox"
+                                                    class="check-choice"  
+                                                    name="<?php echo $groupName; ?>" 
+                                                    data-idchoix="<?php echo $reponse['id']; ?>"
+                                                    data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
+                                                    data-required="<?php echo $required ? 'required' : ''; ?>"
+                                                >
+                                                <?php echo htmlspecialchars($reponse["texte"]); ?>
                                             </label>
-                                        <?php
-                                            } 
-                                        ?>
+                                        <?php endforeach; ?>
                                     </div>
-                                <?php break ?>
+                                <?php break; ?>
 
                                 <?php case "select": ?>
                                     <p><em>Liste de selection - options non disponibles dans la vue.</em></p>
                                 <?php break ?>
 
                                 <?php case "context": ?>
-                                <?php break; ?>
+                                    <p><em>Context - options non disponibles dans la vue.</em></p>
+                                <?php break ?>
                             <?php endswitch; ?>
                         </div>
                     </div>
@@ -156,7 +186,7 @@ $nbContext = 0
 
                 </div>
                 
-                <div id="submitModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+                <div id="submitModal" class="modal-overlay" role="dialog" style="display: none;">
                     <div class="modal-card">
                         <div class="modal-content">
                             <div class="modal-title">Confirmer l'envoi</div>
