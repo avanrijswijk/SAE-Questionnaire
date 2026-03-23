@@ -105,6 +105,9 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                     $id = isset($_GET['id']) ? $_GET['id'] : null;
                     $questionnaireController->repondre($id);
                     break;
+                case 'acceder-par-code':
+                    $questionnaireController->accederParCode();
+                    break;
                 case 'supprimer':
                     $id = isset($_GET['id']) ? $_GET['id'] : null;
                     $questionnaireController->supprimer($id);

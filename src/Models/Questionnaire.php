@@ -320,4 +320,20 @@ class Questionnaire {
         return $id_questionnaire;
     }
 
+
+    /**
+     * Récupère un questionnaire par son code.
+     *
+     * @param string $code Code du questionnaire.
+     * @return array|null Données du questionnaire ou null si introuvable.
+     */
+    public function getQuestionnaireParCode($code) {
+        $sql = "SELECT * FROM questionnaires WHERE code = :code";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':code', $code);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }

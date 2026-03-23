@@ -6,9 +6,9 @@
         </button>
         <div id="dialog-code" class="modal">
             <div class="modal-background"></div>
-            <form id="form-enregistrer" class="modal-card" action="">
+            <form id="form-enregistrer" class="modal-card" action="./?c=questionnaire&a=acceder-par-code" method="POST">
                 <section class="modal-card-body" style="border-radius: 15px;">
-                    <button id="bouton-fermer" class="delete" aria-label="close" style="position: absolute; right:10px; top: 10px;"></button>
+                    <button type="button" id="bouton-fermer" class="delete" aria-label="close" style="position: absolute; right:10px; top: 10px;"></button>
                     <div class="field">
                         <label class="label">Code du questionnaire :</label>
                         <div class="control">

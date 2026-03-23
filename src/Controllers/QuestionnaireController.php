@@ -108,6 +108,32 @@ class QuestionnaireController {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'listerQuestionnaire.php');
     }
 
+
+    public function accederParCode() {
+        $code = $_POST['code'] ?? null;
+
+        if (empty($code)) {
+            die("Veuillez saisir un code.");
+        }
+
+        $questionnaire = $this->questionnaireModel->getQuestionnaireParCode($code);
+
+        if (!$questionnaire) {
+            die("Erreur : Ce code ne correspond à aucun questionnaire actif.");
+        }
+
+        $json_regles = $questionnaire['groupes_autorises'] ?? '{}';
+
+        if (!$this->aLeDroitDAcces($json_regles, $_SESSION['cas_groupes'])) {
+            die("Accès refusé : Ce questionnaire est réservé à d'autres groupes.");
+        }
+
+        $url_redirection = "./?c=questionnaire&a=repondre&id=" . $questionnaire['id'];
+        echo "<script>window.location.href = '" . $url_redirection . "';</script>";
+        exit();
+    }
+
+
     /**
      * Vérifie si l'utilisateur peut voir les résultats du questionnaire (doit être le créateur).
      */
