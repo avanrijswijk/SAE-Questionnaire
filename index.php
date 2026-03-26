@@ -125,6 +125,27 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
         case 'connexion':
             require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'page_connexion.php');
             break;
+
+            
+        case 'erreur':
+            switch ($action) {
+                case 'droits':
+                    require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'Erreur'.DIRECTORY_SEPARATOR.'droits.php');
+                    break;
+                case 'deja-repondu':
+                    require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'Erreur'.DIRECTORY_SEPARATOR.'deja_repondu.php');
+                    break;
+                case '404':
+                default:
+                    require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'Erreur'.DIRECTORY_SEPARATOR.'404.php');
+                    break;
+            }
+            break;
+
+        // Si le contrôleur tapé dans l'URL n'existe pas (ex: ?c=nimportequoi)
+        default:
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'Erreur'.DIRECTORY_SEPARATOR.'404.php');
+            break;
     }
 
     if (!$isExport) {
