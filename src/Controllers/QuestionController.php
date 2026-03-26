@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Question;
-use App\Controllers\Choix_possibleController;
+use App\Controllers\ChoixPossibleController;
 
 class QuestionController {
 
@@ -12,12 +12,12 @@ class QuestionController {
 
     /**
      * Constructeur de la classe QuestionController.
-     * Initialise les instances du modèle Question et du contrôleur Choix_possibleController.
+     * Initialise les instances du modèle Question et du contrôleur ChoixPossibleController.
      */
     public function __construct() {
         $questionModel = new Question();
         $this->questionModel = $questionModel;
-        $this->choix_possibleController = new Choix_possibleController();
+        $this->choix_possibleController = new ChoixPossibleController();
     }
 
     /**

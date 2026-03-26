@@ -6,14 +6,14 @@ use App\Models\Reponses_utilisateur;
 use App\Models\Acceptes;
 use App\Models\Questionnaire;
 
-class Reponses_utilisateurController {
+class ReponsesUtilisateurController {
 
     private $reponses_utilisateurModel;
     private $acceptesModel;
     private $questionnaireModel;
 
     /**
-     * Constructeur de la classe Reponses_utilisateurController.
+     * Constructeur de la classe ReponsesUtilisateurController.
      * Initialise les instances des modèles nécessaires.
      */
     public function __construct() {

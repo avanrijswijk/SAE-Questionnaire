@@ -35,8 +35,8 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'bootstrap.php');
 use App\Controllers\QuestionnaireController;
 use App\Controllers\AcceptesController;
 use App\Controllers\QuestionController;
-use App\Controllers\Reponses_utilisateurController;
-use App\Controllers\Choix_possibleController;
+use App\Controllers\ReponsesUtilisateurController;
+use App\Controllers\ChoixPossibleController;
 
 
 
@@ -67,7 +67,7 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
         case 'questionnaire':
             $questionnaireController = new QuestionnaireController();
             $acceptesController = new AcceptesController();
-            $reponses_utilisateurController = new Reponses_utilisateurController();
+            $reponses_utilisateurController = new ReponsesUtilisateurController();
             $questionController = new QuestionController();
 
             switch ($action) {

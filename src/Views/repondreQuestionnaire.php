@@ -1,8 +1,8 @@
 <?php
 
-use App\Controllers\Choix_possibleController;
+use App\Controllers\ChoixPossibleController;
 use App\Controllers\QuestionnaireController;
-$Choix_possibleController = new Choix_possibleController();
+$Choix_possibleController = new ChoixPossibleController();
 
 // --- TESTS SUR LES DROITS D'ACCÈS AU QUESTIONNAIRE ---
 
