@@ -1,3 +1,8 @@
+<?php
+    use App\Models\Reponses_utilisateur;
+    $reponsesModele = new Reponses_utilisateur();
+?>
+
 <main style="background-color: #EFEFEF; min-height: 100vh; overflow-y: auto;">
     <div>
         <script src="./src/Views/js/lister_questionnaire/modals/code/modalCode.js"></script>
@@ -22,19 +27,21 @@
             </form>
         </div>
     </div>
+    
     <div class="is-flex is-justify-content-center pt-5">
         <table class="table is-hoverable" style="width: 95%;">
             <colgroup>
-                    <col style="width:33%;">
-                    <col style="width:33%;">
-                    <col style="width:33%;">
+                <col style="width:30%;">
+                <col style="width:30%;">
+                <col style="width:25%;">
+                <col style="width:15%;">
             </colgroup>
             <thead>
                 <tr>
                     <th>Titre</th>
                     <th>Auteur</th>
                     <th>Temps</th>
-                </tr>
+                    <th class="has-text-centered">Statut</th> </tr>
             </thead>
             <tbody id="table">
                 <?php date_default_timezone_set('Europe/Paris'); ?>
@@ -47,10 +54,11 @@
                         $difference = $tempsUnix - strtotime("now");
                         $nbJoursRestant = round($difference / 86400, 0);
                         $nbHeureRestant = round(($difference / 3600), 0);
+                        
+                        $aDejaRepondu = $reponsesModele->aDejaRepondu($questionnaire['id'], $_SESSION['cas_user']);
                     ?>
                     <?php if ($nbJoursRestant > 0) : ?>
-                    <?php //if (1 == 1) : ?>
-                        <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';">
+                        <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';" style="cursor: pointer;">
                             <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
                             <?php
                                 $createurNom = $questionnaire['createur_nom'] ?? '';
@@ -61,27 +69,41 @@
                                     : ($questionnaire['id_createur'] ?? '');
                             ?>
                             <td><?php echo htmlspecialchars($createurAffichage); ?></td>
+                            
                             <?php if ($nbJoursRestant <= 0) : ?>
                                 <td title="<?php echo htmlspecialchars($date) ?>" style="color : red;"><?php echo htmlspecialchars($nbHeureRestant); ?> heures restant</td> 
                             <?php else : ?>
                                 <td title="<?php echo htmlspecialchars($date) ?>" style="<?php if ($nbJoursRestant < 7) echo "color : red;" ?>"><?php echo htmlspecialchars($nbJoursRestant); ?> jours restant</td> 
                             <?php endif ?>
-                            </tr>
+
+                            <td class="has-text-centered">
+                                <?php if ($aDejaRepondu): ?>
+                                    <span class="tag is-success is-light is-medium">
+                                        <i class="fas fa-check mr-2"></i> Fait
+                                    </span>
+                                <?php else: ?>
+                                    <span class="tag is-warning is-light is-medium">
+                                        <i class="fas fa-clock mr-2"></i> À faire
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+
+                        </tr>
                     <?php endif ?>
                 <?php endforeach; ?>
             </tbody>
-        </table><!--
-        <?php if (count($questionnaires) === 0) { ?>
-            <p>Aucun questionnaire en attente.</p>
-        <?php }?>-->
+        </table>
+        
         <script>
             document.addEventListener("DOMContentLoaded", () => {
-                const table = document.querySelector("tbody.table");
-                if (table.childElementCount == 0) {
-                    document.querySelector("div.is-flex.is-justify-content-center.pt-5").appendChild(document.createElement("p").innerText("Aucun quesionnaire en attente?"));
+                const table = document.getElementById("table");
+                if (table && table.childElementCount == 0) {
+                    const p = document.createElement("p");
+                    p.innerText = "Aucun questionnaire en attente.";
+                    p.className = "has-text-grey mt-4";
+                    document.querySelector("div.is-flex.is-justify-content-center.pt-5").appendChild(p);
                 }
             });
-            
         </script>
     </div>
     <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;"></div>
