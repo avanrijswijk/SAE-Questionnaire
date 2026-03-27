@@ -15,10 +15,6 @@ if (!isset($questionnaire)) {
 
 $q = $this->questionnaireModel->getQuestionnaire($_GET['id']);
 
-if (!$this->aLeDroitDAcces($q['groupes_autorises'], $_SESSION['cas_groupes'])) {
-    die("⛔ Fraude détectée : Vous n'avez pas l'autorisation d'accéder à ce questionnaire.");
-}
-
 $estCreateur = (isset($_SESSION['cas_user']) && $_SESSION['cas_user'] === $q['id_createur']);
 
 

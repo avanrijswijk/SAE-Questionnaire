@@ -151,6 +151,31 @@ class Reponses_utilisateur {
     }
 
     /**
+     * Vérifie si un utilisateur a déjà répondu à un questionnaire donné.
+     *
+     * @param int $id_questionnaire L'identifiant du questionnaire.
+     * @param int $id_utilisateur L'identifiant de l'utilisateur.
+     * @return bool Vrai si l'utilisateur a déjà répondu faux sinon.
+     */
+    public function aDejaRepondu($id_questionnaire, $id_utilisateur) {
+        $query = "SELECT COUNT(*) as nb_reponses
+                  FROM reponses_utilisateur r
+                  JOIN choix_possible c ON r.id_choix = c.id
+                  JOIN questions q ON c.id_question = q.id
+                  WHERE q.id_questionnaire = :id_questionnaire 
+                  AND r.id_utilisateur = :id_utilisateur";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
+        $stmt->execute();
+        
+        $resultat = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return ($resultat['nb_reponses'] > 0);
+    }
+
+    /**
      * Récupère toutes les réponses pour un questionnaire spécifique.
      * Joint les tables pour obtenir les réponses liées au questionnaire.
      *

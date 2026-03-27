@@ -44,15 +44,31 @@ class QuestionnaireController {
         }
 
         if (empty($id)) {
-            echo 'Identifiant de questionnaire manquant.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
 
         if (!$questionnaire) {
-            echo 'Questionnaire introuvable.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
+        }
+
+        $json_regles = $questionnaire['groupes_autorises'] ?? '';
+        if (!$this->aLeDroitDAcces($json_regles, $_SESSION['cas_groupes']) && $questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
+        }
+
+        if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            
+            $aDejaRepondu = $this->reponses_utilisateurModel->aDejaRepondu($id, $_SESSION['cas_user']);
+
+            if ($aDejaRepondu) {
+                echo "<script>window.location.href = './?c=erreur&a=deja-repondu';</script>";
+                exit();
+            }
         }
 
         $questions = $this->questionModel->getQuestionPar(['id_questionnaire' => $id]);
@@ -113,19 +129,21 @@ class QuestionnaireController {
         $code = $_POST['code'] ?? null;
 
         if (empty($code)) {
-            die("Veuillez saisir un code.");
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
         }
 
         $questionnaire = $this->questionnaireModel->getQuestionnaireParCode($code);
 
         if (!$questionnaire) {
-            die("Erreur : Ce code ne correspond à aucun questionnaire actif.");
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
         }
 
-        $json_regles = $questionnaire['groupes_autorises'] ?? '{}';
-
-        if (!$this->aLeDroitDAcces($json_regles, $_SESSION['cas_groupes'])) {
-            die("Accès refusé : Ce questionnaire est réservé à d'autres groupes.");
+        $json_regles = $questionnaire['groupes_autorises'] ?? '';
+        if (!$this->aLeDroitDAcces($json_regles, $_SESSION['cas_groupes']) && $questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
         }
 
         $url_redirection = "./?c=questionnaire&a=repondre&id=" . $questionnaire['id'];
@@ -142,7 +160,7 @@ class QuestionnaireController {
         
         if (!is_null($id_questionnaire)) {
             if ($_SESSION['id'] != $this->questionnaireModel->getQuestionnaire($id_questionnaire)['id_createur']) {
-                echo "erreur : vous n'êtes pas le créateur de ce questionnaire.";
+                echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
                 return;
             } else {
                 $resultats = $this->reponses_utilisateurModel->getReponse($id_questionnaire, $_SESSION['id_utilisateur']);
@@ -216,6 +234,11 @@ class QuestionnaireController {
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
 
+         if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
+        }
+
         if (isset($questionnaire)) {
             $supprOK = $this->questionnaireModel->supprimer($id);  
         }
@@ -269,19 +292,26 @@ class QuestionnaireController {
 
         if (!$id) {
             http_response_code(400);
-            exit("ID manquant.");
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
         }
 
         $titre = $this->questionnaireModel->getTitreAvecTireParID($id);
         if (!$titre) {
             http_response_code(404);
-            exit("Questionnaire introuvable.");
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
         }
 
         $resultats = $this->reponses_utilisateurModel->getReponsePourCSV($id);
         if (empty($resultats)) {
             http_response_code(204); // pas de contenu
             exit;
+        }
+
+        if ($this->questionnaireModel->getQuestionnaire($id)['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
         }
         
 
@@ -310,12 +340,12 @@ class QuestionnaireController {
      */
     public function detailQuestionnaire($id) {
         if (empty($id)) {
-            echo 'Identifiant de questionnaire manquant.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
         
         if (!$this->questionnaireModel->existant($id)) {
-            echo 'Questionnaire introuvable.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
 
@@ -323,6 +353,12 @@ class QuestionnaireController {
         $total_questions = $this->questionnaireModel->getNombreQuestions($id);
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+
+        if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
+        }
+        
         $repondants = $this->reponses_utilisateurModel->getRepondantsParQuestionnaire($id);
 
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'detailQuestionnaire.php');
@@ -351,10 +387,15 @@ class QuestionnaireController {
      */
     public function modifier() {
     $id = $_GET['id'] ?? null;
-    if (!$id) { die("Identifiant manquant."); }
+    if (!$id) { echo "<script>window.location.href = './?c=erreur&a=404';</script>"; return; }
 
     $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
-    if (!$questionnaire) { die("Questionnaire introuvable."); }
+    if (!$questionnaire) { echo "<script>window.location.href = './?c=erreur&a=404';</script>"; return; }
+
+    if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+        echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+        exit();
+    }
 
     $regles = json_decode($questionnaire['groupes_autorises'], true);
     $groupes_actuels = $regles['groupes_requis'] ?? [];
@@ -428,20 +469,21 @@ class QuestionnaireController {
         }
 
         if (empty($id)) {
-            echo 'Identifiant de questionnaire manquant.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
 
         if (!$questionnaire) {
-            echo 'Questionnaire introuvable.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
 
-        if (!$this->aLeDroitDAcces($questionnaire['groupes_autorises'], $_SESSION['cas_groupes'])) {
-            die("Vous n'avez pas l'autorisation d'accéder à ce questionnaire.");
-        }
+        if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+        exit();
+    }
 
         $resultats_fermes = $this->statistiqueModel->getStatsQuestionsFermees($id);
         $statistiques_formatees = [];
