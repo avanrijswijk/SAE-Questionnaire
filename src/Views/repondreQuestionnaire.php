@@ -19,6 +19,8 @@ if (!$this->aLeDroitDAcces($q['groupes_autorises'], $_SESSION['cas_groupes'])) {
     die("⛔ Fraude détectée : Vous n'avez pas l'autorisation d'accéder à ce questionnaire.");
 }
 
+$estCreateur = (isset($_SESSION['cas_user']) && $_SESSION['cas_user'] === $q['id_createur']);
+
 
 $titre = isset($questionnaire['titre']) ? htmlspecialchars($questionnaire['titre']) : 'Sans titre';
 $date_exp = isset($questionnaire['date_expiration']) ? htmlspecialchars($questionnaire['date_expiration']) : '';
@@ -50,6 +52,13 @@ $nbContext = 0
     <?php if ($auteurAffichage): ?><p><strong>Auteur :</strong> <?php echo htmlspecialchars($auteurAffichage); ?></p><?php endif; ?>
     
     <div class="questionnaire-container" style="justify-items: center;">
+        <?php if ($estCreateur): ?>
+                        
+            <div class="notification is-warning is-light mr-4" style="margin-bottom: 10; padding: 0.5rem 1rem;">
+                <strong>Mode Aperçu</strong> : Vous êtes le créateur de ce questionnaire.
+            </div>
+        <?php endif; ?>
+
         <h1 class="title is-1 mt-3"><?php echo $titre; ?></h1>
 
         <?php if (empty($questions)): ?>
@@ -101,6 +110,7 @@ $nbContext = 0
                                     <textarea 
                                         name="<?php echo $name; ?>"
                                         <?php if ($required) echo "required"; ?> 
+                                        <?php if ($estCreateur) echo "disabled"; ?>
                                         class="textarea" 
                                         placeholder="Remplir ce champ..." 
                                         cols="50"
@@ -122,6 +132,7 @@ $nbContext = 0
                                     <textarea 
                                         name="<?php echo $name; ?>" 
                                         <?php if ($required) echo "required"; ?> 
+                                        <?php if ($estCreateur) echo "disabled"; ?>
                                         class="textarea" 
                                         placeholder="Remplir ce champ..." 
                                         cols="50" 
@@ -141,6 +152,7 @@ $nbContext = 0
                                                     data-idchoix="<?php echo $reponse['id']; ?>"
                                                     data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
                                                     <?php if ($required) echo "required"; ?>
+                                                    <?php if ($estCreateur) echo "disabled"; ?>
                                                 >
                                                 <?php echo htmlspecialchars($reponse["texte"]); ?>
                                             </label>
@@ -159,6 +171,7 @@ $nbContext = 0
                                                     data-idchoix="<?php echo $reponse['id']; ?>"
                                                     data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
                                                     data-required="<?php echo $required ? 'required' : ''; ?>"
+                                                    <?php if ($estCreateur) echo "disabled"; ?>
                                                 >
                                                 <?php echo htmlspecialchars($reponse["texte"]); ?>
                                             </label>
@@ -179,10 +192,19 @@ $nbContext = 0
                 <hr />
 
                 <div class="buttons" style="display: flex; justify-content: center; margin-bottom: 50px;">
+                    <?php if ($estCreateur): ?>
+                        
+                        <a href="./?c=questionnaire&a=lister" class="button is-link">
+                            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                            <span>Retour à la liste des questionnaires</span>
+                        </a>
 
-                    <button type="button" id="cancelBtn" class="button is-danger">Annuler</button>
-                    <button type="button" id="submitBtn" class="button is-primary">Soumettre</button>
-
+                    <?php else: ?>
+                        
+                        <button type="button" id="cancelBtn" class="button is-danger">Annuler</button>
+                        <button type="button" id="submitBtn" class="button is-primary">Soumettre</button>
+                        
+                    <?php endif; ?>
                 </div>
                 
                 <div id="submitModal" class="modal-overlay" role="dialog" style="display: none;">
