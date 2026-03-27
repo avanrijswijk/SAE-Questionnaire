@@ -51,7 +51,7 @@ class Question {
     public function getQuestionPar(array $params) {
         $query = "SELECT * FROM questions WHERE ". implode(' AND ',array_map(function($key) {
             return "$key = :$key";
-        }, array_keys($params)));
+        }, array_keys($params))). " ORDER BY position";
 
         $stmt = $this->conn->prepare($query);
 

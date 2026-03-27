@@ -28,6 +28,12 @@ class QuestionController {
      * @return bool True si l'enregistrement réussit, false sinon.
      */
     public function enregistrerQuestions($id_questionnaire) {
+        $questions = $this->questionModel->getQuestionPar(["id_questionnaire" => $id_questionnaire]);
+        if (!empty($questions)) {
+            foreach ($questions as $q) {
+                $this->supprimer($q['id'], $id_questionnaire);
+            }
+        }
         $ajoutOk = true;
         if(!isset($id_questionnaire)) {
             $id_questionnaire=-1;
@@ -35,7 +41,6 @@ class QuestionController {
         if (isset($_POST['liste-questions'])) {
             $jsonQuestion = json_decode($_POST['liste-questions'], true);
             if (is_array($jsonQuestion)) {
-                
                 foreach ($jsonQuestion as $questionData) {
                     $intitule = isset($questionData['intitule']) ? $questionData['intitule'] : null;
                     $type = isset($questionData['type']) ? $questionData['type'] : null;

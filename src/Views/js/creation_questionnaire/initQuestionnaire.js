@@ -5,23 +5,6 @@ import { ajouterReponseVisualiseurQuestionnaire } from "./afficher/questionnaire
 import { TypeQuestion } from "./typeQuestion.js";
 
 /**
- * Convertit les types venant du back vers les types internes
- */
-function convertirType(type) {
-    switch (type) {
-        case "textfield":
-            return TypeQuestion.CHAMPS_COURT;
-        case "radio":
-            return TypeQuestion.RADIO_BOUTON;
-        case "check":
-            return TypeQuestion.CHECK_BOUTON;
-        default:
-            console.warn("Type inconnu :", type);
-            return TypeQuestion.CHAMPS_COURT;
-    }
-}
-
-/**
  * Charge un questionnaire complet dans l’éditeur
  */
 function chargerQuestionnaire(questionnaire) {
@@ -41,7 +24,7 @@ function chargerQuestionnaire(questionnaire) {
 
         const info = {
             intitule: q.intitule,
-            type: convertirType(q.type),
+            type: q.type,
             obligatoire: q.est_obligatoire == 1,
             _id: idCourant
         };
@@ -51,19 +34,15 @@ function chargerQuestionnaire(questionnaire) {
         ajouterQuestionVisualiseurQuestionnaire(divQuestionnaire, info, true);
 
         // Ajout des réponses si nécessaire
-        if (q.type === "radio" || q.type === "check") {
+        if (q.type === TypeQuestion.RADIO_BOUTON || q.type === TypeQuestion.CHECK_BOUTON) {
+            q.choix.reverse(); // temporaire
             q.choix.forEach((rep, index) => {
                 if (rep.texte !== null) {
-
-                    const evt = new CustomEvent("ajouter-reponse", {
-                        detail: {
-                            idQuestion: idCourant,   // identifiant interne de la question
-                            idReponse: index,        // index de la réponse
-                            texte: rep.texte         // texte réel
-                        }
-                    });
-
-                    document.dispatchEvent(evt);
+                    ajouterReponse(
+                        idCourant,   // identifiant interne de la question
+                        index,       // index de la réponse
+                        rep.texte    // texte réel
+                    );
                 }
             });
         }
@@ -77,8 +56,8 @@ function chargerQuestionnaire(questionnaire) {
 /**
  * Listener global pour ajouter une réponse avec son vrai texte
  */
-document.addEventListener("ajouter-reponse", (e) => {
-    const { idQuestion, idReponse, texte } = e.detail;
+function ajouterReponse(idQuestion, idReponse, texte) {
+    const type = document.querySelector(`div[data-_id="${idQuestion}"]`).dataset.type;
 
     // Partie gauche
     ajouterReponseVisualisateurQuestions(
@@ -86,36 +65,18 @@ document.addEventListener("ajouter-reponse", (e) => {
         texte,
         idReponse
     );
-
-    // Partie droite
-    const type = document.querySelector(`div[data-_id="${idQuestion}"]`).dataset.type;
-    const evt2 = new CustomEvent("ajouter-reponse-questionnaire", {
-        detail: {
-            idReponse: `${idQuestion}-${idReponse}`,
-            type,
-            texte
-        }
-    });
-    document.dispatchEvent(evt2);
-});
-
-/**
- * Listener pour la partie droite
- */
-document.addEventListener("ajouter-reponse-questionnaire", (e) => {
-    const { idReponse, type, texte } = e.detail;
-    ajouterReponseVisualiseurQuestionnaire(idReponse, type, texte);
-});
+    ajouterReponseVisualiseurQuestionnaire(
+        `${idQuestion}-${idReponse}`,
+        type,
+        texte
+    );
+};
 
 document.addEventListener("DOMContentLoaded", () => {
-    try {
+    if (window.questionnaire) {
         chargerQuestionnaire(window.questionnaire);
 
-        // Remplir le formulaire d’enregistrement
         remplirFormulaireEnregistrement(window.questionnaire);
-
-    } catch (e) {
-        console.error("Erreur lors du chargement du questionnaire :", e);
     }
 });
 

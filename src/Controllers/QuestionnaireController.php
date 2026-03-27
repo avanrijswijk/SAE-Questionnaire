@@ -155,12 +155,25 @@ class QuestionnaireController {
      * @return bool True si l'enregistrement réussit, false sinon.
      */
     public function enregistrerQuestionnaire() {
-        $id = isset($_POST['id']) ? $_POST['id'] : null;
+        $id = $_POST['id_questionnaire'] ?? null;
         $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
         $date_expiration = isset($_POST['date-expriration']) ? $_POST['date-expriration'] : null;
-        $id_createur = $_SESSION['cas_user']
-            ?? session_id();
+        $brouillon = isset($_POST['mode_enregistrement']) ? ($_POST['mode_enregistrement'] == "brouillon" ? 0 : 1) : 1;
+        $id_createur = $_SESSION['cas_user'] ?? session_id();
         $code = isset($_POST['code']) ? $_POST['code'] : null;
+
+        if (trim((string)$id) === "") {
+            $id = null;
+        }
+
+        //DEBUG
+        // echo $id . "\n";
+        // echo $titre . "\n";
+        // echo $date_expiration . "\n";
+        // echo $brouillon . "\n";
+        // echo $id_createur . "\n";
+        // echo $code . "\n";
+        // return;
 
         // Gestion des règles d'accès
         $mon_profil = analyserProfilUtilisateur($_SESSION['cas_groupes']);
@@ -177,11 +190,11 @@ class QuestionnaireController {
         // exemple : {"site_requis":"limoges", "groupes_requis":["iut-etudiants-info-1a"]}
         $json_pour_bdd = json_encode($regles_acces);
 
-        if (isset($id)) {
-            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration, $json_pour_bdd);
+        if (!is_null($id)) {
+            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration, $json_pour_bdd, $brouillon);
         } else {
             //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
-            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $json_pour_bdd);
+            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $json_pour_bdd, $brouillon);
         }
 
         if ($ajoutOk) {

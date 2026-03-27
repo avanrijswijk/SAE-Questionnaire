@@ -139,7 +139,6 @@ function ajouterQuestionVisualiseurQuestions(parent, info, chargement = false) {
         divReponses.classList.add("div-reponses");
         info["nombreReponse"] = 0;
 
-        // ❗ NE PAS créer de réponse par défaut si on est en mode chargement
         if (!chargement) {
             const divReponse = creerReponse(info);
             divReponses.appendChild(divReponse);
@@ -190,7 +189,7 @@ function ajouterReponseVisualisateurQuestions(id, texte = null, idReponse = -1) 
     // Sinon, on prend le nombre actuel de réponses comme index.
     let indexReponse = (idReponse >= 0)
         ? idReponse
-        : divReponses.childElementCount;
+        : divReponses.querySelectorAll("div.box.div-box.div-reponse").length;
 
     info["nombreReponse"] = indexReponse;
 

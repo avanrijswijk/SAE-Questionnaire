@@ -91,7 +91,6 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info, chargement = fals
         elementReponse = document.createElement("div");
         elementReponse.classList.add(type == TypeQuestion.RADIO_BOUTON ? "radios" : "checkboxs", "is-flex", "is-flex-direction-column");
 
-        // ❗ NE PAS créer de réponse par défaut si on charge un questionnaire existant
         if (!chargement) {
             elementReponse.appendChild(creerReponse(`${_id}-0`, type, 0));
         }

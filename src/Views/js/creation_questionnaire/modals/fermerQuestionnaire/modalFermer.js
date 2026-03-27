@@ -54,6 +54,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     const formMVQ = document.getElementById("form-enregistrer");
     const boutonFermerMVQ = document.getElementById("bouton-fermer");
     
+    const boutonPublier = document.getElementById("bouton-PublierMVQ");
+    const boutonBrouillon = document.getElementById("bouton-brouillonMVQ");
+
+    // --- Champs cachés ---
+    const inputMode = document.getElementById("mode-enregistrement");
+
+    // --- Bouton Publier ---
+    boutonPublier.addEventListener("click", () => {
+        inputMode.value = "publier";
+        formMVQ.requestSubmit();
+    });
+
+    // --- Bouton Brouillon ---
+    boutonBrouillon.addEventListener("click", () => {
+        inputMode.value = "brouillon";
+        formMVQ.requestSubmit();
+    });
+
     // ---------- MVQ ----------
     boutonFinirMVQ.addEventListener("click", () => {
         ouvrire_modal(modalValiderQuestionnaire);

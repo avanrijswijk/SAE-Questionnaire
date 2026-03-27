@@ -12,9 +12,6 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/fermerQuestionnaire/modalFermer.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/ajoutQuestion/modalAjouter.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/modificationQuestion/modalModifier.js"></script>
-    <script>
-        console.log("QUESTIONNAIRE FINAL :", questionnaire);
-    </script>
     <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
         <div id="context-menu">
             <ul class="menu">
@@ -160,10 +157,12 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                     </div>
                 </section>
                 <footer class="modal-card-foot" style="justify-content: center;">
-                    <button type="submit-brouillon" class="button" id="bouton-brouillonMVQ">
+                    <input type="hidden" name="mode_enregistrement" id="mode-enregistrement" value="">
+                    <input type="hidden" name="id_questionnaire" id="id-questionnaire" value="<?php echo isset($questionnaire['id']) ? htmlspecialchars($questionnaire['id']) : ''; ?>">
+                    <button type="submit-brouillon" class="button mr-4 has-background-warning" id="bouton-brouillonMVQ">
                         <p>Brouillon</p>
                     </button>
-                    <button type="submit-publier" class="button" id="bouton-PublierMVQ">
+                    <button type="submit-publier" class="button has-background-success" id="bouton-PublierMVQ">
                         <p>Publier</p>
                     </button>
                 </footer>

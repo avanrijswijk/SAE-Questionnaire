@@ -14,9 +14,6 @@ function mettreLaPremiereLettreEnMajuscule(chaine) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    //
-    let _id = 0;
-
     // ---------- pour ouvrir le modal d'ajouter une question (MAQ) ----------
     const boutonAjouterQuestion = document.getElementById("ajouter-question");
     const boutonFermerMAQ = document.getElementById("bouton-fermerMAQ");
@@ -40,6 +37,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ---------- ----------
     const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
     const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+
+    //
+    const nbQuestions = () => {
+        return divVisualiseurQuestions.querySelectorAll("div.box.div-box.div-question").length;
+    }
+    let _id = nbQuestions();
 
     // ---------- MAQ ----------
     boutonAjouterQuestion.addEventListener("click", () => {
