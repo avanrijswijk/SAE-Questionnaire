@@ -75,8 +75,8 @@ class Reponses_utilisateur {
      * @return bool Vrai si l'insertion a réussi, faux sinon.
      */
     public function creerReponse($id_utilisateur, $id_choix, $reponse) {
-        $query = "INSERT INTO reponses_utilisateur (id_utilisateur, id_choix, reponse) 
-        VALUES (:id_utilisateur, :id_choix, :reponse)";
+        $query = "INSERT INTO reponses_utilisateur (id_utilisateur, id_choix, reponse, date_reponse) 
+        VALUES (:id_utilisateur, :id_choix, :reponse, NOW())";
        
         $stmt = $this->conn->prepare($query);
 
@@ -124,6 +124,55 @@ class Reponses_utilisateur {
         $stmt->bindParam(':id_questionnaire', $id_questionnaire);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Récupère la liste des répondants distincts pour un questionnaire donné,
+     * avec la date de leur dernière réponse.
+     *
+     * @param int $id_questionnaire L'identifiant du questionnaire.
+     * @return array Liste des répondants (id_utilisateur, date_reponse).
+     */
+    public function getRepondantsParQuestionnaire($id_questionnaire) {
+        $query = "SELECT r.id_utilisateur, u.nom, u.prenom, MAX(r.date_reponse) as date_reponse
+                  FROM questionnaires qtr
+                  JOIN questions qt ON qt.id_questionnaire = qtr.id
+                  JOIN choix_possible c ON c.id_question = qt.id
+                  JOIN reponses_utilisateur r ON r.id_choix = c.id
+                  LEFT JOIN utilisateurs u ON u.identifiant = r.id_utilisateur
+                  WHERE qtr.id = :id_questionnaire
+                  GROUP BY r.id_utilisateur, u.nom, u.prenom
+                  ORDER BY date_reponse DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Vérifie si un utilisateur a déjà répondu à un questionnaire donné.
+     *
+     * @param int $id_questionnaire L'identifiant du questionnaire.
+     * @param int $id_utilisateur L'identifiant de l'utilisateur.
+     * @return bool Vrai si l'utilisateur a déjà répondu faux sinon.
+     */
+    public function aDejaRepondu($id_questionnaire, $id_utilisateur) {
+        $query = "SELECT COUNT(*) as nb_reponses
+                  FROM reponses_utilisateur r
+                  JOIN choix_possible c ON r.id_choix = c.id
+                  JOIN questions q ON c.id_question = q.id
+                  WHERE q.id_questionnaire = :id_questionnaire 
+                  AND r.id_utilisateur = :id_utilisateur";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->bindParam(':id_utilisateur', $id_utilisateur);
+        $stmt->execute();
+        
+        $resultat = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return ($resultat['nb_reponses'] > 0);
     }
 
     /**

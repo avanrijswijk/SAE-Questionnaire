@@ -63,7 +63,7 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                                 Mise en context
                             </label>
                         </div>
-                    </div>
+                    </div> 
                     <div id="radio-sous-type" class="field">
                         <label class="label">Sous type :</label>
                         <div class="radios" id="sous-type-champs">
@@ -103,11 +103,44 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
-                        <label for="titre-question" class="label">Libellé de la question</label>
+                        <label for="libelle-question" class="label">Libellé de la question :</label>
                         <div class="control">
-                            <textarea class="textarea" rows=2 name="libelle-question" autocapitalize="sentences" autofocus required></textarea>
+                            <textarea class="textarea" rows=2 name="libelle-question-modifier" autocapitalize="sentences" autofocus required></textarea>
                         </div>
                     </div>
+                    <div id="sous-type-modifier" class="field">
+                        <label class="label">Sous type :</label>
+                        <div class="radios" id="sous-type-champ-modifier">
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="sous-type-question-c-modifier" value="champs-libre-court" checked required>
+                                Petit champs
+                            </label>
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="sous-type-question-c-modifier" value="champs-libre-long">
+                                Grand champs
+                            </label>
+                        </div>
+                        <div class="radios" id="sous-type-choix-multiples-modifier">
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="sous-type-question-cm-modifier" value="radio-box" checked required>
+                                Raido box
+                            </label>
+                            <label class="radio is-unselectable">
+                                <input type="radio" name="sous-type-question-cm-modifier" value="check-box">
+                                Check box
+                            </label>
+                        </div>
+                    </div>
+                    <div id="obligatoire-modifier" class="field">
+                        <label for="titre-question" class="label">Option :</label>
+                        <div class="checkboxes">
+                            <label class="checkbox is-unselectable">
+                                <input type="checkbox" name="question-obligatoire-modifier" value="obligatoire">
+                                Question obligatoire
+                            </label>
+                        </div>
+                    </div>
+                    
                     
                 </section>
                 <footer class="modal-card-foot buttons" style="justify-content: center;">
@@ -138,7 +171,12 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                     </div>
                     <div class="field" style="width: 60%;">
                         <label class="label" for="date-expriration">Date d'expiration :</label>
-                        <input type="date" class="input" name="date-expriration" id="date-expriration" min="<?php date_default_timezone_set('Europe/Paris'); echo date('Y-m-d'); ?>"/>
+                        <?php 
+                            date_default_timezone_set('Europe/Paris'); 
+                            $demain = date('Y-m-d', strtotime('+1 day'));
+                            $date_max = date('Y-m-d', strtotime('+3 year'));
+                        ?>
+                        <input type="date" class="input" name="date-expriration" id="date-expriration" min="<?php echo $demain; ?>" value="<?php echo $demain; ?>" max="<?php echo $date_max; ?>"/>
                     </div>
                     <div class="field" style="width: 60%;">
                         <label class="label" for="mes-cibles">Qui peut répondre :</label>
@@ -172,19 +210,12 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
             <h3 class="title is-4 mt-3 p-4">FINIR</h3>
         </button>
     </div>
-    <div style="background-color: #B5C6E6; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center"> <!-- enlever  is-align-items-center ; mettre un  -->
-        <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-qestionnaire">
-            <!--<div class="block">
-                <h4 class="title is-4 has-text-weight-semibold">Titre de la question</h4>
-                <div class="ml-2 field">
-                    reponses...
-                </div>
-            </div>-->
+    <div style="background-color: #B5C6E6; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center">
+        <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-questionnaire">
         </div>
     </div>
     <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;">
     </div>
-
     <script type="module" src="./src/Views/js/creation_questionnaire/notification/notification.js"></script>
 </main>
 

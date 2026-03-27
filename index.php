@@ -35,8 +35,8 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'bootstrap.php');
 use App\Controllers\QuestionnaireController;
 use App\Controllers\AcceptesController;
 use App\Controllers\QuestionController;
-use App\Controllers\Reponses_utilisateurController;
-use App\Controllers\Choix_possibleController;
+use App\Controllers\ReponsesUtilisateurController;
+use App\Controllers\ChoixPossibleController;
 
 
 
@@ -67,7 +67,7 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
         case 'questionnaire':
             $questionnaireController = new QuestionnaireController();
             $acceptesController = new AcceptesController();
-            $reponses_utilisateurController = new Reponses_utilisateurController();
+            $reponses_utilisateurController = new ReponsesUtilisateurController();
             $questionController = new QuestionController();
 
             switch ($action) {
@@ -110,16 +110,46 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                     $id = isset($_GET['id']) ? $_GET['id'] : null;
                     $questionnaireController->repondre($id);
                     break;
+                case 'acceder-par-code':
+                    $questionnaireController->accederParCode();
+                    break;
                 case 'supprimer':
                     $id = isset($_GET['id']) ? $_GET['id'] : null;
                     $questionnaireController->supprimer($id);
                     break;
+                case 'analyse':
+                    $id = isset($_GET['id']) ? $_GET['id'] : null;
+                    $questionnaireController->analyseGraphique($id);
+                    break;
+                case 'modifier':
+                    $questionnaireController->modifier();
             }
             break;
 
 
         case 'connexion':
             require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'page_connexion.php');
+            break;
+
+            
+        case 'erreur':
+            switch ($action) {
+                case 'droits':
+                    require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'Erreur'.DIRECTORY_SEPARATOR.'droits.php');
+                    break;
+                case 'deja-repondu':
+                    require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'Erreur'.DIRECTORY_SEPARATOR.'deja_repondu.php');
+                    break;
+                case '404':
+                default:
+                    require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'Erreur'.DIRECTORY_SEPARATOR.'404.php');
+                    break;
+            }
+            break;
+
+        // Si le contrôleur tapé dans l'URL n'existe pas (ex: ?c=nimportequoi)
+        default:
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'Erreur'.DIRECTORY_SEPARATOR.'404.php');
             break;
     }
 

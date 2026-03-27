@@ -1,5 +1,5 @@
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
-import { notification, TypeNotification } from '../../notification/notification.js';
+import { notification, TypeNotification } from '../../../utils/notification/notification.js';
 
 /**
  * liste les questions :
@@ -13,23 +13,24 @@ import { notification, TypeNotification } from '../../notification/notification.
  * @returns {Array} un fichier JSON contenant les informations
  */
 function listerQuestions() {
-    const divQuestions = document.getElementById("visualiseur-questions");
+    const divConteneurQuestions = document.getElementById("visualiseur-questions");
+    
+    const divQuestions = divConteneurQuestions.querySelectorAll("div.div-question");
     const questions = [];
 
-    if (!divQuestions) {
+    if (!divConteneurQuestions) {
         return questions;
     }
 
-    for (let index = 0; index < divQuestions.childElementCount; index++) {
-        const divConteneur = divQuestions.children[index];
-        const divQuestion = divConteneur.firstChild;
-        const divReponses = divConteneur.querySelector("div.div-reponses");
+    divQuestions.forEach((divQuestion, index) => {
+        divQuestion = divQuestion.firstChild;
+        const divReponses = divQuestion.querySelector("div.div-reponses");
 
         const data = {
             "intitule" : divQuestion.dataset.intitule,
             "type" : divQuestion.dataset.type,
             "position" : index+1,
-            "est_obligatoire" : divQuestion.dataset.obligatoire,
+            "est_obligatoire" : divQuestion.dataset.obligatoire,    
             "choix" : []
         };
 
@@ -42,7 +43,7 @@ function listerQuestions() {
         }
 
         questions.push(data);
-    }
+    });
     return questions
 }
 
@@ -74,7 +75,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // ---------- MVQ ----------
     boutonFinirMVQ.addEventListener("click", () => {
+        const inputTitre = formMVQ.querySelector("input#nom-questionnaire");
         ouvrire_modal(modalValiderQuestionnaire);
+        inputTitre.focus();
+        inputTitre.select();
     });
 
     boutonFermerMVQ.addEventListener("click", () => {
@@ -94,7 +98,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         est_obligatoire : bool
         choix : [str]
         */
-        console.log(listerQuestions());
         const listeQuestions = document.createElement('input');
         const jsonQuestions = listerQuestions();
         if (jsonQuestions.length === 0) {
@@ -105,9 +108,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.name = "liste-questions";
         listeQuestions.value = JSON.stringify(jsonQuestions);
 
-        console.log(jsonQuestions);
+        // Debug //
+        // console.log(jsonQuestions);
         // e.preventDefault();
         // return;
+
         formMVQ.appendChild(listeQuestions);
     });
 
@@ -117,5 +122,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     modalValiderQuestionnaire.getElementsByClassName("modal-background")[0].addEventListener("click", () => {
         fermer_modal(modalValiderQuestionnaire);
+    });
+
+
+    const lienAcceuil = document.getElementById("img-accueil").parentElement;
+    lienAcceuil.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const listeQuestions = listerQuestions();
+        if (listeQuestions.length > 0) {
+            if (confirm("Etes vous sur de vouloir revenir à l'acceuil ?\nSi vous revenez à l'acceuil, vous predrez votre progression.")) {
+                window.location.href = lienAcceuil.href;
+            }
+        } else {
+            window.location.href = lienAcceuil.href;
+        }
     });
 });

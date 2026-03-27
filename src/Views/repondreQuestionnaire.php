@@ -1,8 +1,8 @@
 <?php
 
-use App\Controllers\Choix_possibleController;
+use App\Controllers\ChoixPossibleController;
 use App\Controllers\QuestionnaireController;
-$Choix_possibleController = new Choix_possibleController();
+$Choix_possibleController = new ChoixPossibleController();
 
 // --- TESTS SUR LES DROITS D'ACCÈS AU QUESTIONNAIRE ---
 
@@ -15,9 +15,7 @@ if (!isset($questionnaire)) {
 
 $q = $this->questionnaireModel->getQuestionnaire($_GET['id']);
 
-if (!$this->aLeDroitDAcces($q['groupes_autorises'], $_SESSION['cas_groupes'])) {
-    die("⛔ Fraude détectée : Vous n'avez pas l'autorisation d'accéder à ce questionnaire.");
-}
+$estCreateur = (isset($_SESSION['cas_user']) && $_SESSION['cas_user'] === $q['id_createur']);
 
 
 $titre = isset($questionnaire['titre']) ? htmlspecialchars($questionnaire['titre']) : 'Sans titre';
@@ -34,11 +32,29 @@ $nbContext = 0
 ?>
 <main class="container" style="margin-top: 25px;">
     <script src="./src/Views/js/repondre_questionnaire/modals/modal.js"></script>
-	<?php if ($date_exp): ?><p><strong>Expiration :</strong> <?php echo $date_exp; ?></p><?php endif; ?>
+	<?php if ($date_exp): ?>
+        <?php 
+            $dateBrute = isset($date_exp) ? $date_exp : "";
+            $tempsUnix = strtotime($dateBrute);
+
+            $date = date("d/m/Y", $tempsUnix);
+            $difference = $tempsUnix - strtotime("now");
+            $nbJoursRestant = round($difference / 86400, 0);
+            $nbHeureRestant = round(($difference / 3600), 0);
+        ?>
+        <p title="<?php echo htmlspecialchars($date) ?>"><strong>Expiration :</strong> <?php echo $nbJoursRestant ? $nbJoursRestant . " jours restant" : $nbHeureRestant . " heures restant"; ?></p>
+    <?php endif; ?>
 	<?php if ($code): ?><p><strong>Code :</strong> <?php echo $code; ?></p><?php endif; ?>
     <?php if ($auteurAffichage): ?><p><strong>Auteur :</strong> <?php echo htmlspecialchars($auteurAffichage); ?></p><?php endif; ?>
     
     <div class="questionnaire-container" style="justify-items: center;">
+        <?php if ($estCreateur): ?>
+                        
+            <div class="notification is-warning is-light mr-4" style="margin-bottom: 10; padding: 0.5rem 1rem;">
+                <strong>Mode Aperçu</strong> : Vous êtes le créateur de ce questionnaire.
+            </div>
+        <?php endif; ?>
+
         <h1 class="title is-1 mt-3"><?php echo $titre; ?></h1>
 
         <?php if (empty($questions)): ?>
@@ -90,6 +106,7 @@ $nbContext = 0
                                     <textarea 
                                         name="<?php echo $name; ?>"
                                         <?php if ($required) echo "required"; ?> 
+                                        <?php if ($estCreateur) echo "disabled"; ?>
                                         class="textarea" 
                                         placeholder="Remplir ce champ..." 
                                         cols="50"
@@ -111,6 +128,7 @@ $nbContext = 0
                                     <textarea 
                                         name="<?php echo $name; ?>" 
                                         <?php if ($required) echo "required"; ?> 
+                                        <?php if ($estCreateur) echo "disabled"; ?>
                                         class="textarea" 
                                         placeholder="Remplir ce champ..." 
                                         cols="50" 
@@ -130,6 +148,7 @@ $nbContext = 0
                                                     data-idchoix="<?php echo $reponse['id']; ?>"
                                                     data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
                                                     <?php if ($required) echo "required"; ?>
+                                                    <?php if ($estCreateur) echo "disabled"; ?>
                                                 >
                                                 <?php echo htmlspecialchars($reponse["texte"]); ?>
                                             </label>
@@ -148,6 +167,7 @@ $nbContext = 0
                                                     data-idchoix="<?php echo $reponse['id']; ?>"
                                                     data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
                                                     data-required="<?php echo $required ? 'required' : ''; ?>"
+                                                    <?php if ($estCreateur) echo "disabled"; ?>
                                                 >
                                                 <?php echo htmlspecialchars($reponse["texte"]); ?>
                                             </label>
@@ -160,7 +180,7 @@ $nbContext = 0
                                 <?php break ?>
 
                                 <?php case "context": ?>
-                                <?php break; ?>
+                                <?php break ?>
                             <?php endswitch; ?>
                         </div>
                     </div>
@@ -168,10 +188,19 @@ $nbContext = 0
                 <hr />
 
                 <div class="buttons" style="display: flex; justify-content: center; margin-bottom: 50px;">
+                    <?php if ($estCreateur): ?>
+                        
+                        <a href="./?c=questionnaire&a=lister" class="button is-link">
+                            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                            <span>Retour à la liste des questionnaires</span>
+                        </a>
 
-                    <button type="button" id="cancelBtn" class="button is-danger">Annuler</button>
+                    <?php else: ?>
+                        
+                        <button type="button" id="cancelBtn" class="button is-danger">Annuler</button>
                     <button type="button" id="submitBtn" class="button is-primary" data-brouillon="<?= (int)$questionnaire['brouillon']; ?>">Soumettre</button>
-
+                        
+                    <?php endif; ?>
                 </div>
                 
                 <div id="submitModal" class="modal-overlay" role="dialog" style="display: none;">

@@ -6,6 +6,7 @@ use App\Models\Questionnaire;
 use App\Models\Question;
 use App\Models\Reponses_utilisateur;
 use App\Models\Choix_possible;
+use App\Models\Statistique;
 
 require_once 'config.php';
 
@@ -16,6 +17,7 @@ class QuestionnaireController {
     private $questionModel;
     private $reponses_utilisateurModel;
     private $choix_possibleModel;
+    private $statistiqueModel;
 
     /**
      * Constructeur de la classe QuestionnaireController.
@@ -28,6 +30,8 @@ class QuestionnaireController {
         $this->questionModel = $questionModel;
         $reponses_utilisateurModel = new Reponses_utilisateur();
         $this->reponses_utilisateurModel = $reponses_utilisateurModel;
+        $statistiqueModel = new Statistique();
+        $this->statistiqueModel = $statistiqueModel;
         $choix_possibleModel = new Choix_possible();
         $this->choix_possibleModel = $choix_possibleModel;
     }
@@ -44,17 +48,38 @@ class QuestionnaireController {
         }
 
         if (empty($id)) {
-            echo 'Identifiant de questionnaire manquant.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
 
         if (!$questionnaire) {
-            echo 'Questionnaire introuvable.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
 
+        $json_regles = $questionnaire['groupes_autorises'] ?? '';
+        if (!$this->aLeDroitDAcces($json_regles, $_SESSION['cas_groupes']) && $questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
+        }
+
+        if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            
+            $aDejaRepondu = $this->reponses_utilisateurModel->aDejaRepondu($id, $_SESSION['cas_user']);
+
+            if ($aDejaRepondu) {
+                echo "<script>window.location.href = './?c=erreur&a=deja-repondu';</script>";
+                exit();
+            }
+        }
+
+        $questions = $this->questionModel->getQuestionPar(['id_questionnaire' => $id]);
+        $createur = null;
+        if (isset($questionnaire['id_createur'])) {
+            $createur = $this->questionnaireModel->getUtilisateurParId($questionnaire['id_createur']);
+        }
         if ($questionnaire['brouillon'] == 0) {
             echo 'Ce questionnaire est encore en brouillon, vous ne pouvez pas y répondre.';
             return;
@@ -128,6 +153,34 @@ class QuestionnaireController {
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'listerQuestionnaire.php');
     }
 
+
+    public function accederParCode() {
+        $code = $_POST['code'] ?? null;
+
+        if (empty($code)) {
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
+        }
+
+        $questionnaire = $this->questionnaireModel->getQuestionnaireParCode($code);
+
+        if (!$questionnaire) {
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
+        }
+
+        $json_regles = $questionnaire['groupes_autorises'] ?? '';
+        if (!$this->aLeDroitDAcces($json_regles, $_SESSION['cas_groupes']) && $questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
+        }
+
+        $url_redirection = "./?c=questionnaire&a=repondre&id=" . $questionnaire['id'];
+        echo "<script>window.location.href = '" . $url_redirection . "';</script>";
+        exit();
+    }
+
+
     /**
      * Vérifie si l'utilisateur peut voir les résultats du questionnaire (doit être le créateur).
      */
@@ -136,7 +189,7 @@ class QuestionnaireController {
         
         if (!is_null($id_questionnaire)) {
             if ($_SESSION['id'] != $this->questionnaireModel->getQuestionnaire($id_questionnaire)['id_createur']) {
-                echo "erreur : vous n'êtes pas le créateur de ce questionnaire.";
+                echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
                 return;
             } else {
                 $resultats = $this->reponses_utilisateurModel->getReponse($id_questionnaire, $_SESSION['id_utilisateur']);
@@ -223,6 +276,11 @@ class QuestionnaireController {
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
 
+         if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
+        }
+
         if (isset($questionnaire)) {
             $supprOK = $this->questionnaireModel->supprimer($id);  
         }
@@ -276,19 +334,26 @@ class QuestionnaireController {
 
         if (!$id) {
             http_response_code(400);
-            exit("ID manquant.");
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
         }
 
         $titre = $this->questionnaireModel->getTitreAvecTireParID($id);
         if (!$titre) {
             http_response_code(404);
-            exit("Questionnaire introuvable.");
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
         }
 
         $resultats = $this->reponses_utilisateurModel->getReponsePourCSV($id);
         if (empty($resultats)) {
             http_response_code(204); // pas de contenu
             exit;
+        }
+
+        if ($this->questionnaireModel->getQuestionnaire($id)['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
         }
         
 
@@ -311,20 +376,23 @@ class QuestionnaireController {
     }
 
     /**
-     * affiichage temporaire en attendant son implementation
+     * affichage temporaire en attendant son implementation
      *
      * @param int|null $id ID du questionnaire à afficher (optionnel, sinon depuis GET).
      */
     public function detailQuestionnaire($id) {
         if (empty($id)) {
-            echo 'Identifiant de questionnaire manquant.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
         
         if (!$this->questionnaireModel->existant($id)) {
-            echo 'Questionnaire introuvable.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
+
+        $total_reponses = $this->questionnaireModel->getNombreRepondants($id);
+        $total_questions = $this->questionnaireModel->getNombreQuestions($id);
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
         if($questionnaire['id_createur'] == $_SESSION['cas_user']){
@@ -339,6 +407,9 @@ class QuestionnaireController {
         } else {
             echo 'Vous n\'avez pas accès à ce questionnaire.';
             return;
+        } else {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
         }
     }
 
@@ -352,12 +423,34 @@ class QuestionnaireController {
         echo("id = " . $id . "titre = " . $titre);
 
         $date_expiration = $this->questionnaireModel->getQuestionnaire($id)['date_expiration'];
+        $groupes_autorises = $this->questionnaireModel->getQuestionnaire($id)['groupes_autorises'];
 
         $questionnaire = new Questionnaire();
-        $questionnaire-> modifier($id, $titre, $date_expiration, '');
+        $questionnaire-> modifier($id, $titre, $date_expiration, $groupes_autorises);
 
         echo "OK";
     }
+
+    /**
+     * Affiche le formulaire de modification d'un questionnaire.
+     */
+    public function modifier() {
+    $id = $_GET['id'] ?? null;
+    if (!$id) { echo "<script>window.location.href = './?c=erreur&a=404';</script>"; return; }
+
+    $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+    if (!$questionnaire) { echo "<script>window.location.href = './?c=erreur&a=404';</script>"; return; }
+
+    if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+        echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+        exit();
+    }
+
+    $regles = json_decode($questionnaire['groupes_autorises'], true);
+    $groupes_actuels = $regles['groupes_requis'] ?? [];
+
+    require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'modifierQuestionnaire.php');
+}
 
     /**
      * Vérifie si un utilisateur a le droit de voir/répondre à un questionnaire
@@ -411,6 +504,68 @@ class QuestionnaireController {
 
         return true;
     }
+
+
+
+    /**
+     * Affiche la vue d'analyse graphique des résultats d'un questionnaire.
+     *
+     * @param int|null $id ID du questionnaire à analyser (optionnel, sinon depuis GET).
+     */
+    public function analyseGraphique($id = null) {
+        if ($id === null) {
+            $id = isset($_GET['id']) ? $_GET['id'] : null;
+        }
+
+        if (empty($id)) {
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
+        }
+
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+
+        if (!$questionnaire) {
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            return;
+        }
+
+        if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+        exit();
+    }
+
+        $resultats_fermes = $this->statistiqueModel->getStatsQuestionsFermees($id);
+        $statistiques_formatees = [];
+        $palette_couleurs = ['#3273dc', '#48c774', '#ffdd57', '#f14668', '#b86bff', '#00d1b2'];
+
+        foreach ($resultats_fermes as $ligne) {
+            $id_q = $ligne['id_question'];
+            if (!isset($statistiques_formatees[$id_q])) {
+                $statistiques_formatees[$id_q] = [
+                    'id_question' => $id_q,
+                    'titre_question' => $ligne['titre_question'],
+                    // Radio = Pie, Checkbox = Bar
+                    'type_graphique' => ($ligne['type_question'] == 'radio') ? 'pie' : 'bar',
+                    'labels' => [],
+                    'donnees' => [],
+                    'couleurs' => []
+                ];
+            }
+            $statistiques_formatees[$id_q]['labels'][] = $ligne['label'];
+            $statistiques_formatees[$id_q]['donnees'][] = (int) $ligne['nb_votes'];
+            
+            $index_couleur = count($statistiques_formatees[$id_q]['couleurs']) % count($palette_couleurs);
+            $statistiques_formatees[$id_q]['couleurs'][] = $palette_couleurs[$index_couleur];
+        }
+        
+        $json_statistiques = json_encode(array_values($statistiques_formatees));
+
+        $questions_ouvertes = $this->statistiqueModel->getStatsQuestionsOuvertes($id);
+
+        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'analyseGraphique.php');
+    }
+
+
 
     public function getQuestionnaireComplet($id) {
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);

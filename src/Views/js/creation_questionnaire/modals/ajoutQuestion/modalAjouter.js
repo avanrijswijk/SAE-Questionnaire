@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // ---------- ----------
     const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
-    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+    const divVisualiseurQuestionnaire = document.getElementById("visualiseur-questionnaire");
 
     //
     const nbQuestions = () => {
@@ -46,9 +46,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // ---------- MAQ ----------
     boutonAjouterQuestion.addEventListener("click", () => {
+        const textarea = formMAQ.querySelector("textarea[name='libelle-question']");
+        
         formMAQ.reset();
         divRadioSousType.style.display = "";
         ouvrire_modal(modalAjouterQuestion);
+
+        if (textarea) {
+            textarea.focus();
+        }
     });
 
     boutonFermerMAQ.addEventListener("click", () => {

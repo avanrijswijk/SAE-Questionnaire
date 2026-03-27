@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Choix_possible;
 
-class Choix_possibleController {
+class ChoixPossibleController {
 
     private $choixPossibleModel;
 

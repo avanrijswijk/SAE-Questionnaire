@@ -6,6 +6,7 @@
     <title>Page d'accueil</title>
     <link rel="icon" href="./src/Views/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="./src/Views/css/style-header.css">
     <!-- import de select2 -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

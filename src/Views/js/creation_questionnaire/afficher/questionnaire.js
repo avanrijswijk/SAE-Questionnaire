@@ -1,8 +1,68 @@
 import {TypeQuestion} from '../typeQuestion.js';
-import { donnerNombreReponse } from "./questions.js";
+import { donnerNombreReponse, donnerTypeQuestionAvecIdVisualiseurQuestions } from "./questions.js";
 
-// Ce fichier est le fichier relié à l'ajout d'une question dans la partie pour la visualitation du questionnaire
+/** 
+ * Ce fichier est le fichier relié à l'ajout d'une question dans la partie pour la visualitation du questionnaire
+ */
 
+const TAILLE_CHAMP_COURT = 1;
+const TAILLE_CHAMP_LONG = 4;
+
+/**
+ * Synchronise l'ordre des questions du visualiseur (droite) pour qu'il corresponde 
+ * exactement à un tableau d'identifiants fourni.
+ * @param {Array<String>} nouvelOrdreIds - Tableau contenant les _id dans le nouvel ordre
+ */
+function synchroniserOrdreQuestion(nouvelOrdreIds) {
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questionnaire");
+    
+    nouvelOrdreIds.forEach(id => {
+        const divQuestion = divVisualiseurQuestions.querySelector(`div.block[data-_id="${id}"]`);
+        if (divQuestion) {
+            divVisualiseurQuestions.appendChild(divQuestion);
+        }
+    });
+}
+
+/**
+ * Synchronise l'ordre des réponses du visualiseur (droite) pour qu'il corresponde 
+ * exactement à un tableau d'identifiants fourni.
+ * @param {string} idQuestion - L'identifiant de la question
+ * @param {Array<String>} nouvelOrdreIds - Tableau contenant les _id des réponses dans le nouvel ordre
+ */
+function synchroniserOrdreReponse(idQuestion, nouvelOrdreIds) {
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questionnaire");
+    const divQuestion = divVisualiseurQuestions.querySelector(`div.block[data-_id="${idQuestion}"]`);
+    
+    if (!divQuestion) return;
+
+    // Trouver le conteneur des réponses (soit radios, soit checkboxs)
+    const conteneurReponses = divQuestion.querySelector('div.radios') || divQuestion.querySelector('div.checkboxs');
+    if (!conteneurReponses) return;
+
+    const labels = Array.from(conteneurReponses.querySelectorAll('label')); // on prend les labels
+
+    labels.sort((a, b) => {
+        const spanA = a.querySelector('span[data-_id]');
+        const spanB = b.querySelector('span[data-_id]');
+        
+        if (!spanA || !spanB) return 0;
+
+        const indexA = nouvelOrdreIds.indexOf(spanA.dataset._id);
+        const indexB = nouvelOrdreIds.indexOf(spanB.dataset._id);
+
+        if (indexA === -1 || indexB === -1) return 1;
+
+        return indexA - indexB;
+    });
+    labels.forEach(label => conteneurReponses.appendChild(label));
+}
+
+/**
+ * Ajout une réponse de type 'type' dans le conteur d'une question en fonction de l'id de la reponse
+ * @param {int || string} idReponse - l'identifiant de la reponse (X-X)
+ * @param {TypeQuestion} type - le type de la réponse 
+ */
 function ajouterReponseVisualiseurQuestionnaire(idReponse, type, texte = null) {
     const idQuestion = String(idReponse).split("-")[0];
 
@@ -31,7 +91,7 @@ function creerReponse(id, type, nombreReponse = 0, texte = null) {
         case TypeQuestion.CHAMPS_LONG:
         case TypeQuestion.CHAMPS_COURT:
             elementReponse = document.createElement("textarea");
-            elementReponse.rows = type == TypeQuestion.CHAMPS_COURT ? 1 : 4;
+            elementReponse.rows = type == TypeQuestion.CHAMPS_COURT ? TAILLE_CHAMP_COURT : TAILLE_CHAMP_LONG;
             elementReponse.classList.add("textarea");
             elementReponse.style.border = "1px solid";
             elementReponse.disabled = true;
@@ -61,8 +121,13 @@ function creerReponse(id, type, nombreReponse = 0, texte = null) {
     return elementReponse;
 }
 
+/**
+ * Ajoute une question dans le visualiseur de questionnaire (partie droite)
+ * @param {HTMLElement} parent - Le conteneur parent où sera placé la question
+ * @param {JSON} info - Les informations sur la question (intitule:str, type:str, obligatoire:bool, _id:int)
+ */
 function ajouterQuestionVisualiseurQuestionnaire(parent, info, chargement = false) {
-    const libelleQestion = info['intitule'];
+    const libelleQuestion = info['intitule'];
     const type = info['type'];
     const _id = info['_id'];
     const estObligatoire = info["obligatoire"];
@@ -80,7 +145,9 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info, chargement = fals
 
     divLibelle.classList.add("is-flex", "is-flex-direction-row");
     titreQuestion.classList.add("title", "is-4", "has-text-weight-semibold");
-    titreQuestion.innerText = libelleQestion;
+    titreQuestion.innerText = libelleQuestion;
+    titreQuestion.style.marginBottom = "10px";
+    divSousConteneur.classList.add("ml-3", "field", "control");
 
     spanObligatoire.innerText = "*";
     spanObligatoire.style.color = "red";
@@ -122,9 +189,10 @@ function supprimerQuestionVisualiseurQuestionnaire(id) {
         labelReponse.remove();
 
         if (parent.childElementCount <= 0) {
-            console.log(parent.childElementCount);
-            ajouterReponseVisualiseurQuestionnaire(id, type);
-            modifierQuestionVisualiseurQuestionnaire(id, "Réponse 1");
+            // console.log(parent.childElementCount); //debug
+            const idQuestion = String(id).split("-")[0];
+            const nouvelId = `${idQuestion}-0`
+            ajouterReponseVisualiseurQuestionnaire(nouvelId, type);
         }
     } else{
         const divQuestion = document.querySelector(`div.block[data-_id="${id}"]`);
@@ -132,16 +200,14 @@ function supprimerQuestionVisualiseurQuestionnaire(id) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    
-});
-
 /**
  * Modifi une question dans le visualisateur de questionnaire (partie de droite)
  * @param {int || string} id - identifiant de la question
  * @param {string} libelle - le nouveau libelé
+ * @param {TypeQuestion || null} type - le type de la question (fonctionne pour le moment qu'avec les champs de texte)
+ * @param {boolean || null} estObligatoire - le fait que la question soit obligatoire 
  */
-function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
+function modifierQuestionVisualiseurQuestionnaire(id, libelle, type=null, estObligatoire=null) {
     const identifiant = String(id);
     const question = donnerQuestionAvecIdVisualiseurQuestionnaire(identifiant.includes("-") ? identifiant.split("-")[0] : identifiant);
     if (identifiant.includes("-")) {
@@ -152,6 +218,38 @@ function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
         baliseH4Question.innerText = libelle; 
     }
     
+    const typeQuestion = donnerTypeQuestionAvecIdVisualiseurQuestions(id);
+    if (type && (typeQuestion == TypeQuestion.CHAMPS_COURT || typeQuestion == TypeQuestion.CHAMPS_LONG)) {
+        const textarea = question.querySelector("textarea.textarea");
+        if (textarea) {
+            textarea.rows = typeQuestion == TypeQuestion.CHAMPS_COURT ? TAILLE_CHAMP_COURT : TAILLE_CHAMP_LONG;
+        }
+    } else
+    if (type && (typeQuestion == TypeQuestion.RADIO_BOUTON || typeQuestion == TypeQuestion.CHECK_BOUTON)) {
+
+        const divReponse = question.querySelector("div.radios") || question.querySelector("div.checkboxs");
+        
+        if (divReponse) {
+            divReponse.classList.remove("radios");
+            divReponse.classList.remove("checkboxs");
+            divReponse.classList.add(typeQuestion == TypeQuestion.RADIO_BOUTON ? "radios" : "checkboxs");
+
+            const nomType = typeQuestion == TypeQuestion.RADIO_BOUTON ? "radio" : "checkbox";
+        
+            divReponse.querySelectorAll("label").forEach((label) => {
+                label.className = nomType;
+                const input = label.querySelector("input");
+                if (input) {
+                    input.type = nomType;
+                }
+            });
+        }
+    }
+
+    const spanObligatoire = question.querySelector("span[title='obligatoire']");
+    if (spanObligatoire) {
+        spanObligatoire.style.display = estObligatoire === true ? "" : "none";
+    }
 }
 
 
@@ -162,7 +260,7 @@ function modifierQuestionVisualiseurQuestionnaire(id, libelle) {
  * @returns {HTMLDivElement} le div de la question
  */
 function donnerQuestionAvecIdVisualiseurQuestionnaire(id) {
-    const divVisualiseurQuestions = document.getElementById("visualiseur-qestionnaire");
+    const divVisualiseurQuestions = document.getElementById("visualiseur-questionnaire");
     return divVisualiseurQuestions.querySelector(`[data-_id="${id}"]`);
 }
 
@@ -171,5 +269,7 @@ export {
     modifierQuestionVisualiseurQuestionnaire,
     ajouterQuestionVisualiseurQuestionnaire,
     ajouterReponseVisualiseurQuestionnaire,
-    supprimerQuestionVisualiseurQuestionnaire
+    supprimerQuestionVisualiseurQuestionnaire,
+    synchroniserOrdreQuestion,
+    synchroniserOrdreReponse
 }

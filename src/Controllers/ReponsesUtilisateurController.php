@@ -6,14 +6,14 @@ use App\Models\Reponses_utilisateur;
 use App\Models\Acceptes;
 use App\Models\Questionnaire;
 
-class Reponses_utilisateurController {
+class ReponsesUtilisateurController {
 
     private $reponses_utilisateurModel;
     private $acceptesModel;
     private $questionnaireModel;
 
     /**
-     * Constructeur de la classe Reponses_utilisateurController.
+     * Constructeur de la classe ReponsesUtilisateurController.
      * Initialise les instances des modèles nécessaires.
      */
     public function __construct() {
@@ -52,8 +52,10 @@ class Reponses_utilisateurController {
                 $id_choix = substr($key, strlen('choix-'));
                 $reponse  = $value;
 
-                if ($reponse === '' || $reponse === null) {
-                    continue;
+                $id_utilisateur = $_SESSION['cas_user'] ?? null;
+                
+                if (!isset($id_utilisateur)) {
+                    $id_utilisateur = 'anonyme';
                 }
 
                 $dernier_id_choix = $id_choix;
