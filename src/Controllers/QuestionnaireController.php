@@ -299,21 +299,30 @@ class QuestionnaireController {
 
         if (!$id) {
             http_response_code(400);
-            exit("ID manquant.");
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            exit();
         }
 
         if (empty($id)) {
-            return false;
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+            exit();
         }
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
 
-        if (isset($questionnaire)) {
-            $supprOK = $this->questionnaireModel->supprimer($id);  
+        if (!isset($_SESSION['cas_user']) || $questionnaire['id_createur'] !== $_SESSION['cas_user']) {
+            echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+            exit();
         }
 
-        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'resultatsQuestionnaire.php');
-        return $supprOK;
+        $suppressionOk = $this->questionnaireModel->supprimer($id); 
+
+        if ($suppressionOk) {
+            header("Location: ./?c=questionnaire&a=lister");
+            exit();
+        } else {
+            die("Une erreur est survenue lors de la suppression en base de données.");
+        }
     }
 
     /**
