@@ -14,9 +14,6 @@ function mettreLaPremiereLettreEnMajuscule(chaine) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    //
-    let _id = 0;
-
     // ---------- pour ouvrir le modal d'ajouter une question (MAQ) ----------
     const boutonAjouterQuestion = document.getElementById("ajouter-question");
     const boutonFermerMAQ = document.getElementById("bouton-fermerMAQ");
@@ -40,6 +37,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ---------- ----------
     const divVisualiseurQuestions = document.getElementById("visualiseur-questions");
     const divVisualiseurQuestionnaire = document.getElementById("visualiseur-questionnaire");
+
+    //
+    const nbQuestions = () => {
+        return divVisualiseurQuestions.querySelectorAll("div.box.div-box.div-question").length;
+    }
+    let _id = nbQuestions();
 
     // ---------- MAQ ----------
     boutonAjouterQuestion.addEventListener("click", () => {
@@ -66,11 +69,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 divRadioSousType.style.display = "none";
             }
 
-            // if (radio == radioTypeContext || radio == radioTypeCheckBox) {
-            //     divObligatoire.style.display = "none";
-            // } else {
-            //     divObligatoire.style.display = "";
-            // }
+            if (radio == radioTypeContext) {
+                divObligatoire.style.display = "none";
+            } else {
+                divObligatoire.style.display = "";
+            }
         });
     });
 

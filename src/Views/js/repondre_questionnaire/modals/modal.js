@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelBtn = document.getElementById('cancelBtn');
     const submitBtn = document.getElementById('submitBtn');
     const form = document.querySelector('form');
+    const brouillon = submitBtn.dataset.brouillon;
 
     const cancelModal = document.getElementById('cancelModal');
     const cancelNo = document.getElementById('cancelModalNo');
@@ -202,4 +203,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if(cancelYes){ cancelYes.addEventListener('click', function(){ window.location.href='?c=home'; }); }
 
     if(submitNo){ submitNo.addEventListener('click', function(){ hide(submitModal); }); }
+    //if(submitYes){ submitYes.addEventListener('click', function(){ hide(submitModal); if(form) form.submit(); }); }
+
+    // Fermer modal sur clic en dehors de la carte
+    [cancelModal].forEach(modal=>{
+        modal.addEventListener('click', function(e){ if(e.target===modal) hide(modal); });
+    });
+
+    if ((submitYes && brouillon === '0')){
+        submitYes.addEventListener('click', function(e){
+            e.preventDefault();
+            alert("Ce questionnaire est en brouillon et ne peut pas être soumis.");
+        });
+    }
+    
 });

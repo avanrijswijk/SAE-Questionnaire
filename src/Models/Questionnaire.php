@@ -84,11 +84,12 @@ class Questionnaire {
      * @param string $date_expiration Date d'expiration.
      * @param string|null $code Code du questionnaire (généré si null).
      * @param string $groupes_autorises Règles d'accès en JSON.
+     * @param int|null $brouillon Nouveau mode (0->brouillon ; 1->publier) Vaut null par defaut
      * @return string Dernier ID inséré.
      */
-    public function creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $groupes_autorises) {
-        $query = "INSERT INTO questionnaires (titre, id_createur, date_expiration, date_creation, code, groupes_autorises) 
-        VALUES (:titre, :id_createur, :date_expiration, NOW(), :code, :groupes_autorises)";
+    public function creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $groupes_autorises, $brouillon=null) {
+        $query = "INSERT INTO questionnaires (titre, id_createur, date_expiration, date_creation, code, groupes_autorises". (isset($brouillon) ? ", brouillon" : "") . ") 
+        VALUES (:titre, :id_createur, :date_expiration, NOW(), :code, :groupes_autorises" .( isset($brouillon) ? ", :brouillon" : "" ) . ")";
 
         $stmt = $this->conn->prepare($query);
 
@@ -107,7 +108,9 @@ class Questionnaire {
         }
         $stmt->bindParam(':code', $code);
         $stmt->bindParam(':groupes_autorises', $groupes_autorises);
-
+        if (isset($brouillon)) {
+            $stmt->bindParam(':brouillon', $brouillon);
+        }
         $stmt->execute();
 
         return $this->conn->lastInsertId();
@@ -120,17 +123,22 @@ class Questionnaire {
      * @param string $titre Nouveau titre.
      * @param string $date_expiration Nouvelle date d'expiration.
      * @param string $groupes_autorises Nouveaux groupes autorisés.
+     * @param int|null $brouillon Nouveau mode (0->brouillon ; 1->publier) Vaut null par defaut
+     * @return bool Un boolean en fonction de la réussite de la modification
      */
-    public function modifier($id, $titre, $date_expiration, $groupes_autorises) {
+    public function modifier($id, $titre, $date_expiration, $groupes_autorises, $brouillon=null) {
         $query = "UPDATE questionnaires 
-                  SET titre = :titre, date_expiration = :date_expiration, groupes_autorises = :groupes_autorises
-                  WHERE id = :id";
+                  SET titre = :titre, date_expiration = :date_expiration, groupes_autorises = :groupes_autorises " . (!is_null($brouillon) ? ", brouillon = :brouillon" : "")
+                  ." WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':titre', $titre);
         $stmt->bindParam(':date_expiration', $date_expiration);
         $stmt->bindParam(':groupes_autorises', $groupes_autorises);
+        if (!is_null($brouillon)) {
+            $stmt->bindParam(':brouillon', $brouillon);
+        }
         $stmt->bindParam(':id', $id);
 
         return $stmt->execute();

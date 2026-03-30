@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Questionnaire;
 use App\Models\Question;
 use App\Models\Reponses_utilisateur;
+use App\Models\Choix_possible;
 use App\Models\Statistique;
 
 require_once 'config.php';
@@ -15,6 +16,7 @@ class QuestionnaireController {
     private $questionnaireModel;
     private $questionModel;
     private $reponses_utilisateurModel;
+    private $choix_possibleModel;
     private $statistiqueModel;
 
     /**
@@ -30,6 +32,8 @@ class QuestionnaireController {
         $this->reponses_utilisateurModel = $reponses_utilisateurModel;
         $statistiqueModel = new Statistique();
         $this->statistiqueModel = $statistiqueModel;
+        $choix_possibleModel = new Choix_possible();
+        $this->choix_possibleModel = $choix_possibleModel;
     }
 
     /**
@@ -76,21 +80,46 @@ class QuestionnaireController {
         if (isset($questionnaire['id_createur'])) {
             $createur = $this->questionnaireModel->getUtilisateurParId($questionnaire['id_createur']);
         }
+        if ($questionnaire['brouillon'] == 0) {
+            echo 'Ce questionnaire est encore en brouillon, vous ne pouvez pas y répondre.';
+            return;
+        } else {
 
-        // trier par position si disponible
-        usort($questions, function($a, $b) {
-            $pa = isset($a['position']) ? (int)$a['position'] : 0;
-            $pb = isset($b['position']) ? (int)$b['position'] : 0;
-            return $pa <=> $pb;
-        });
+            $questions = $this->questionModel->getQuestionPar(['id_questionnaire' => $id]);
+            $createur = null;
+            if (isset($questionnaire['id_createur'])) {
+                $createur = $this->questionnaireModel->getUtilisateurParId($questionnaire['id_createur']);
+            }
 
-        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'repondreQuestionnaire.php');
+            // trier par position si disponible
+            usort($questions, function($a, $b) {
+                $pa = isset($a['position']) ? (int)$a['position'] : 0;
+                $pb = isset($b['position']) ? (int)$b['position'] : 0;
+                return $pa <=> $pb;
+            });
+
+            require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'repondreQuestionnaire.php');
+        }
     }
 
     /**
      * Affiche la vue de création d'un nouveau questionnaire.
      */
-    public function ajouterQuestionnaire() {
+    public function ajouterQuestionnaire($id = null) {
+        if ($id !== null) {
+            $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+            if (!$questionnaire) {
+                echo 'Questionnaire introuvable.';
+                return;
+            }
+            if ($questionnaire['brouillon'] == 1) {
+                echo 'Les questionnaires déjà publiés ne peuvent pas être modifiés.       :)';
+                return;
+            }
+            $questionnaire= $this->getQuestionnaireComplet($id);
+        } else {
+            $questionnaire = null;
+        }
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'creationQuestionnaire.php');
     }
 
@@ -99,10 +128,10 @@ class QuestionnaireController {
      */
     public function listerQuestionnaires() {
 
-        $tous_les_questionnaires = $this->questionnaireModel->getTousLesQuestionnaires();
+        $tous_les_questionnairesPublier = $this->questionnaireModel->getQuestionnairePar(["brouillon" => 1]);
         $questionnaires_visibles = [];
 
-        foreach ($tous_les_questionnaires as $index => $questionnaire) {
+        foreach ($tous_les_questionnairesPublier as $index => $questionnaire) {
             $json_regles = $questionnaire['groupes_autorises'] ?? '';
 
             if ($this->aLeDroitDAcces($json_regles, $_SESSION['cas_groupes'])) {
@@ -179,12 +208,25 @@ class QuestionnaireController {
      * @return bool True si l'enregistrement réussit, false sinon.
      */
     public function enregistrerQuestionnaire() {
-        $id = isset($_POST['id']) ? $_POST['id'] : null;
+        $id = $_POST['id_questionnaire'] ?? null;
         $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
         $date_expiration = isset($_POST['date-expriration']) ? $_POST['date-expriration'] : null;
-        $id_createur = $_SESSION['cas_user']
-            ?? session_id();
+        $brouillon = isset($_POST['mode_enregistrement']) ? ($_POST['mode_enregistrement'] == "brouillon" ? 0 : 1) : 1;
+        $id_createur = $_SESSION['cas_user'] ?? session_id();
         $code = isset($_POST['code']) ? $_POST['code'] : null;
+
+        if (trim((string)$id) === "") {
+            $id = null;
+        }
+
+        //DEBUG
+        // echo $id . "\n";
+        // echo $titre . "\n";
+        // echo $date_expiration . "\n";
+        // echo $brouillon . "\n";
+        // echo $id_createur . "\n";
+        // echo $code . "\n";
+        // return;
 
         // Gestion des règles d'accès
         $mon_profil = analyserProfilUtilisateur($_SESSION['cas_groupes']);
@@ -201,11 +243,11 @@ class QuestionnaireController {
         // exemple : {"site_requis":"limoges", "groupes_requis":["iut-etudiants-info-1a"]}
         $json_pour_bdd = json_encode($regles_acces);
 
-        if (isset($id)) {
-            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration, $json_pour_bdd);
+        if (!is_null($id)) {
+            $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration, $json_pour_bdd, $brouillon);
         } else {
             //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
-            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $json_pour_bdd);
+            $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $json_pour_bdd, $brouillon);
         }
 
         if ($ajoutOk) {
@@ -353,15 +395,20 @@ class QuestionnaireController {
         $total_questions = $this->questionnaireModel->getNombreQuestions($id);
 
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
-
-        if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
+        if($questionnaire['id_createur'] == $_SESSION['cas_user']){
+            if ($questionnaire['brouillon'] == 1) {
+                require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'detailQuestionnaire.php');
+            } else
+            if ($questionnaire['brouillon'] == 0) {
+                header('Location: ?c=questionnaire&a=creation&id=' . $id);
+                exit;            
+            } else {
+                echo "erreur : format de données du questionnaire invalide -> le Brouillon n'est pas à 1 ni 0.";
+            }
+        } else {
             echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
             exit();
         }
-        
-        $repondants = $this->reponses_utilisateurModel->getRepondantsParQuestionnaire($id);
-
-        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'detailQuestionnaire.php');
     }
 
     /**
@@ -517,6 +564,21 @@ class QuestionnaireController {
     }
 
 
+
+    public function getQuestionnaireComplet($id) {
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+        if (!$questionnaire) return null;
+
+        $questions = $this->questionModel->getQuestionPar(["id_questionnaire" => $id]);
+
+        foreach ($questions as &$q) {
+            $q['choix'] = $this->choix_possibleModel->getChoixDeQuestion($q['id']);
+        }
+
+        $questionnaire['questions'] = $questions;
+
+        return $questionnaire;
+    }
 }
 
     

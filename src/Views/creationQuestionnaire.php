@@ -3,8 +3,12 @@ require_once 'config.php';
 $mon_profil = analyserProfilUtilisateur($_SESSION['cas_groupes']);
 $mes_choix = genererCiblesAutorisees($mon_profil);
 ?>
+<script>
+    window.questionnaire = <?php echo json_encode($questionnaire); ?>;
+</script>
 
 <main class="is-flex is-flex-direction-row" style="max-height: 100vh;">
+    <script type="module" src="./src/Views/js/creation_questionnaire/initQuestionnaire.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/fermerQuestionnaire/modalFermer.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/ajoutQuestion/modalAjouter.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/modificationQuestion/modalModifier.js"></script>
@@ -191,8 +195,13 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                     </div>
                 </section>
                 <footer class="modal-card-foot" style="justify-content: center;">
-                    <button type="submit" class="button" id="bouton-validerMVQ">
-                        <p>Valider</p>
+                    <input type="hidden" name="mode_enregistrement" id="mode-enregistrement" value="">
+                    <input type="hidden" name="id_questionnaire" id="id-questionnaire" value="<?php echo isset($questionnaire['id']) ? htmlspecialchars($questionnaire['id']) : ''; ?>">
+                    <button type="submit-brouillon" class="button mr-4 has-background-warning" id="bouton-brouillonMVQ">
+                        <p>Brouillon</p>
+                    </button>
+                    <button type="submit-publier" class="button has-background-success" id="bouton-PublierMVQ">
+                        <p>Publier</p>
                     </button>
                 </footer>
             </form>
@@ -205,7 +214,9 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
         <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-questionnaire">
         </div>
     </div>
-    <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;"></div>
+    <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;">
+    </div>
+    <script type="module" src="./src/Views/js/creation_questionnaire/notification/notification.js"></script>
 </main>
 
 

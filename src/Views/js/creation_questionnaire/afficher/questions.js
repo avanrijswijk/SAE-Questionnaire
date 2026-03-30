@@ -320,15 +320,14 @@ function creerQuestion(info) {
 
 /**
  * 
- * @param {JSON} info - Les informations sur la question (intitule:str, type:str, obligatoire:bool, _id:int, nombreReponse:int) 
+ * @param {JSON} info - Les informations sur la question (intitule:str, type:str, obligatoire:bool, _id:int, dernierId:int) 
  * @returns {HTMLDivElement || null} - un div.div-reponses ou null si aucun type ne correspond
  */
-function creerReponse(info) {
-    const divDnd = document.createElement("div");
-    const strongDnd = document.createElement("strong");
+function creerReponse(info, texte = null) {
     const _id = info["_id"];
+    const dernierId = parseInt(info["dernierId"])+1;
     const type = info["type"];
-    const nombreReponse = info["nombreReponse"];
+    const libelle = texte ?? `Réponse ${dernierId+1}`;
 
     const divReponse = document.createElement("div");
     divReponse.classList.add("box", "div-box", "div-reponse", "is-relative"); 
@@ -336,11 +335,11 @@ function creerReponse(info) {
     switch (type) {
         case TypeQuestion.CHECK_BOUTON:
         case TypeQuestion.RADIO_BOUTON:
-            divReponse.dataset._id = `${_id}-${nombreReponse}`;
-            divReponse.dataset.intitule = `Réponse ${nombreReponse+1}`;
-
+            divReponse.dataset._id = `${_id}-${dernierId}`;
+            divReponse.dataset.intitule = libelle;
+            
             const pReponse = document.createElement("p");
-            pReponse.innerText = `Réponse ${nombreReponse+1}`;
+            pReponse.innerText = libelle;
             pReponse.classList.add("is-unselectable", "question");
             
             // dnd
@@ -366,8 +365,9 @@ function creerReponse(info) {
  * Ajoute une question dans le visualiseur de questions (partie gauche)
  * @param {HTMLElement} parent - Le conteneur parent où sera placé la question
  * @param {JSON} info - Les informations sur la question (intitule:str, type:str, obligatoire:bool, _id:int)
+ * @param {boolean} chargement - true si on est en train de charger un questionnaire existant
  */
-function ajouterQuestionVisualiseurQuestions(parent, info) {
+function ajouterQuestionVisualiseurQuestions(parent, info, chargement = false) {
     const type = info["type"];
     //const _id = info["_id"];
 
@@ -379,13 +379,15 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
     if (type == TypeQuestion.CHECK_BOUTON || type == TypeQuestion.RADIO_BOUTON) {
         divReponses = document.createElement("div");
         divReponses.classList.add("div-reponses");
-        info["nombreReponse"] = 0;
-        
+        info["dernierId"] = -1; // pour que l'id de la premiere reponse soit 0
+
         divReponses.appendChild(creerZoneDndReponse());
-        const divReponse = creerReponse(info);
-        divReponses.appendChild(divReponse);
-        divReponses.appendChild(creerZoneDndReponse());
-        
+        if (!chargement) {
+            const divReponse = creerReponse(info);
+            divReponses.appendChild(divReponse);
+            divReponses.appendChild(creerZoneDndReponse());
+        }
+
         divConteneur.appendChild(divReponses);
         divConteneur.dataset.replier = "0";
         affichageReponses(divReponses);
@@ -395,68 +397,63 @@ function ajouterQuestionVisualiseurQuestions(parent, info) {
 }
 
 /**
- * Ajout une réponse à une question dans le visualisateur de questions
- * @param {int || string} id - l'identifiant de la question (X)
- * @param {number} [idReponse=-1] - l'identifiant de la réponse (X) s'il en faut une spécifique. id auto sinon
- * @returns {int} - l'identifiant de la réponse. -1 si un probleme est survenu
+ * Ajoute une réponse à une question dans le visualisateur de questions
+ * @param {int || string} id - l'identifiant interne de la question (X)
+ * @param {string|null} texte - le texte réel de la réponse (ou null si nouvelle réponse)
+ * @param {number} [idReponse=-1] - index de la réponse (X) si imposé (chargement)
+ * @returns {string} - l'identifiant complet de la réponse "X-Y"
  */
-function ajouterReponseVisualisateurQuestions(id, idReponse=-1) {
+function ajouterReponseVisualisateurQuestions(id, texte = null, idReponse = -1) {
     const divQuestion = document.querySelector(`div[data-_id="${id}"]`)
                                 .closest("div.box.div-question.div-box")
                                 .firstChild;
+
     const divReponses = document.querySelector(`div[data-_id="${id}"]`)
                                 .closest("div.box.div-question.div-box")
                                 .querySelector("div.div-reponses");
 
-    let identifiantReponse = idReponse;
-    
-    if (!divReponses) return identifiantReponse;
+    if (!divReponses) return `${id}-0`;
 
     const type = divQuestion.dataset.type;
 
     const info = {
-        "intitule" : "",
-        "type" : type,
-        "obligatoire" : true,
-        "_id" : divQuestion.dataset._id
-    }
-
-    const nombreReponse = function() {
-        let idMax = -1; // CORRECTION 1 : On commence à -1 pour que le +1 donne 0 s'il n'y a rien
-        Array.from(divReponses.children).forEach((divReponse) => {
-            // CORRECTION 2 : On filtre pour ignorer les zones DnD qui n'ont pas d'ID
-            if (divReponse.classList.contains("div-reponse") && divReponse.dataset._id) {
-                const idExtrait = parseInt(String(divReponse.dataset._id).split("-")[1]);
-                if (idMax < idExtrait) { 
-                    idMax = idExtrait;
-                }
-            }
-        });
-        return idMax + 1;
+        intitule: "",
+        type: type,
+        obligatoire: true,
+        _id: divQuestion.dataset._id
     };
-    //console.log(`nb réponse +1 : ${nombreReponse()}`); // debug
+
+    // Si idReponse est fourni (chargement), on l'utilise.
+    // Sinon, on prend le nombre actuel de réponses comme index.
+    const nbReponses = (idReponse >= 0) ? idReponse : divReponses.querySelectorAll("div.box.div-box.div-reponse").length;
+    // console.log(nbReponses);
+    // console.log(idReponse);
+    info["dernierId"] = nbReponses > 0 ? Math.max(...Array.from(divReponses.querySelectorAll("div.box.div-box.div-reponse"), el => el.dataset._id.split("-")[1])) : -1;
+    
+    // cette variable ne sert pas a rien
+    // elle permet de retrouner l'id exacte de la réponse lors de la creation
+    let identifiantReponse = idReponse; // retourne l'identifiant de la reponse 
 
     switch (type) {
         case TypeQuestion.CHECK_BOUTON:
-        case TypeQuestion.RADIO_BOUTON:
-            info["nombreReponse"] = nombreReponse(); 
-            const divReponse = creerReponse(info);
+        case TypeQuestion.RADIO_BOUTON: {
+            const divReponse = creerReponse(info, texte);
+
             if (divReponse){
                 divReponses.appendChild(divReponse);
                 divReponses.appendChild(creerZoneDndReponse());
-                if (identifiantReponse >= 0) {
-                    divReponse.dataset._id = `${id}-${identifiantReponse}`;
-                } else {
-                    identifiantReponse = divReponse.dataset._id;
+                if (idReponse >= 0) {
+                    divReponse.dataset._id = `${id}-${idReponse}`;
                 }
-                
-                //attribuerModalModifierQuestionAvecId(identifiantReponse, TypeModifier.REPONSE);
+                identifiantReponse = divReponse.dataset._id;
             }
             break;
+        }
 
         case TypeQuestion.LISTE_DEROULANTE:
             break;
     }
+
     return identifiantReponse;
 }
 
@@ -511,7 +508,7 @@ function supprierQuestionVisualiseurQuestions(id) {
 
         if (String(id).includes("-")) {
             // --- CAS 1 : C'EST UNE RÉPONSE ---
-            const parent = divQuestion.parentElement; // Le conteneur div.div-reponses
+            const parent = divQuestion.closest("div.div-reponses");
             
             // 1. Supprimer la zone DnD située juste en dessous de la réponse
             const dndZone = divQuestion.nextElementSibling;
@@ -525,7 +522,7 @@ function supprierQuestionVisualiseurQuestions(id) {
             // 3. Vérifier s'il reste d'autres réponses (on compte les vraies réponses, pas les DnD)
             const nbReponsesRestantes = parent.querySelectorAll("div.div-reponse").length;
             
-            if (nbReponsesRestantes === 0) {
+            if (nbReponsesRestantes <= 0) {
                 // S'il n'y a plus aucune réponse, on réinitialise proprement
                 parent.innerHTML = ""; // On nettoie les éventuelles zones DnD fantômes restantes
                 parent.appendChild(creerZoneDndReponse()); // On remet la zone DnD du haut

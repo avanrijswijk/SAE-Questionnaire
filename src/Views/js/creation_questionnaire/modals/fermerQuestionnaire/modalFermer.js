@@ -22,10 +22,10 @@ function listerQuestions() {
         return questions;
     }
 
-    divQuestions.forEach((divQuestion, index) => {
-        divQuestion = divQuestion.firstChild;
-        const divReponses = divQuestion.querySelector("div.div-reponses");
-
+    divQuestions.forEach((divConteneur, index) => {
+        const divQuestion = divConteneur.firstChild;
+        const divReponses = divConteneur.querySelector("div.div-reponses");
+        
         const data = {
             "intitule" : divQuestion.dataset.intitule,
             "type" : divQuestion.dataset.type,
@@ -55,6 +55,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     const formMVQ = document.getElementById("form-enregistrer");
     const boutonFermerMVQ = document.getElementById("bouton-fermer");
     
+    const boutonPublier = document.getElementById("bouton-PublierMVQ");
+    const boutonBrouillon = document.getElementById("bouton-brouillonMVQ");
+
+    // --- Champs cachés ---
+    const inputMode = document.getElementById("mode-enregistrement");
+
+    // --- Bouton Publier ---
+    boutonPublier.addEventListener("click", () => {
+        inputMode.value = "publier";
+        formMVQ.requestSubmit();
+    });
+
+    // --- Bouton Brouillon ---
+    boutonBrouillon.addEventListener("click", () => {
+        inputMode.value = "brouillon";
+        formMVQ.requestSubmit();
+    });
+
     // ---------- MVQ ----------
     boutonFinirMVQ.addEventListener("click", () => {
         const inputTitre = formMVQ.querySelector("input#nom-questionnaire");
