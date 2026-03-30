@@ -96,12 +96,24 @@
         
         <script>
             document.addEventListener("DOMContentLoaded", () => {
-                const table = document.getElementById("table");
-                if (table && table.childElementCount == 0) {
-                    const p = document.createElement("p");
-                    p.innerText = "Aucun questionnaire en attente.";
-                    p.className = "has-text-grey mt-4";
-                    document.querySelector("div.is-flex.is-justify-content-center.pt-5").appendChild(p);
+                const tbody = document.getElementById("table");
+                const tableElement = tbody.closest("table");
+                
+                if (tbody && tbody.childElementCount == 0) {
+                    tableElement.style.display = "none";
+                    
+                    const emptyState = document.createElement("div");
+                    emptyState.className = "has-text-centered mt-6 mb-6";
+                    emptyState.innerHTML = `
+                        <div class="mb-4">
+                            <span class="icon has-text-grey-light" style="font-size: 4rem; height: 4rem; width: 4rem;">
+                                <i class="fas fa-inbox"></i>
+                            </span>
+                        </div>
+                        <h2 class="title is-4 has-text-grey">Aucun questionnaire disponible</h2>
+                        <p class="subtitle is-6 has-text-grey-light mt-2">Vous n'avez pas de questionnaire en attente pour le moment.</p>
+                    `;
+                    document.querySelector("div.is-flex.is-justify-content-center.pt-5").appendChild(emptyState);
                 }
             });
         </script>
