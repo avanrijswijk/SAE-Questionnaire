@@ -16,7 +16,7 @@ function chargerQuestionnaire(questionnaire) {
     }
 
     const divQuestions = document.getElementById("visualiseur-questions");
-    const divQuestionnaire = document.getElementById("visualiseur-qestionnaire");
+    const divQuestionnaire = document.getElementById("visualiseur-questionnaire");
 
     let idCourant = 0;
 
@@ -59,6 +59,7 @@ function chargerQuestionnaire(questionnaire) {
 function ajouterReponse(idQuestion, idReponse, texte) {
     const type = document.querySelector(`div[data-_id="${idQuestion}"]`).dataset.type;
 
+    console.log("je passe dans l'ajout de reponse");
     // Partie gauche
     ajouterReponseVisualisateurQuestions(
         idQuestion,

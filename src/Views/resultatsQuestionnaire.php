@@ -40,19 +40,22 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($questionnairesFinis as $questionnairefini): ?> 
-                            <tr class="ligne-questionnaire" data-id="<?php echo $questionnairefini['id']; ?>">
+                        <?php foreach ($questionnairesFinis as $questionnairefini): 
+                            $idQuestionnaire = $questionnairefini['id'];
+                            $titreQuestionnaire = $questionnairefini['titre'];
+                            ?> 
+                            <tr class="ligne-questionnaire" data-id="<?php echo $idQuestionnaire; ?>">
                                 <td class="titre-questionnaire">
-                                    <span class="titre-texte"><?php echo $questionnairefini["titre"] ?></span>
+                                    <span class="titre-texte"><?php echo $titreQuestionnaire ?></span>
                                 </td>
-                                <td class="has-text-centered"><?php echo $questionnaireBDD->getNombreRepondants($questionnaire['id']); ?></td>
+                                <td class="has-text-centered"><?php echo $questionnaireBDD->getNombreRepondants($idQuestionnaire); ?></td>
                                 <td class="has-text-centered">
-                                    <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();alert('téléchargement en cours'); window.location.href = './?c=questionnaire&a=exporter&id=<?php echo $questionnaire['id']; ?>';">
+                                    <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();alert('téléchargement en cours'); window.location.href = './?c=questionnaire&a=exporter&id=<?php echo $idQuestionnaire; ?>';">
                                         <img src="./src/Views/img/telecharger-64.png" alt="icon de téléchargement" title="Télécharger">
                                     </div>
                                 </td>
                                 <td class="has-text-centered">
-                                    <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $questionnaire['titre'] ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $questionnaire['id']; ?>';}">
+                                    <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $titreQuestionnaire ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $idQuestionnaire; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
                                 </td> 
@@ -88,13 +91,16 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($questionnairesBrouillons as $questionnaireBrouillon): ?> 
-                            <tr class="ligne-questionnaire" data-id="<?php echo $questionnaireBrouillon['id']; ?>">
+                        <?php foreach ($questionnairesBrouillons as $questionnaireBrouillon): 
+                            $idQuestionnaireBrouillon = $questionnaireBrouillon['id'];
+                            $titreQuestionnaireBrouillon = $questionnaireBrouillon['titre'];
+                            ?> 
+                            <tr class="ligne-questionnaire" data-id="<?php echo $idQuestionnaireBrouillon; ?>">
                                 <td class="titre-questionnaire">
-                                    <span class="titre-texte"><?php echo $questionnaireBrouillon["titre"] ?></span>
+                                    <span class="titre-texte"><?php echo $titreQuestionnaireBrouillon ?></span>
                                 </td>
-                                <td>
-                                    <div class="image is-32x32" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $questionnaireBrouillon['titre'] ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $questionnaireBrouillon['id']; ?>';}">
+                                <td class="has-text-centered">
+                                    <div class="image is-32x32" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $titreQuestionnaireBrouillon ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $idQuestionnaireBrouillon; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
                                 </td> 

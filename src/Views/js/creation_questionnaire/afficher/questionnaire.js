@@ -151,6 +151,8 @@ function ajouterQuestionVisualiseurQuestionnaire(parent, info, chargement = fals
 
     spanObligatoire.innerText = "*";
     spanObligatoire.style.color = "red";
+    spanObligatoire.title = "obligatoire";
+    spanObligatoire.classList.add("spanObligatoire");
 
     divSousConteneur.classList.add("ml-3", "field", "control");
 
@@ -246,7 +248,7 @@ function modifierQuestionVisualiseurQuestionnaire(id, libelle, type=null, estObl
         }
     }
 
-    const spanObligatoire = question.querySelector("span[title='obligatoire']");
+    const spanObligatoire = question.querySelector("span.spanObligatoire");
     if (spanObligatoire) {
         spanObligatoire.style.display = estObligatoire === true ? "" : "none";
     }

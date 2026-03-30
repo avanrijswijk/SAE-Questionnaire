@@ -398,15 +398,13 @@ class QuestionnaireController {
         if($questionnaire['id_createur'] == $_SESSION['cas_user']){
             if ($questionnaire['brouillon'] == 1) {
                 require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'detailQuestionnaire.php');
-            }
+            } else
             if ($questionnaire['brouillon'] == 0) {
                 header('Location: ?c=questionnaire&a=creation&id=' . $id);
                 exit;            
+            } else {
+                echo "erreur : format de données du questionnaire invalide -> le Brouillon n'est pas à 1 ni 0.";
             }
-            echo "erreur : format de données du questionnaire invalide -> le Brouillon n'est pas à 1 ni 0.";
-        } else {
-            echo 'Vous n\'avez pas accès à ce questionnaire.';
-            return;
         } else {
             echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
             exit();

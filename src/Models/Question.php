@@ -118,18 +118,22 @@ class Question {
     }
 
     /**
-     * Supprime une question de la base de données.
+     * Supprime une question de la base de données ainsi que ses choix associés.
      *
      * @param int $id ID de la question à supprimer.
      * @return bool True si la suppression a affecté au moins une ligne, false sinon.
      */
     public function supprimer($id) {
         $query = "DELETE FROM questions WHERE id = :id";
+        $queryChoix = "DELETE FROM choix_possible WHERE id_question = :id";
 
         $stmt = $this->conn->prepare($query);
+        $stmtChoix = $this->conn->prepare($queryChoix);
         $stmt->bindParam(':id', $id);
+        $stmtChoix->bindParam(':id', $id);
         $stmt->execute();
-        
+        $stmtChoix->execute();
+
         return $stmt->rowCount() > 0;
     }    
     /**

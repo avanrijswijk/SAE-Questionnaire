@@ -139,7 +139,9 @@ $nbContext = 0
 
                                 <?php case "radio": ?>
                                     <div class="radios is-flex is-flex-direction-column" style="row-gap: 0.5em;">
-                                        <?php foreach($choix as $reponse): ?>
+                                        <?php foreach($choix as $reponse):
+                                            // n'affiche pas une réponse si son text est null
+                                            if (!is_null($reponse) && !is_null($reponse['texte'])) {?>
                                             <label class="radio">
                                                 <input
                                                     type="radio"
@@ -152,13 +154,21 @@ $nbContext = 0
                                                 >
                                                 <?php echo htmlspecialchars($reponse["texte"]); ?>
                                             </label>
-                                        <?php endforeach; ?>
+                                        <?php
+                                            } else { ?>
+                                            <script>
+                                                console.warn(`Le choix[id:<?php echo $q['id']; ?>] de la question[id:<?php echo $reponse['id']; ?>] vaut null`);
+                                            </script>
+                                            <?php }
+                                            endforeach; ?>
                                     </div>
                                 <?php break; ?>
 
                                 <?php case "check": ?>
                                     <div class="checkboxs is-flex is-flex-direction-column" style="row-gap: 0.5em;">
-                                        <?php foreach($choix as $reponse): ?>
+                                        <?php foreach($choix as $reponse): 
+                                            // n'affiche pas une réponse si son text est null
+                                            if (!is_null($reponse) && !is_null($reponse['texte'])) {?>
                                             <label class="checkbox">
                                                 <input
                                                     type="checkbox"
@@ -171,7 +181,13 @@ $nbContext = 0
                                                 >
                                                 <?php echo htmlspecialchars($reponse["texte"]); ?>
                                             </label>
-                                        <?php endforeach; ?>
+                                        <?php
+                                            } else { ?>
+                                            <script>
+                                                console.warn(`Le choix[id:<?php echo $q['id']; ?>] de la question[id:<?php echo $reponse['id']; ?>] vaut null`);
+                                            </script>
+                                            <?php }
+                                            endforeach; ?>
                                     </div>
                                 <?php break; ?>
 

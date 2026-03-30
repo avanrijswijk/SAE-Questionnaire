@@ -69,11 +69,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 divRadioSousType.style.display = "none";
             }
 
-            // if (radio == radioTypeContext || radio == radioTypeCheckBox) {
-            //     divObligatoire.style.display = "none";
-            // } else {
-            //     divObligatoire.style.display = "";
-            // }
+            if (radio == radioTypeContext) {
+                divObligatoire.style.display = "none";
+            } else {
+                divObligatoire.style.display = "";
+            }
         });
     });
 
