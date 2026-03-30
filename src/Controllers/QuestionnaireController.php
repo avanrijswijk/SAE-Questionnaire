@@ -208,7 +208,7 @@ class QuestionnaireController {
      * @return bool True si l'enregistrement réussit, false sinon.
      */
     public function enregistrerQuestionnaire() {
-        $id = $_POST['id_questionnaire'] ?? null;
+        $id = $_POST['id_questionnaire'] ?? $_POST['id'] ?? null;
         $titre = isset($_POST['nom-questionnaire']) ? $_POST['nom-questionnaire'] : null;
         $date_expiration = isset($_POST['date-expriration']) ? $_POST['date-expriration'] : null;
         $brouillon = isset($_POST['mode_enregistrement']) ? ($_POST['mode_enregistrement'] == "brouillon" ? 0 : 1) : 1;
