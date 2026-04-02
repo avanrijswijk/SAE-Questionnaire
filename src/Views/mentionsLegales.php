@@ -2,7 +2,7 @@
 <html lang="fr">
 <div>
     <meta charset="UTF-8">
-    <title>Mentions Légales</title>
+    <title>Quit - Mentions Légales</title>
     <style>
         section { font-family: sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
         h1 { color: #005b96; border-bottom: 2px solid #005b96; padding-bottom: 10px; }

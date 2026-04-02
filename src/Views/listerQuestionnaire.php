@@ -4,6 +4,9 @@
 ?>
 
 <main style="background-color: #EFEFEF; min-height: 100vh; overflow-y: auto;">
+    <script>
+        document.title = "Quit - Liste des questionnaires"
+    </script>
     <div>
         <script src="./src/Views/js/lister_questionnaire/modals/code/modalCode.js"></script>
         <button style="background-color: #F5A320;border-radius: 0 0 100px 0;" id="bouton-code">

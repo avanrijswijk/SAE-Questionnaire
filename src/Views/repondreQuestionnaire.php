@@ -31,6 +31,9 @@ $nbContext = 0
 
 ?>
 <main class="container" style="margin-top: 25px;">
+    <script>
+        document.title = "Quit - Répondre à un questionnaire"
+    </script>
     <script src="./src/Views/js/repondre_questionnaire/modals/modal.js"></script>
 	<?php if ($date_exp): ?>
         <?php 

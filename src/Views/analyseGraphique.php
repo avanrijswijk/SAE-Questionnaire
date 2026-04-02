@@ -3,6 +3,9 @@
 
 
 <div class="container mt-5 mb-6">
+    <script>
+        document.title = "Quit - Analyse des réponses"
+    </script>
     
     <div class="level mb-5">
         <div class="level-left">

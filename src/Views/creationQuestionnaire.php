@@ -12,6 +12,9 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/fermerQuestionnaire/modalFermer.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/ajoutQuestion/modalAjouter.js"></script>
     <script type="module" src="./src/Views/js/creation_questionnaire/modals/modificationQuestion/modalModifier.js"></script>
+    <script>
+        document.title = "Quit - Page de création"
+    </script>
     <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
         <div id="context-menu">
             <ul class="menu">

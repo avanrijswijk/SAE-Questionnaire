@@ -9,6 +9,9 @@ $questionnairesFinis = $questionnaireBDD->getQuestionnairePar(["id_createur" => 
 $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur" => $_SESSION['cas_user'] , "brouillon" => 0]);
 ?>
 <main style="background-color: #EFEFEF; height: 100%; overflow-y: auto;">
+    <script>
+        document.title = "Quit - Page des résultats d'un questionnaire"
+    </script>
     <div class="pt-5">
         <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5">liste des questionnaires publiés</h3>
         <div id="questionnaires" class="is-flex is-justify-content-center pt-5 pb-2">

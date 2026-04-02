@@ -12,7 +12,9 @@ $groupes_actuels = $regles['groupes_requis'] ?? [];
 ?>
 
 <body class="has-background-white-ter">
-
+<script>
+    document.title = "Quit - Modifier un questionnaire"
+</script>
 <div class="container mt-6 mb-6">
     <div class="box">
         <h1 class="title is-3 mb-5 has-text-centered">

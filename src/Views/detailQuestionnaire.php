@@ -1,3 +1,6 @@
+<script>
+    document.title = "Quit - Details d'un questionnaire"
+</script>
 <style>
     .kpi-box { border-top: 4px solid #ff0000; }
 </style>

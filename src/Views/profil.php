@@ -20,6 +20,9 @@ $groupes = array_map(function($groupe){ return htmlspecialchars($groupe, ENT_QUO
 ?>
 
 <section class="section">
+  <script>
+      document.title = "Quit - Page de profil"
+  </script>
   <div class="container">
     <h1 class="title">Profil</h1>
     <div class="box">

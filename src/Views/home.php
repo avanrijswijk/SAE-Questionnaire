@@ -1,4 +1,7 @@
     <main>
+      <script>
+        document.title = "Quit - Page d'accueil"
+      </script>
       <div class="is-flex is-flex-direction-column ">
         <div style="justify-items: center;">
           <h1 class="title is-1 mt-3">Que voulez-vous faire ?</h1>
