@@ -78,11 +78,4 @@ class ReponsesUtilisateurController {
         }
         return $ajoutOk;
     }
-
-    /**
-     * Affiche la vue des résultats du questionnaire.
-     */
-    public function resultatsQuestionnaire() {
-        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'resultatsQuestionnaire.php');
-    }
 }

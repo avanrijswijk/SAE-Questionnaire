@@ -79,7 +79,7 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                     $questionnaireController->listerQuestionnaires();
                     break;
                 case 'resultats':
-                    $reponses_utilisateurController->resultatsQuestionnaire();
+                    $questionnaireController->resultatsQuestionnaire();
                     break;
                 case 'detail':
                     $id = isset($_GET['id']) ? $_GET['id'] : null;

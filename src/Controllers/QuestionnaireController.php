@@ -127,6 +127,7 @@ class QuestionnaireController {
      * Liste les questionnaires selon l'utilisateur connecté ou tous si non connecté.
      */
     public function listerQuestionnaires() {
+        $this->autoSuppression();
 
         $tous_les_questionnairesPublier = $this->questionnaireModel->getQuestionnairePar(["brouillon" => 1]);
         $questionnaires_visibles = [];
@@ -588,6 +589,30 @@ class QuestionnaireController {
 
         return $questionnaire;
     }
-}
 
-    
+    public function autoSuppression() {
+        $listeQuestionnaires = $this->questionnaireModel->getTousLesQuestionnaires();
+        $dateActuelle = new \DateTime();
+
+        foreach ($listeQuestionnaires as $qtnaire) {
+            $dateExpiration = new \DateTime($qtnaire['date_expiration']);
+            $interval = $dateActuelle->diff($dateExpiration);
+            $jours = (int)$interval->format('%r%a');
+            if ($jours <= -1097) {   // date expirée depuis 3 ans ou plus
+                $this->questionnaireModel->supprimer($qtnaire['id']);
+            }
+        }
+    }
+
+    /**
+     * Affiche la vue des résultats du questionnaire.
+     */
+    public function resultatsQuestionnaire() {
+        $this->autoSuppression();
+
+        $questionnairesFinis = $this->questionnaireModel->getQuestionnairePar(["id_createur" => $_SESSION['cas_user'] , "brouillon" => 1]);
+        $questionnairesBrouillons = $this->questionnaireModel->getQuestionnairePar(["id_createur" => $_SESSION['cas_user'] , "brouillon" => 0]);
+
+        require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'resultatsQuestionnaire.php');
+    }
+}

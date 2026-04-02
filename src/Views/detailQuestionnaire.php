@@ -3,29 +3,45 @@
 </script>
 <style>
     .kpi-box { border-top: 4px solid #ff0000; }
+        .back-btn {
+        color: black !important;   
+        padding-left: 0 !important;  
+    }
+
+    .back-btn span.mdi {
+        font-size: 1.6rem;   
+        margin-right: 6px;  
+        color: black !important;
+    }
+
+    .back-btn span {
+        color: black !important;
+    }
 </style>
 
 <div class="container mt-5 mb-6">
     
     <div class="level mb-5">
+        <div>
         <div class="level-left">
-            <div>
-                <a href="./?c=questionnaire&a=resultats" class="button is-small is-ghost mb-5">
-                    <span>< Mes questionnaires</span>
-                </a>
-                <h1 class="title is-2 mb-5">
-                    <?php echo htmlspecialchars($questionnaire['titre'] ?? 'Titre inconnu'); ?>
-                </h1>
-                <div class="tags">
-                    <?php 
-                    $est_expire = strtotime($questionnaire['date_expiration']) < time();
-                    if ($est_expire): ?>
-                        <span class="tag is-danger">Expiré</span>
-                    <?php else: ?>
-                        <span class="tag is-success">Actif (jusqu'au <?php echo date('d/m/Y', strtotime($questionnaire['date_expiration'])); ?>)</span>
-                    <?php endif; ?>
-                </div>
+            <div onclick="window.location.href ='./?c=questionnaire&a=resultats';"
+                class="button is-small is-ghost mb-5 is-flex is-align-items-center back-btn">
+                <span class="mdi mdi-arrow-left-thin"></span>
+                <span>Mes questionnaires</span>
             </div>
+        </div>
+            <h1 class="title is-2 mb-5">
+                <?php echo htmlspecialchars($questionnaire['titre'] ?? 'Titre inconnu'); ?>
+            </h1>
+            <div class="tags">
+                <?php 
+                $est_expire = strtotime($questionnaire['date_expiration']) < time();
+                if ($est_expire): ?>
+                    <span class="tag is-danger">Expiré (auto-suppression le <?php echo date('d/m/Y', strtotime('+3 years', strtotime($questionnaire['date_expiration']))); ?>)</span>
+                <?php else: ?>
+                    <span class="tag is-success">Actif (jusqu'au <?php echo date('d/m/Y', strtotime($questionnaire['date_expiration'])); ?>)</span>
+                <?php endif; ?>
+                </div>
         </div>
 
         <div class="level-right">
