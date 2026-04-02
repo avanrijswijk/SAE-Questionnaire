@@ -348,24 +348,26 @@ class QuestionnaireController {
             return;
         }
 
-        $titre = $this->questionnaireModel->getTitreAvecTireParID($id);
-        if (!$titre) {
+        $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
+        if (!$questionnaire) {
             http_response_code(404);
             echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
 
-        $resultats = $this->reponses_utilisateurModel->getReponsePourCSV($id);
-        if (empty($resultats)) {
-            http_response_code(204); // pas de contenu
-            exit;
-        }
-
-        if ($this->questionnaireModel->getQuestionnaire($id)['id_createur'] != $_SESSION['cas_user']) {
+        // Vérification des droits
+        if ($questionnaire['id_createur'] != $_SESSION['cas_user']) {
             echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
             exit();
         }
-        
+
+        $titre = $questionnaire['titre'];
+        $resultats = $this->reponses_utilisateurModel->getReponsePourCSV($id);
+
+        if (empty($resultats)) {
+            http_response_code(204);
+            exit;
+        }
 
         $filename = "export_" . $titre . ".csv";
 
@@ -375,10 +377,19 @@ class QuestionnaireController {
         header("Expires: 0");
 
         $output = fopen("php://output", "w");
-        fputcsv($output, array_keys($resultats[0]), ';');
+
+        fwrite($output, "\xEF\xBB\xBF"); // s'occupe des caractères spéciaux pour excel.
+
+        // En-têtes imposés
+        fputcsv($output, ["Questions", "répondants", "choix", "réponses"], ';');
 
         foreach ($resultats as $row) {
-            fputcsv($output, $row, ';');
+            fputcsv($output, [
+                $row['question'],
+                $row['repondant'],
+                $row['choix'],
+                $row['reponse_libre']
+            ], ';');
         }
 
         fclose($output);

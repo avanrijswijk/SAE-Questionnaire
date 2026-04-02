@@ -111,17 +111,21 @@ class Reponses_utilisateur {
      * @param int $id_questionnaire L'identifiant du questionnaire.
      * @return array Liste des réponses formatées pour CSV.
      */
-    public function getReponsePourCSV($id_questionnaire) { //a voir si utilisable pour traitement de donnée
-        $query = "SELECT qt.intitule as question, c.texte as choix, r.reponse
-                FROM questionnaires qtnaire
-                JOIN questions qt ON qt.id_questionnaire = qtnaire.id 
-                JOIN choix_possible c ON c.id_question = qt.id
-                JOIN reponses_utilisateur r ON r.id_choix = c.id
-                WHERE qtnaire.id = :id_questionnaire
-                ORDER BY r.id_choix, r.id_utilisateur";
+    public function getReponsePourCSV($id_questionnaire) {
+        $query = "SELECT 
+                    qt.intitule AS question,
+                    CONCAT(u.prenom, ' ', u.nom) AS repondant,
+                    cp.texte AS choix,
+                    ru.reponse AS reponse_libre
+                FROM reponses_utilisateur ru
+                JOIN utilisateurs u ON u.identifiant = ru.id_utilisateur
+                JOIN choix_possible cp ON cp.id = ru.id_choix
+                JOIN questions qt ON qt.id = cp.id_question
+                WHERE qt.id_questionnaire = :id
+                ORDER BY ru.date_reponse ASC";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id_questionnaire', $id_questionnaire);
+        $stmt->bindParam(':id', $id_questionnaire); // ✔️ correction ici
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
