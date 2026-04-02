@@ -24,6 +24,8 @@ function notification(type, message) {
     // const id = "notification-" + notifications.childElementCount;
 
     notifConteneur.classList.add("notification", type);
+    notifConteneur.style.transform = "translateX(-500px)";
+    notifConteneur.style.transition = "transform .5s ease-out";
     boutonFermer.classList.add("delete");
     pMessage.classList.add("is-unselectable");
     pMessage.innerText = message;
@@ -33,9 +35,15 @@ function notification(type, message) {
     if (notificationConteneur) {
         notifConteneur.append(boutonFermer, pMessage);
         notificationConteneur.appendChild(notifConteneur);
+        setTimeout(() => {
+            notifConteneur.style.transform = "translateX(0px)";
+        }, 200);
 
         boutonFermer.addEventListener("click", () => {
-            notificationConteneur.removeChild(notifConteneur);
+            notifConteneur.style.transform = "translateX(-500px)";
+            setTimeout(() => {
+                notificationConteneur.removeChild(notifConteneur);
+            }, 600);
         });
     }
 }
