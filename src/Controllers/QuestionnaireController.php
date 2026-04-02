@@ -109,13 +109,19 @@ class QuestionnaireController {
         if ($id !== null) {
             $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
             if (!$questionnaire) {
-                echo 'Questionnaire introuvable.';
+                echo "<script>window.location.href = './?c=erreur&a=404';</script>";
                 return;
             }
             if ($questionnaire['brouillon'] == 1) {
-                echo 'Les questionnaires déjà publiés ne peuvent pas être modifiés.       :)';
+                echo "<script>window.location.href = './?c=erreur&a=404';</script>";
                 return;
             }
+
+            if (!isset($_SESSION['cas_user']) || $questionnaire['id_createur'] !== $_SESSION['cas_user']) {
+                echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+                exit();
+            }
+
             $questionnaire= $this->getQuestionnaireComplet($id);
         } else {
             $questionnaire = null;
@@ -198,7 +204,7 @@ class QuestionnaireController {
             }
             
         } else {
-            echo 'erreur : id du questionnaire introuvable.';
+            echo "<script>window.location.href = './?c=erreur&a=404';</script>";
             return;
         }
     }
