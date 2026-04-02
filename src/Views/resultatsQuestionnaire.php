@@ -10,11 +10,11 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
 ?>
 <main style="background-color: #EFEFEF; height: 100%; overflow-y: auto;">
     <script>
-        document.title = "Quit - Page des résultats d'un questionnaire"
+        document.title = "Quit - Mes Questionnaires"
     </script>
     <div class="pt-5">
-        <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5 mb-1">liste des questionnaires publiés</h3>
-        <div id="questionnaires" class="is-flex is-justify-content-center pt-5 pb-2 mb-5">
+        <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5 mb-1">Questionnaires Publiés</h3>
+        <div id="questionnaires" class="is-flex is-justify-content-center pt-5 pb-2 mb-6">
             <?php if (count($questionnairesFinis) < 1) { ?>
                 <span><?php echo "Aucun questionnaire publié"; ?></span>
             <?php } else { ?>
@@ -46,10 +46,23 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                         <?php foreach ($questionnairesFinis as $questionnairefini): 
                             $idQuestionnaire = $questionnairefini['id'];
                             $titreQuestionnaire = $questionnairefini['titre'];
+
+                            $dateBrute = $questionnairefini['date_expiration'] ?? '';
+                            $estExpire = false;
+                            if (!empty($dateBrute)) {
+                                if (strtotime($dateBrute) < time()) {
+                                    $estExpire = true;
+                                }
+                            }
                             ?> 
                             <tr class="ligne-questionnaire" data-id="<?php echo $idQuestionnaire; ?>">
                                 <td class="titre-questionnaire">
                                     <span class="titre-texte"><?php echo $titreQuestionnaire ?></span>
+                                    <?php if ($estExpire): ?>
+                                        <span class="tag is-danger is-light ml-3">Expiré</span>
+                                    <?php else: ?>
+                                        <span class="tag is-success is-light ml-3">Actif</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td class="has-text-centered"><?php echo $questionnaireBDD->getNombreRepondants($idQuestionnaire); ?></td>
                                 <td class="has-text-centered">
@@ -68,7 +81,7 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                 </table>
             <?php } ?>
         </div>
-        <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5 mb-1">liste des brouillons de questionnaires</h3>
+        <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5 mb-1">Questionnaires Brouillon</h3>
         <div id="questionnaires" class="is-flex is-justify-content-center pt-5 pb-2">
             <?php if (count($questionnairesBrouillons) < 1) { ?>
                 <span><?php echo "Aucun brouillon de questionnaire"; ?></span>
@@ -90,7 +103,7 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                     <thead>
                         <tr>
                             <th>Titre</th>
-                            <th>Supprimer</th>
+                            <th class="has-text-centered">Supprimer</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -101,9 +114,10 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                             <tr class="ligne-questionnaire" data-id="<?php echo $idQuestionnaireBrouillon; ?>">
                                 <td class="titre-questionnaire">
                                     <span class="titre-texte"><?php echo $titreQuestionnaireBrouillon ?></span>
+                                    <span class="tag is-warning is-light ml-3">Brouillon</span>
                                 </td>
                                 <td class="has-text-centered">
-                                    <div class="image is-32x32" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $titreQuestionnaireBrouillon ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $idQuestionnaireBrouillon; ?>';}">
+                                    <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $titreQuestionnaireBrouillon ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $idQuestionnaireBrouillon; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
                                 </td> 

@@ -10,7 +10,7 @@
     <div>
         <script src="./src/Views/js/lister_questionnaire/modals/code/modalCode.js"></script>
         <button style="background-color: #F5A320;border-radius: 0 0 100px 0;" id="bouton-code">
-            <h3 class="title is-4 p-2 pr-6 is-3 has-text-weight-semibold">J'ai un code</h3>
+            <h3 class="title is-4 p-4 pr-6 is-3 has-text-weight-semibold"><span class="icon"><i class="fas fa-key"></i></span> J'ai un code</h3>
         </button>
         <div id="dialog-code" class="modal">
             <div class="modal-background"></div>
@@ -30,20 +30,24 @@
             </form>
         </div>
     </div>
+
+    <div class="is-flex is-justify-content-center">
+        <h1 class="title is-3 has-text-weight-bold">Questionnaires disponibles</h1>
+    </div>
     
-    <div class="is-flex is-justify-content-center pt-5">
+    <div class="is-flex is-justify-content-center pt-5 mt-5">
         <table class="table is-hoverable" style="width: 95%;">
             <colgroup>
-                <col style="width:30%;">
-                <col style="width:30%;">
+                <col style="width:20%;">
                 <col style="width:25%;">
+                <col style="width:35%;">
                 <col style="width:15%;">
             </colgroup>
             <thead>
                 <tr>
                     <th>Titre</th>
-                    <th>Auteur</th>
-                    <th>Temps</th>
+                    <th class="has-text-centered">Auteur</th>
+                    <th class="has-text-centered">Temps</th>
                     <th class="has-text-centered">Statut</th> </tr>
             </thead>
             <tbody id="table">
@@ -71,12 +75,12 @@
                                     ? $createurNomPrenom
                                     : ($questionnaire['id_createur'] ?? '');
                             ?>
-                            <td><?php echo htmlspecialchars($createurAffichage); ?></td>
+                            <td class="has-text-centered"><?php echo htmlspecialchars($createurAffichage); ?></td>
                             
                             <?php if ($nbJoursRestant <= 0) : ?>
-                                <td title="<?php echo htmlspecialchars($date) ?>" style="color : red;"><?php echo htmlspecialchars($nbHeureRestant); ?> heures restant</td> 
+                                <td class="has-text-centered" title="<?php echo htmlspecialchars($date) ?>" style="color : red;"><?php echo htmlspecialchars($nbHeureRestant); ?> heures restant</td> 
                             <?php else : ?>
-                                <td title="<?php echo htmlspecialchars($date) ?>" style="<?php if ($nbJoursRestant < 7) echo "color : red;" ?>"><?php echo htmlspecialchars($nbJoursRestant); ?> jours restant</td> 
+                                <td class="has-text-centered" title="<?php echo htmlspecialchars($date) ?>" style="<?php if ($nbJoursRestant < 7) echo "color : red;" ?>"><?php echo htmlspecialchars($nbJoursRestant); ?> jours restant</td> 
                             <?php endif ?>
 
                             <td class="has-text-centered">

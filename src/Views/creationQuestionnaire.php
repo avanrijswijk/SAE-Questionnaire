@@ -15,7 +15,7 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
     <script>
         document.title = "Quit - Page de création"
     </script>
-    <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #E9E9E9;width: 30%;">
+    <div class="is-flex is-flex-direction-column is-justify-content-space-between pb-6" style="background-color: #f6f5f5;width: 30%;">
         <div id="context-menu">
             <ul class="menu">
                 <li class="menu-item" id="menu-item-afficher">Afficher</li>
@@ -36,64 +36,50 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
             <div class="modal-background"></div>
             <form class="modal-card" id="form-ajouter-question">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Ajouter une question</p>
+                    <p class="modal-card-title has-text-weight-semibold">Ajouter une question</p>
                     <button type="button" id="bouton-fermerMAQ" class="delete" aria-label="close"></button>
                 </header>
-                <section class="modal-card-body is-flex is-flex-direction-column">
-                    <div class="field" style="width: 100%;">
+                <section class="modal-card-body">
+                    <div class="field mb-4">
                         <label for="titre-question" class="label">Libellé de la question</label>
                         <div class="control">
-                            <textarea class="textarea" rows=2 name="libelle-question" autocapitalize="sentences" autofocus required></textarea>
+                            <textarea class="textarea" rows="2" name="libelle-question" autocapitalize="sentences" autofocus required placeholder="Saisissez votre question ici..."></textarea>
                         </div>
                     </div>
-                    <div class="field">
-                        <label class="label">Type de la question</label>
-                        <div class="radios" id="radios-types">
-                            <label class="radio is-unselectable">
-                                <input type="radio" name="type-question" value="champs-libre" id="radio-champs-libre" checked required>
-                                Champs libre
-                            </label>
-                            <label class="radio is-unselectable">
-                                <input type="radio" name="type-question" value="radio-box" id="radio-radio-box">
-                                Radio box
-                            </label>
-                            <label class="radio is-unselectable">
-                                <input type="radio" name="type-question" value="check-box" id="radio-check-box">
-                                Check box
-                            </label>
-                            <label class="radio is-unselectable">
-                                <input type="radio" name="type-question" value="context" id="radio-context">
-                                Mise en context
-                            </label>
-                        </div>
-                    </div> 
-                    <div id="radio-sous-type" class="field">
-                        <label class="label">Sous type :</label>
-                        <div class="radios" id="sous-type-champs">
-                            <label class="radio is-unselectable">
-                                <input type="radio" name="sous-type-question" value="champs-libre-court" checked required>
-                                Petit champs
-                            </label>
-                            <label class="radio is-unselectable">
-                                <input type="radio" name="sous-type-question" value="champs-libre-long">
-                                Grand champs
-                            </label>
+                    
+                    <div class="columns mb-0">
+                        <div class="column field">
+                            <label class="label">Type de la question</label>
+                            <div class="control" id="radios-types">
+                                <label class="radio is-block mb-2"><input type="radio" name="type-question" value="champs-libre" id="radio-champs-libre" checked required> Champ libre</label>
+                                <label class="radio is-block mb-2"><input type="radio" name="type-question" value="radio-box" id="radio-radio-box"> Boutons radio (1 seul choix)</label>
+                                <label class="radio is-block mb-2"><input type="radio" name="type-question" value="check-box" id="radio-check-box"> Cases à cocher (Multiples)</label>
+                                <label class="radio is-block"><input type="radio" name="type-question" value="context" id="radio-context"> Mise en contexte (Texte seul)</label>
+                            </div>
+                        </div> 
+                        
+                        <div class="column field" id="radio-sous-type">
+                            <label class="label">Taille du champ :</label>
+                            <div class="control" id="sous-type-champs">
+                                <label class="radio is-block mb-2"><input type="radio" name="sous-type-question" value="champs-libre-court" checked required> Petit champ (1 ligne)</label>
+                                <label class="radio is-block"><input type="radio" name="sous-type-question" value="champs-libre-long"> Grand champ (Paragraphe)</label>
+                            </div>
                         </div>
                     </div>
+
+                    <hr class="mt-2 mb-4">
+
                     <div id="obligatoire" class="field">
-                        <label class="label">Option :</label>
-                        <div class="checkboxes">
-                            <label class="checkbox is-unselectable">
-                                <input type="checkbox" name="question-obligatoire" value="obligatoire">
-                                Question obligatoire
+                        <div class="control">
+                            <label class="checkbox has-text-weight-semibold">
+                                <input type="checkbox" name="question-obligatoire" value="obligatoire" class="mr-2">
+                                Rendre cette question obligatoire
                             </label>
                         </div>
                     </div>
                 </section>
-                <footer class="modal-card-foot" style="justify-content: center;">
-                    <button type="submit" class="button" id="bouton-validerMAQ"  style="width: 20%;">
-                        <p>Créer</p>
-                    </button>
+                <footer class="modal-card-foot buttons is-centered">
+                    <button type="submit" class="button is-warning has-text-weight-bold px-6" id="bouton-validerMAQ">Créer la question</button>
                 </footer>
             </form>
         </div>
@@ -134,6 +120,9 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                             </label>
                         </div>
                     </div>
+
+                    <hr class="mt-4 mb-3">
+
                     <div id="obligatoire-modifier" class="field">
                         <label for="titre-question" class="label">Option :</label>
                         <div class="checkboxes">
@@ -209,12 +198,15 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                 </footer>
             </form>
         </div>
-        <button type="button" id="bouton-finir"> <!--onclick="window.location.href = './?c=home';"-->
-            <h3 class="title is-4 mt-3 p-4">FINIR</h3>
-        </button>
+        <div class="p-3 is-flex is-justify-content-center">
+            <button type="button" id="bouton-finir" class="button is-large has-text-weight-bold" style="border: 2px solid #11841e; border-radius: 12px; transition: all 0.2s ease;">
+                <span class="icon is-medium mr-2 ml-1"><i class="fas fa-check"></i></span>
+                <span class="mr-4">FINIR</span>
+            </button>
+        </div>
     </div>
-    <div style="background-color: #B5C6E6; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center">
-        <div class="mt-5 mb-5" style="background-color: #edededff; width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-questionnaire">
+    <div style="background-color: #e6b5b5; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center">
+        <div class="mt-5 mb-5" style="background-color: rgb(248, 248, 248); width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-questionnaire">
         </div>
     </div>
     <div id="notifications" style="width:30%; position: fixed; bottom: 2%; left: 2%; max-height: 50%;">
