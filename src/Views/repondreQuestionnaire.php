@@ -217,8 +217,11 @@ $nbContext = 0
                         </div>
                     </div>
                 <?php endforeach; ?>
-                <hr />
-
+                
+                <hr style="margin-bottom: 0.5rem;"/>
+                <div class="mb-5">
+                    <span>Le symbole <span style="color:red;">*</span> représente une question obligatoire.</span>
+                </div>
                 <div class="buttons" style="display: flex; justify-content: center; margin-bottom: 50px;">
                     <?php if ($estCreateur): ?>
                         
