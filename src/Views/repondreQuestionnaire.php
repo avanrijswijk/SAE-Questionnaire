@@ -56,12 +56,25 @@ $nbContext = 0
             <div class="notification is-warning is-light mr-4" style="margin-bottom: 10; padding: 0.5rem 1rem;">
                 <strong>Mode Aperçu</strong> : Vous êtes le créateur de ce questionnaire.
             </div>
+        <?php else :?> 
+            <style>
+                label.radio:hover, label.checkbox:hover {
+                    background-color: #a8a8a856 !important;
+                }
+
+                label.radio, label.checkbox {
+                    padding-left: 5px;
+                }
+            </style>
         <?php endif; ?>
 
         <h1 class="title is-1 mt-3"><?php echo $titre; ?></h1>
 
         <?php if (empty($questions)): ?>
             <p>Aucune question pour ce questionnaire.</p>
+            <script>
+                console.warn("Il n'y a pas de questions dans le questionnaire[id:<?php echo $_GET["id"]; ?>");
+            </script>
         <?php else: ?>
             <style>
                 form {
@@ -142,7 +155,7 @@ $nbContext = 0
 
                                 <?php case "radio": ?>
                                     <div class="radios is-flex is-flex-direction-column" style="row-gap: 0.5em;">
-                                        <?php foreach($choix as $reponse):
+                                        <?php foreach(array_reverse($choix) as $reponse):
                                             // n'affiche pas une réponse si son text est null
                                             if (!is_null($reponse) && !is_null($reponse['texte'])) {?>
                                             <label class="radio">
@@ -169,7 +182,7 @@ $nbContext = 0
 
                                 <?php case "check": ?>
                                     <div class="checkboxs is-flex is-flex-direction-column" style="row-gap: 0.5em;">
-                                        <?php foreach($choix as $reponse): 
+                                        <?php foreach(array_reverse($choix) as $reponse): 
                                             // n'affiche pas une réponse si son text est null
                                             if (!is_null($reponse) && !is_null($reponse['texte'])) {?>
                                             <label class="checkbox">
@@ -204,8 +217,11 @@ $nbContext = 0
                         </div>
                     </div>
                 <?php endforeach; ?>
-                <hr />
-
+                
+                <hr style="margin-bottom: 0.5rem;"/>
+                <div class="mb-5">
+                    <span>Le symbole <span style="color:red;">*</span> représente une question obligatoire.</span>
+                </div>
                 <div class="buttons" style="display: flex; justify-content: center; margin-bottom: 50px;">
                     <?php if ($estCreateur): ?>
                         

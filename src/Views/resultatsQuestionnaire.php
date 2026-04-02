@@ -13,8 +13,8 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
         document.title = "Quit - Page des résultats d'un questionnaire"
     </script>
     <div class="pt-5">
-        <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5">liste des questionnaires publiés</h3>
-        <div id="questionnaires" class="is-flex is-justify-content-center pt-5 pb-2">
+        <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5 mb-1">liste des questionnaires publiés</h3>
+        <div id="questionnaires" class="is-flex is-justify-content-center pt-5 pb-2 mb-5">
             <?php if (count($questionnairesFinis) < 1) { ?>
                 <span><?php echo "Aucun questionnaire publié"; ?></span>
             <?php } else { ?>
@@ -68,7 +68,7 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                 </table>
             <?php } ?>
         </div>
-        <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5">liste des brouillons de questionnaires</h3>
+        <h3 class="is-capitalized title is-3 has-text-weight-semibold pl-5 mb-1">liste des brouillons de questionnaires</h3>
         <div id="questionnaires" class="is-flex is-justify-content-center pt-5 pb-2">
             <?php if (count($questionnairesBrouillons) < 1) { ?>
                 <span><?php echo "Aucun brouillon de questionnaire"; ?></span>
