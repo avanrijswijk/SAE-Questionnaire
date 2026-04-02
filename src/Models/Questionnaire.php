@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use PDO;
+use Exception;
 
 class Questionnaire {
 
@@ -342,6 +343,85 @@ class Questionnaire {
         $stmt->bindParam(':code', $code);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+    public function dupliquerQuestionnaireComplet($id_original, $nouveauTitre, $estBrouillon = 0) {
+        try {
+            $this->conn->beginTransaction();
+
+            $stmt = $this->conn->prepare("SELECT * FROM questionnaires WHERE id = :id");
+            $stmt->execute(['id' => $id_original]);
+            $qOriginal = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$qOriginal) {
+                $this->conn->rollBack();
+                return false;
+            }
+
+            $nouveauCode = substr(str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 4);
+            while ($this->codeExistant($nouveauCode)) {
+                $nouveauCode = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4); 
+            }
+
+            $sqlInsertQ = "INSERT INTO questionnaires (titre, id_createur, date_expiration, date_creation, groupes_autorises, code, brouillon) 
+                           VALUES (:titre, :id_createur, :date_expiration, NOW(), :groupes_autorises, :code, :brouillon)";
+            $stmtInsertQ = $this->conn->prepare($sqlInsertQ);
+            
+            $stmtInsertQ->execute([
+                ':titre' => $nouveauTitre,
+                ':id_createur' => $qOriginal['id_createur'],
+                ':date_expiration' => $qOriginal['date_expiration'],
+                ':groupes_autorises' => $qOriginal['groupes_autorises'],
+                ':code' => $nouveauCode,
+                ':brouillon' => $estBrouillon
+            ]);
+
+            $nouvelIdQuestionnaire = $this->conn->lastInsertId();
+
+            $stmtQuestions = $this->conn->prepare("SELECT * FROM questions WHERE id_questionnaire = :id_q");
+            $stmtQuestions->execute(['id_q' => $id_original]);
+            $questions = $stmtQuestions->fetchAll(PDO::FETCH_ASSOC);
+
+            $sqlInsertQuestion = "INSERT INTO questions (id_questionnaire, intitule, type, est_obligatoire, position) 
+                                  VALUES (:id_q, :intitule, :type, :est_obligatoire, :position)";
+            $stmtInsertQuestion = $this->conn->prepare($sqlInsertQuestion);
+
+            $sqlSelectChoix = "SELECT * FROM choix_possible WHERE id_question = :id_question";
+            $stmtSelectChoix = $this->conn->prepare($sqlSelectChoix);
+
+            $sqlInsertChoix = "INSERT INTO choix_possible (id_question, texte) VALUES (:id_q, :texte)";
+            $stmtInsertChoix = $this->conn->prepare($sqlInsertChoix);
+
+            foreach ($questions as $question) {
+                
+                $stmtInsertQuestion->execute([
+                    ':id_q' => $nouvelIdQuestionnaire,
+                    ':intitule' => $question['intitule'],
+                    ':type' => $question['type'],
+                    ':est_obligatoire' => $question['est_obligatoire'] ?? 0,
+                    ':position' => $question['position'] ?? 0
+                ]);
+
+                $nouvelIdQuestion = $this->conn->lastInsertId();
+
+                $stmtSelectChoix->execute(['id_question' => $question['id']]);
+                $choixPossibles = $stmtSelectChoix->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach ($choixPossibles as $choix) {
+                    $stmtInsertChoix->execute([
+                        ':id_q' => $nouvelIdQuestion,
+                        ':texte' => $choix['texte']
+                    ]);
+                }
+            }
+            $this->conn->commit();
+            return true;
+
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return false;
+        }
     }
 
 }

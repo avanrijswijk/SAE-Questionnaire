@@ -128,6 +128,11 @@ require_once(__DIR__.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Views'.DIREC
                     break;
                 case 'modifier':
                     $questionnaireController->modifier();
+                    break;
+                case 'dupliquer':
+                    $id = isset($_GET['id']) ? $_GET['id'] : null;
+                    $questionnaireController->dupliquer($id);
+                    break;
             }
             break;
 

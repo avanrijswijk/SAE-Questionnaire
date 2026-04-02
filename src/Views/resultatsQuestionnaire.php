@@ -1,15 +1,11 @@
 <?php
 
-use App\Controllers\AcceptesController;
-use App\Controllers\QuestionController;
-use App\Models\Acceptes;
 use App\Models\Questionnaire;
 $questionnaireBDD = new Questionnaire();
 $questionnairesFinis = $questionnaireBDD->getQuestionnairePar(["id_createur" => $_SESSION['cas_user'] , "brouillon" => 1]);
 $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur" => $_SESSION['cas_user'] , "brouillon" => 0]);
 ?>
-<main style="background-color: #EFEFEF; height: 100%; overflow-y: auto;">
-    <script>
+<main style="background-color: #EFEFEF; min-height: calc(100vh - 65px); padding-bottom: 5rem;">    <script>
         document.title = "Quit - Mes Questionnaires"
     </script>
     <div class="pt-5">
@@ -29,7 +25,8 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                 </style>
                 <table class="table is-hoverable" style="width: 95%;">
                     <colgroup>
-                            <col style="width:70%;">
+                            <col style="width:55%;">
+                            <col style="width:15%;">
                             <col style="width:10%;">
                             <col style="width:10%;">
                             <col style="width:10%;">
@@ -40,6 +37,7 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                             <th class="has-text-centered">Réponses</th>
                             <th class="has-text-centered">Telecharger</th>
                             <th class="has-text-centered">Supprimer</th>
+                            <th class="has-text-centered"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -64,17 +62,42 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                                         <span class="tag is-success is-light ml-3">Actif</span>
                                     <?php endif; ?>
                                 </td>
+
                                 <td class="has-text-centered"><?php echo $questionnaireBDD->getNombreRepondants($idQuestionnaire); ?></td>
+
                                 <td class="has-text-centered">
                                     <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();alert('téléchargement en cours'); window.location.href = './?c=questionnaire&a=exporter&id=<?php echo $idQuestionnaire; ?>';">
                                         <img src="./src/Views/img/telecharger-64.png" alt="icon de téléchargement" title="Télécharger">
                                     </div>
                                 </td>
+
                                 <td class="has-text-centered">
                                     <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $titreQuestionnaire ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $idQuestionnaire; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
                                 </td> 
+
+                                <td class="has-text-centered">
+                                    <div class="dropdown is-right" id="dropdown-publie-<?php echo $idQuestionnaire; ?>">
+                                        <div class="dropdown-trigger">
+                                            <button class="button is-white is-small action-btn" aria-haspopup="true" aria-controls="dropdown-menu-<?php echo $idQuestionnaire; ?>" onclick="toggleDropdown(event, 'dropdown-publie-<?php echo $idQuestionnaire; ?>')">
+                                                <span class="icon is-small has-text-black">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <div class="dropdown-menu" id="dropdown-menu-<?php echo $idQuestionnaire; ?>" role="menu" style="min-width: 8rem;">
+                                            <div class="dropdown-content has-text-left">
+                                                <a href="./?c=questionnaire&a=modifier&id=<?php echo $idQuestionnaire; ?>" class="dropdown-item" onclick="event.stopPropagation();">
+                                                    <span class="icon is-small mr-2"><i class="fas fa-edit"></i></span> Modifier
+                                                </a>
+                                                <a href="./?c=questionnaire&a=dupliquer&id=<?php echo $idQuestionnaire; ?>" class="dropdown-item" onclick="event.stopPropagation();">
+                                                    <span class="icon is-small mr-2"><i class="fas fa-copy"></i></span> Dupliquer
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -97,13 +120,15 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                 </style>
                 <table class="table is-hoverable" style="width: 95%;">
                     <colgroup>
-                            <col style="width:90%;">
+                            <col style="width:80%;">
+                            <col style="width:10%;">
                             <col style="width:10%;">
                     </colgroup>
                     <thead>
                         <tr>
                             <th>Titre</th>
                             <th class="has-text-centered">Supprimer</th>
+                            <th class="has-text-centered"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,11 +141,34 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                                     <span class="titre-texte"><?php echo $titreQuestionnaireBrouillon ?></span>
                                     <span class="tag is-warning is-light ml-3">Brouillon</span>
                                 </td>
+
                                 <td class="has-text-centered">
                                     <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo $titreQuestionnaireBrouillon ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $idQuestionnaireBrouillon; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
-                                </td> 
+                                </td>
+
+                                <td class="has-text-centered">
+                                    <div class="dropdown is-right" id="dropdown-brouillon-<?php echo $idQuestionnaireBrouillon; ?>">
+                                        <div class="dropdown-trigger">
+                                            <button class="button is-white is-small action-btn" aria-haspopup="true" aria-controls="dropdown-menu-brouillon-<?php echo $idQuestionnaireBrouillon; ?>" onclick="toggleDropdown(event, 'dropdown-brouillon-<?php echo $idQuestionnaireBrouillon; ?>')">
+                                                <span class="icon is-small has-text-black">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <div class="dropdown-menu" id="dropdown-menu-brouillon-<?php echo $idQuestionnaireBrouillon; ?>" role="menu" style="min-width: 8rem;">
+                                            <div class="dropdown-content has-text-left">
+                                                <a href="./?c=questionnaire&a=modifier&id=<?php echo $idQuestionnaireBrouillon; ?>" class="dropdown-item" onclick="event.stopPropagation();">
+                                                    <span class="icon is-small mr-2"><i class="fas fa-edit"></i></span> Modifier
+                                                </a>
+                                                <a href="./?c=questionnaire&a=dupliquer&id=<?php echo $idQuestionnaireBrouillon; ?>" class="dropdown-item" onclick="event.stopPropagation();">
+                                                    <span class="icon is-small mr-2"><i class="fas fa-copy"></i></span> Dupliquer
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -131,3 +179,28 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
 </main>
 
 <script src="./src/Views/js/resultats_questionnaire/afficher/resultat.js"></script>
+
+<script>
+    function toggleDropdown(event, dropdownId) {
+        event.stopPropagation();
+        const targetDropdown = document.getElementById(dropdownId);
+        const isActive = targetDropdown.classList.contains('is-active');
+        
+        fermerTousLesDropdowns();
+        
+        if (!isActive) {
+            targetDropdown.classList.add('is-active');
+        }
+    }
+
+    function fermerTousLesDropdowns() {
+        const dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.classList.remove('is-active');
+        });
+    }
+
+    document.addEventListener('click', () => {
+        fermerTousLesDropdowns();
+    });
+</script>

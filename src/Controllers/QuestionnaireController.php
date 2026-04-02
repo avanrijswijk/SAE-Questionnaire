@@ -626,4 +626,36 @@ class QuestionnaireController {
 
         require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'resultatsQuestionnaire.php');
     }
+
+    /**
+     * Duplique un questionnaire existant en créant une copie avec un nouveau titre.
+     * Le nouveau titre est basé sur l'original avec " (copie)" ajouté à la fin.
+     */
+    public function dupliquer($id = null) {
+    if (empty($id)) {
+        echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+        exit();
+    }
+
+    $original = $this->questionnaireModel->getQuestionnaire($id);
+    if (!$original) {
+        echo "<script>window.location.href = './?c=erreur&a=404';</script>";
+        exit();
+    }
+
+    if (!isset($_SESSION['cas_user']) || $original['id_createur'] !== $_SESSION['cas_user']) {
+        echo "<script>window.location.href = './?c=erreur&a=droits';</script>";
+        exit();
+    }
+
+    $nouveauTitre = $original['titre'] . ' (copie)';
+    $succes = $this->questionnaireModel->dupliquerQuestionnaireComplet($id, $nouveauTitre, 0);
+
+    if ($succes) {
+        header("Location: ./?c=questionnaire&a=resultats");
+        exit();
+    } else {
+        die("Une erreur est survenue lors de la duplication.");
+    }
+}
 }

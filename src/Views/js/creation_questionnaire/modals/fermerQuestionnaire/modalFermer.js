@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const listeQuestions = listerQuestions();
         if (listeQuestions.length > 0) {
-            if (confirm("Etes vous sur de vouloir revenir à l'acceuil ?\nSi vous revenez à l'acceuil, vous predrez votre progression.")) {
+            if (confirm("Etes vous sur de vouloir revenir à l'accueil ?\nSi vous revenez à l'accueil, vous perdrez toute votre progression.")) {
                 window.location.href = lienAcceuil.href;
             }
         } else {

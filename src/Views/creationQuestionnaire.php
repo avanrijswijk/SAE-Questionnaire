@@ -205,7 +205,7 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
             </button>
         </div>
     </div>
-    <div style="background-color: #e6b5b5; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center">
+    <div style="background-color: #ffe7c0; width:100%; line-break: anywhere;"  class="is-flex is-justify-content-center">
         <div class="mt-5 mb-5" style="background-color: rgb(248, 248, 248); width:85%; padding: 25px 15px; overflow: auto;" id="visualiseur-questionnaire">
         </div>
     </div>
