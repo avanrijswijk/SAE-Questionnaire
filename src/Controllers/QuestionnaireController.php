@@ -318,7 +318,7 @@ class QuestionnaireController {
         $suppressionOk = $this->questionnaireModel->supprimer($id); 
 
         if ($suppressionOk) {
-            header("Location: ./?c=questionnaire&a=lister");
+            header("Location: ./?c=questionnaire&a=resultats");
             exit();
         } else {
             die("Une erreur est survenue lors de la suppression en base de données.");

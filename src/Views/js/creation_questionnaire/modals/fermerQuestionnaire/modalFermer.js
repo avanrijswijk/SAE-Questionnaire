@@ -1,5 +1,6 @@
 import { ouvrire_modal, fermer_modal } from '../gestion_modal.js';
 import { notification, TypeNotification } from '../../../utils/notification/notification.js';
+import { TypeQuestion } from '../../typeQuestion.js';
 
 /**
  * liste les questions :
@@ -86,11 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     formMVQ.addEventListener("submit", (e) => {
-        //e.preventDefault();
-        
-        fermer_modal(modalValiderQuestionnaire);
-        // window.location.href = "./?c=home";
-
+       fermer_modal(modalValiderQuestionnaire);
         /*
         intitule : str 
         type : str
@@ -103,7 +100,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (jsonQuestions.length === 0) {
             notification(TypeNotification.ERREUR, "Aucune question n'a été créé.");
             e.preventDefault();
+            return;
+        } else
+        if (jsonQuestions.filter((q) => q["type"].toLowerCase() == TypeQuestion.CONTEXT.toLowerCase()).length === jsonQuestions.length) {
+            notification(TypeNotification.ATTENTION, "Vous ne pouvez pas créer un questionnaire avec\nuniquement des contextes.");
+            e.preventDefault();
+            return;
         }
+        
         listeQuestions.type = "hidden";
         listeQuestions.name = "liste-questions";
         listeQuestions.value = JSON.stringify(jsonQuestions);

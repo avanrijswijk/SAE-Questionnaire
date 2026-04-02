@@ -197,10 +197,10 @@ $mes_choix = genererCiblesAutorisees($mon_profil);
                 <footer class="modal-card-foot" style="justify-content: center;">
                     <input type="hidden" name="mode_enregistrement" id="mode-enregistrement" value="">
                     <input type="hidden" name="id_questionnaire" id="id-questionnaire" value="<?php echo isset($questionnaire['id']) ? htmlspecialchars($questionnaire['id']) : ''; ?>">
-                    <button type="submit-brouillon" class="button mr-4 has-background-warning" id="bouton-brouillonMVQ">
+                    <button type="button" class="button mr-4 has-background-warning" id="bouton-brouillonMVQ">
                         <p>Brouillon</p>
                     </button>
-                    <button type="submit-publier" class="button has-background-success" id="bouton-PublierMVQ">
+                    <button type="button" class="button has-background-success" id="bouton-PublierMVQ">
                         <p>Publier</p>
                     </button>
                 </footer>
