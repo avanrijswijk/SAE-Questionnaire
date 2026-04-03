@@ -143,7 +143,7 @@ $questionnairesBrouillons = $questionnaireBDD->getQuestionnairePar(["id_createur
                                 </td>
 
                                 <td class="has-text-centered">
-                                    <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo htmlspecialchars(addslashes($titreQuestionnaire), ENT_QUOTES); ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $idQuestionnaireBrouillon; ?>';}">
+                                    <div class="image is-32x32 mx-auto" onclick="event.stopPropagation();if (confirm('Êtes-vous sûr de vouloir supprimer le questionnaire \'<?php echo htmlspecialchars(addslashes($titreQuestionnaireBrouillon), ENT_QUOTES); ?>\' ?\nCette action est définitive.')) {window.location.href = './?c=questionnaire&a=supprimer&id=<?php echo $idQuestionnaireBrouillon; ?>';}">
                                         <img src="./src/Views/img/poubelle-64.png" alt="icon de poubelle" title="Supprimer">
                                     </div> 
                                 </td>
