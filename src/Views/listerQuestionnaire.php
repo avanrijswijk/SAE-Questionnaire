@@ -1,6 +1,8 @@
 <?php
     use App\Models\Reponses_utilisateur;
+    use App\Models\Questionnaire;
     $reponsesModele = new Reponses_utilisateur();
+    $questionnaireModele = new Questionnaire();
 ?>
 
 <main style="background-color: #EFEFEF; min-height: 100vh; overflow-y: auto;">
@@ -68,12 +70,21 @@
                         <tr onclick="window.location.href ='./?c=questionnaire&a=repondre&id=<?php echo $questionnaire['id']; ?>';" style="cursor: pointer;">
                             <td><?php echo htmlspecialchars($questionnaire['titre']); ?></td>
                             <?php
-                                $createurNom = $questionnaire['createur_nom'] ?? '';
-                                $createurPrenom = $questionnaire['createur_prenom'] ?? '';
-                                $createurNomPrenom = trim($createurPrenom . ' ' . $createurNom);
-                                $createurAffichage = $createurNomPrenom !== ''
-                                    ? $createurNomPrenom
-                                    : ($questionnaire['id_createur'] ?? '');
+                                $idCreateur = $questionnaire['id_createur'] ?? '';
+                                $createurAffichage = $idCreateur;
+                                
+                                if (!empty($idCreateur)) {
+                                    $createurInfos = $questionnaireModele->getUtilisateurParId($idCreateur);
+                                    if ($createurInfos) {
+                                        $nom = $createurInfos['nom'] ?? '';
+                                        $prenom = $createurInfos['prenom'] ?? '';
+                                        $nomComplet = trim($prenom . ' ' . $nom);
+                                        
+                                        if (!empty($nomComplet)) {
+                                            $createurAffichage = $nomComplet;
+                                        }
+                                    }
+                                }
                             ?>
                             <td class="has-text-centered"><?php echo htmlspecialchars($createurAffichage); ?></td>
                             
