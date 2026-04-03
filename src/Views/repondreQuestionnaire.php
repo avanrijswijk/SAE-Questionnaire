@@ -162,7 +162,8 @@ $nbContext = 0
                                                 <input
                                                     type="radio"
                                                     class="radio-choice"
-                                                    name="<?php echo $groupName; ?>"  
+                                                    name="<?php echo $groupName; ?>" 
+                                                    value="<?php echo $reponse['id']; ?>" 
                                                     data-idchoix="<?php echo $reponse['id']; ?>"
                                                     data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
                                                     <?php if ($required) echo "required"; ?>
@@ -189,7 +190,7 @@ $nbContext = 0
                                                 <input
                                                     type="checkbox"
                                                     class="check-choice"  
-                                                    name="<?php echo $groupName; ?>" 
+                                                    name="<?php echo $groupName; ?>[]" 
                                                     data-idchoix="<?php echo $reponse['id']; ?>"
                                                     data-texte="<?php echo htmlspecialchars($reponse['texte']); ?>"
                                                     data-required="<?php echo $required ? 'required' : ''; ?>"

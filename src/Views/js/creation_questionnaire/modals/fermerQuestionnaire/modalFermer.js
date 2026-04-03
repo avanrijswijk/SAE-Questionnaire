@@ -113,9 +113,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.value = JSON.stringify(jsonQuestions);
 
         // Debug //
-        console.log(jsonQuestions);
-        e.preventDefault();
-        return;
+        // console.log(jsonQuestions);
+        // e.preventDefault();
+        // return;
 
         formMVQ.appendChild(listeQuestions);
     });

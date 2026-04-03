@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use PDO;
+use Exception;
 
 class Question {
 
@@ -143,6 +144,24 @@ class Question {
      */
     public function getIdDerniereInsertion() {
         return $this->conn->lastInsertId();
+    }
+
+
+    public function supprimerQuestionsParQuestionnaire($id_questionnaire) {
+        try {
+            $sqlChoix = "DELETE FROM choix_possible WHERE id_question IN (SELECT id FROM questions WHERE id_questionnaire = :id_q)";
+            $stmtChoix = $this->conn->prepare($sqlChoix);
+            $stmtChoix->execute([':id_q' => $id_questionnaire]);
+
+            $sqlQuestions = "DELETE FROM questions WHERE id_questionnaire = :id_q";
+            $stmtQuestions = $this->conn->prepare($sqlQuestions);
+            $stmtQuestions->execute([':id_q' => $id_questionnaire]);
+
+            return true;
+
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
 }

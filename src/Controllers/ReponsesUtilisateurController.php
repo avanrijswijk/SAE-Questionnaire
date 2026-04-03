@@ -36,45 +36,49 @@ class ReponsesUtilisateurController {
         $ajoutOk = false;
 
         if (is_array($_POST) && !empty($_POST)) {
-            $id_utilisateur = $_SESSION['id_utilisateur'] ?? null;
-            if (!isset($id_utilisateur)) {
-                $id_utilisateur = 1; // Utilisateur non connecté pour les tests
-            }
-
+            $id_utilisateur = $_SESSION['cas_user'] ?? 'anonyme';
             $dernier_id_choix = null;
 
             foreach ($_POST as $key => $value) {
-                // On ne traite que les clés qui commencent par "choix-"
-                if (strpos($key, 'choix-') !== 0) {
-                    continue;
-                }
-
-                $id_choix = substr($key, strlen('choix-'));
-                $reponse  = $value;
-
-                $id_utilisateur = $_SESSION['cas_user'] ?? null;
                 
-                if (!isset($id_utilisateur)) {
-                    $id_utilisateur = 'anonyme';
-                }
-
-                $dernier_id_choix = $id_choix;
-
-                $ajoutOk = $this->reponses_utilisateurModel->creerReponse($id_utilisateur, $id_choix, $reponse);
-                if (!$ajoutOk) {
-                    echo "echec de l'insertion.";
-                    return false;
+                if (strpos($key, 'choix-') === 0) {
+                    $id_choix = substr($key, strlen('choix-'));
+                    $reponse  = trim($value);
+                    
+                    if (!empty($reponse)) {
+                        $dernier_id_choix = $id_choix;
+                        $ajoutOk = $this->reponses_utilisateurModel->creerReponse($id_utilisateur, $id_choix, $reponse);
+                    }
+                } 
+                
+                else if (strpos($key, 'question-') === 0) {
+                    
+                    if (is_array($value)) {
+                        foreach ($value as $id_choix_coche) {
+                            $dernier_id_choix = $id_choix_coche;
+                            $ajoutOk = $this->reponses_utilisateurModel->creerReponse($id_utilisateur, $id_choix_coche, "Coché");
+                        }
+                    } else {
+                        $id_choix = $value;
+                        $dernier_id_choix = $id_choix;
+                        $ajoutOk = $this->reponses_utilisateurModel->creerReponse($id_utilisateur, $id_choix, "Sélectionné");
+                    }
                 }
             }
         } else {
             echo 'Données de réponses invalides.';
+            return false;
         }
 
         if ($ajoutOk && $dernier_id_choix !== null) {
-            $this->acceptesModel->repondre($id_utilisateur , $this->questionnaireModel->getQuestionnaireParIdReponse($dernier_id_choix));
-            require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'home.php');
+            $id_questionnaire = $this->questionnaireModel->getQuestionnaireParIdReponse($dernier_id_choix);
+            if ($id_questionnaire != -1) {
+                $this->acceptesModel->repondre($id_utilisateur, $id_questionnaire);
+            }
+            header("Location: ./?c=home");
+            exit();
         } else {
-            echo 'Erreur lors de l\'enregistrement des réponses.';
+            echo 'Erreur : Aucune réponse enregistrée.';
         }
         return $ajoutOk;
     }

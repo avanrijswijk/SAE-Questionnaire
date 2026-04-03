@@ -226,39 +226,53 @@ class QuestionnaireController {
             $id = null;
         }
 
-        //DEBUG
-        // echo $id . "\n";
-        // echo $titre . "\n";
-        // echo $date_expiration . "\n";
-        // echo $brouillon . "\n";
-        // echo $id_createur . "\n";
-        // echo $code . "\n";
-        // return;
-
-        // Gestion des règles d'accès
         $mon_profil = analyserProfilUtilisateur($_SESSION['cas_groupes']);
         $cibles_selectionnees = $_POST['groupes_cibles'] ?? [];
-        // On détermine le site du créateur du questionnaire
         $site_du_questionnaire = $mon_profil['sites'][0] ?? 'limoges'; 
-        // On crée nos règles d'accès en fonction du site et des groupes cibles sélectionnés
+        
         $regles_acces = [
             "site_requis" => $site_du_questionnaire,
             "groupes_requis" => $cibles_selectionnees
         ];
-
-        // On encode ces règles en JSON pour la base de données
-        // exemple : {"site_requis":"limoges", "groupes_requis":["iut-etudiants-info-1a"]}
         $json_pour_bdd = json_encode($regles_acces);
 
         if (!is_null($id)) {
             $ajoutOk = $this->questionnaireModel->modifier($id, $titre, $date_expiration, $json_pour_bdd, $brouillon);
+            $idQuestionnaire = $id;
         } else {
-            //for ($i = 0; $i < 500; $i++) { //pour les testes de gestion de conflit de code
             $ajoutOk = $this->questionnaireModel->creerQuestionnaire($titre, $id_createur, $date_expiration, $code, $json_pour_bdd, $brouillon);
+            $idQuestionnaire = $this->questionnaireModel->getIdDerniereInsertion();
+        }
+
+        if ($ajoutOk && isset($_POST['liste-questions'])) {
+            $questionsJson = json_decode($_POST['liste-questions'], true);
+            
+            if (is_array($questionsJson)) {
+                if (!is_null($id)) {
+                    $this->questionModel->supprimerQuestionsParQuestionnaire($idQuestionnaire);
+                }
+
+                foreach ($questionsJson as $q) {
+                    $intitule = $q['intitule'] ?? '';
+                    $type = $q['type'] ?? 'textfield';
+                    $position = $q['position'] ?? 0;
+                    $est_obligatoire = ($q['est_obligatoire'] === "true" || $q['est_obligatoire'] === true || $q['est_obligatoire'] == 1) ? 1 : 0;
+                    
+                    $this->questionModel->creerQuestion($idQuestionnaire, $intitule, $type, $est_obligatoire, $position);
+                    $idQuestion = $this->questionModel->getIdDerniereInsertion(); 
+
+                    if (isset($q['choix']) && is_array($q['choix'])) {
+                        foreach ($q['choix'] as $choixTexte) {
+                            $this->choix_possibleModel->creerChoix($idQuestion, $choixTexte);
+                        }
+                    }
+                }
+            }
         }
 
         if ($ajoutOk) {
-            require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'home.php');
+            header("Location: ./?c=home");
+            exit();
         } else {
             echo 'Erreur lors de l\'enregistrement.';
         }
@@ -424,6 +438,7 @@ class QuestionnaireController {
         $questionnaire = $this->questionnaireModel->getQuestionnaire($id);
         if($questionnaire['id_createur'] == $_SESSION['cas_user']){
             if ($questionnaire['brouillon'] == 1) {
+                $repondants = $this->reponses_utilisateurModel->getRepondantsParQuestionnaire($id);
                 require_once(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Views'.DIRECTORY_SEPARATOR.'detailQuestionnaire.php');
             } else
             if ($questionnaire['brouillon'] == 0) {
