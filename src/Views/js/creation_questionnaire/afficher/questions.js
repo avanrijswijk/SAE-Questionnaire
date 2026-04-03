@@ -207,11 +207,13 @@ document.addEventListener("drop", (e) => {
             
         // si c'est une question
         } else if (!estUneReponse && !zoneDnd.classList.contains("dnd-reponse")) {
+            // on prend les infos sur la question et la zone qui lui est associé
             const parentVQ = document.getElementById("visualiseur-questions");
             const question = parentVQ.querySelector(`div[data-_id="${idDeplace}"]`).parentElement; 
             const indexZoneDnd = Array.prototype.indexOf.call(parentVQ.children, zoneDnd);
             const indexQuestion = Array.prototype.indexOf.call(parentVQ.children, question);
 
+            // on vérifit la validité du déplacement
             if (!(indexQuestion+1 < parentVQ.children.length)){notifErreur(); return;} 
             if (!parentVQ.children[indexQuestion+1].classList.contains("dnd")){notifErreur(); return;} 
             if (zoneDnd.nextElementSibling === question || zoneDnd.previousElementSibling === question) { return ;}
@@ -220,9 +222,11 @@ document.addEventListener("drop", (e) => {
 
             if (Array.prototype.indexOf.call(parentVQ.children, zoneDndQuestion) == indexZoneDnd){return;} 
 
+            // on déplace la question et ça zone "dnd"
             parentVQ.insertBefore(question, zoneDnd);
             parentVQ.insertBefore(zoneDndQuestion, question);
 
+            // on fait un liste avec le nouvel ordre des questions
             const nouvelOrdreIds = [];
             const questionsAGauche = parentVQ.querySelectorAll("div.div-question"); 
             questionsAGauche.forEach(divConteneur => {
@@ -230,6 +234,7 @@ document.addEventListener("drop", (e) => {
                 if(id) nouvelOrdreIds.push(id);
             });
 
+            // on synchronise avec la partie de droite
             synchroniserOrdreQuestion(nouvelOrdreIds);
         }
     }

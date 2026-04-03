@@ -36,7 +36,7 @@ function listerQuestions() {
         };
 
         if (divReponses) {
-            divReponses.childNodes.forEach((divReponse) => {
+            divReponses.querySelectorAll("div.div-reponse").forEach((divReponse) => {
                 data["choix"].push(divReponse.dataset.intitule);
             });
         } else {
@@ -113,9 +113,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeQuestions.value = JSON.stringify(jsonQuestions);
 
         // Debug //
-        // console.log(jsonQuestions);
-        // e.preventDefault();
-        // return;
+        console.log(jsonQuestions);
+        e.preventDefault();
+        return;
 
         formMVQ.appendChild(listeQuestions);
     });
