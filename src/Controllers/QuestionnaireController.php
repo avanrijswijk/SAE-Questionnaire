@@ -258,7 +258,7 @@ class QuestionnaireController {
                     $position = $q['position'] ?? 0;
                     $est_obligatoire = ($q['est_obligatoire'] === "true" || $q['est_obligatoire'] === true || $q['est_obligatoire'] == 1) ? 1 : 0;
                     
-                    $this->questionModel->creerQuestion($idQuestionnaire, $intitule, $type, $est_obligatoire, $position);
+                    $this->questionModel->creerQuestion($idQuestionnaire, $intitule, $type, $position, $est_obligatoire);
                     $idQuestion = $this->questionModel->getIdDerniereInsertion(); 
 
                     if (isset($q['choix']) && is_array($q['choix'])) {
